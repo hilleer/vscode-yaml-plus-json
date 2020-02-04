@@ -36,11 +36,11 @@ function onRename(e) {
         if (wasJson && isYml) {
             convertJsonToYml(newUri);
         }
-        const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
-        const isJson = newPath.endsWith('json');
-        if (wasYml && isJson) {
-            convertYmlToJson(newUri);
-        }
+        // const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
+        // const isJson = newPath.endsWith('json');
+        // if (wasYml && isJson) {
+        // 	convertYmlToJson(newUri);
+        // }
     });
 }
 function convertJsonToYml(uri) {

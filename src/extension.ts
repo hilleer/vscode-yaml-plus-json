@@ -32,12 +32,12 @@ function onRename(e: vscode.FileRenameEvent) {
 			convertJsonToYml(newUri);
 		}
 
-		const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
-		const isJson = newPath.endsWith('json');
+		// const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
+		// const isJson = newPath.endsWith('json');
 
-		if (wasYml && isJson) {
-			convertYmlToJson(newUri);
-		}
+		// if (wasYml && isJson) {
+		// 	convertYmlToJson(newUri);
+		// }
 	});
 }
 
