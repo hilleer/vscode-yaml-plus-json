@@ -9,17 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require("vscode");
 const YAML = require("yaml");
 const fs_1 = require("fs");
 const util_1 = require("util");
 const readFileAsync = util_1.promisify(fs_1.readFile);
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 function activate(context) {
-    console.log('Congratulations, your extension "yaml-plus-json" is now active!');
     vscode.workspace.onDidRenameFiles(onRename);
 }
 exports.activate = activate;
@@ -36,35 +31,54 @@ function onRename(e) {
         if (wasJson && isYml) {
             convertJsonToYml(newUri);
         }
-        // const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
-        // const isJson = newPath.endsWith('json');
-        // if (wasYml && isJson) {
-        // 	convertYmlToJson(newUri);
-        // }
+        const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
+        const isJson = newPath.endsWith('json');
+        if (wasYml && isJson) {
+            convertYmlToJson(newUri);
+        }
     });
 }
 function convertJsonToYml(uri) {
     return __awaiter(this, void 0, void 0, function* () {
-        const json = yield readFileAsync(uri.path, 'utf8');
-        const yml = YAML.stringify(JSON.parse(json));
-        yield replace(uri, yml);
+        try {
+            const json = yield readFileAsync(uri.path, 'utf8');
+            const jsonString = JSON.parse(json);
+            const yml = YAML.stringify(jsonString);
+            yield replace(uri, yml);
+        }
+        catch (error) {
+            console.error(error);
+            vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
+        }
     });
 }
 function convertYmlToJson(uri) {
     return __awaiter(this, void 0, void 0, function* () {
-        const yml = yield readFileAsync(uri.path, 'utf8');
-        const json = YAML.parse(yml);
-        yield replace(uri, json);
+        try {
+            const yml = yield readFileAsync(uri.path, 'utf8');
+            const json = YAML.parse(yml);
+            const jsonString = JSON.stringify(json, undefined, 2);
+            yield replace(uri, jsonString);
+        }
+        catch (error) {
+            console.error(error);
+            vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
+        }
     });
 }
 function replace(uri, newText) {
     return __awaiter(this, void 0, void 0, function* () {
-        const document = yield vscode.workspace.openTextDocument(uri);
-        const lastLine = document.lineCount;
-        const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastLine, Number.MAX_VALUE));
-        const edit = new vscode.WorkspaceEdit();
-        edit.replace(uri, range, newText);
-        yield vscode.workspace.applyEdit(edit);
+        try {
+            const document = yield vscode.workspace.openTextDocument(uri);
+            const lastLine = document.lineCount;
+            const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastLine, Number.MAX_VALUE));
+            const edit = new vscode.WorkspaceEdit();
+            edit.replace(uri, range, newText);
+            yield vscode.workspace.applyEdit(edit);
+        }
+        catch (error) {
+            vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
+        }
     });
 }
 //# sourceMappingURL=extension.js.map
