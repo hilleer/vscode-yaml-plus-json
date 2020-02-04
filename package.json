@@ -1,8 +1,9 @@
 {
 	"name": "yaml-plus-json",
-	"displayName": "yaml-plus-json",
+	"displayName": "YAML plus JSON",
 	"description": "Easily convert yaml to json and vice versa",
-	"version": "0.0.1",
+	"version": "1.0.0-beta.0",
+	"publisher": "hilleer",
 	"engines": {
 		"vscode": "^1.41.0"
 	},
@@ -14,12 +15,7 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
+		"commands": []
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -45,10 +41,10 @@
 	},
 	"dependencies": {
 		"i": "0.3.6",
-		"json-to-pretty-yaml": "1.2.2",
-		"json2yaml": "1.1.0",
 		"npm": "6.13.7",
-		"yaml": "1.7.2",
-		"yamljs": "0.3.0"
+		"yaml": "1.7.2"
+	},
+	"bugs": {
+		"url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
 	}
 }
