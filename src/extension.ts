@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-const jsonToYaml = require('json-to-pretty-yaml');
+import * as YAML from 'yaml';
 import { readFile } from 'fs';
 import { promisify } from 'util';
 
@@ -22,31 +22,46 @@ function onRename(e: vscode.FileRenameEvent) {
 	e.files.forEach((change) => {
 		const { oldUri, newUri } = change;
 
-		const jsonPath = oldUri.path;
-		const ymlPath = newUri.path;
+		const oldPath = oldUri.path;
+		const newPath = newUri.path;
 
-		const wasJson = jsonPath.endsWith('.json');
-		const isYml = ymlPath.endsWith('.yml');
+		const wasJson = oldPath.endsWith('.json');
+		const isYml = newPath.endsWith('.yml') || newPath.endsWith('.yaml');
 
 		if (wasJson && isYml) {
 			convertJsonToYml(newUri);
 		}
-		console.log('was json', wasJson);
-		console.log('isyml', isYml);
+
+		const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
+		const isJson = newPath.endsWith('json');
+
+		if (wasYml && isJson) {
+			convertYmlToJson(newUri);
+		}
 	});
 }
 
 async function convertJsonToYml(uri: vscode.Uri) {
 	const json = await readFileAsync(uri.path, 'utf8');
-	const yml = jsonToYaml.stringify(json);
-	console.log('file content', json);
-	console.log('yml', yml);
+	const yml = YAML.stringify(JSON.parse(json));
 
-	const edit: vscode.WorkspaceEdit = {
-
-	};
-
-	vscode.workspace.applyEdit({ replace: (uri, new vscode.Range(new vscode.Position(0, 0), new vscode.Position(9999, 9999)), yml) });
+	await replace(uri, yml);
 }
 
-// JSON --> yml
+async function convertYmlToJson(uri: vscode.Uri) {
+	const yml = await readFileAsync(uri.path, 'utf8');
+	const json = YAML.parse(yml);
+
+	await replace(uri, json);
+}
+
+async function replace(uri: vscode.Uri, newText: string) {
+	const document = await vscode.workspace.openTextDocument(uri);
+	const lastLine = document.lineCount;
+	const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastLine, Number.MAX_VALUE));
+	const edit = new vscode.WorkspaceEdit();
+
+	edit.replace(uri, range, newText);
+
+	await vscode.workspace.applyEdit(edit);
+}

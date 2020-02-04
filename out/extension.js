@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require("vscode");
-const jsonToYaml = require('json-to-pretty-yaml');
+const YAML = require("yaml");
 const fs_1 = require("fs");
 const util_1 = require("util");
 const readFileAsync = util_1.promisify(fs_1.readFile);
@@ -29,26 +29,42 @@ exports.deactivate = deactivate;
 function onRename(e) {
     e.files.forEach((change) => {
         const { oldUri, newUri } = change;
-        const jsonPath = oldUri.path;
-        const ymlPath = newUri.path;
-        const wasJson = jsonPath.endsWith('.json');
-        const isYml = ymlPath.endsWith('.yml');
+        const oldPath = oldUri.path;
+        const newPath = newUri.path;
+        const wasJson = oldPath.endsWith('.json');
+        const isYml = newPath.endsWith('.yml') || newPath.endsWith('.yaml');
         if (wasJson && isYml) {
             convertJsonToYml(newUri);
         }
-        console.log('was json', wasJson);
-        console.log('isyml', isYml);
+        const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
+        const isJson = newPath.endsWith('json');
+        if (wasYml && isJson) {
+            convertYmlToJson(newUri);
+        }
     });
 }
 function convertJsonToYml(uri) {
     return __awaiter(this, void 0, void 0, function* () {
         const json = yield readFileAsync(uri.path, 'utf8');
-        const yml = jsonToYaml.stringify(json);
-        console.log('file content', json);
-        console.log('yml', yml);
-        const edit = {};
-        vscode.workspace.applyEdit({ replace: (uri, new vscode.Range(new vscode.Position(0, 0), new vscode.Position(9999, 9999)), yml) });
+        const yml = YAML.stringify(JSON.parse(json));
+        yield replace(uri, yml);
     });
 }
-// JSON --> yml
+function convertYmlToJson(uri) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const yml = yield readFileAsync(uri.path, 'utf8');
+        const json = YAML.parse(yml);
+        yield replace(uri, json);
+    });
+}
+function replace(uri, newText) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const document = yield vscode.workspace.openTextDocument(uri);
+        const lastLine = document.lineCount;
+        const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastLine, Number.MAX_VALUE));
+        const edit = new vscode.WorkspaceEdit();
+        edit.replace(uri, range, newText);
+        yield vscode.workspace.applyEdit(edit);
+    });
+}
 //# sourceMappingURL=extension.js.map
