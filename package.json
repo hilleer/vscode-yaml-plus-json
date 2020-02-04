@@ -10,6 +10,13 @@
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"converter",
+		"yaml",
+		"json",
+		"yml to json",
+		"json to yml"
+	],
 	"activationEvents": [
 		"workspaceContains:**/**.json"
 	],
