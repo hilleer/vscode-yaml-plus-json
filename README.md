@@ -1,0 +1,1 @@
+# vscode-yaml-plus-json
