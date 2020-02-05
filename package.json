@@ -18,7 +18,9 @@
 		"json to yml"
 	],
 	"activationEvents": [
-		"workspaceContains:**/**.json"
+		"workspaceContains:**/**.json",
+		"workspaceContains:**/**.yml",
+		"workspaceContains:**/**.yaml"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
