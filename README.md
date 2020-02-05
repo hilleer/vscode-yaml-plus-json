@@ -2,9 +2,11 @@
 
 Easily convert json to yml and vice versa.
 
-## Renaming
+## Functionality
 
-The extension will automatically convert `.json` files renamed to `.yml`/`.yaml` and vice versa.
+* The extension will automatically convert `.json` files renamed to `.yml`/`.yaml` and vice versa.
+
+## Config
 
 ## Upcoming features
 
