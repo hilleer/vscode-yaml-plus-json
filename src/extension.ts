@@ -71,6 +71,7 @@ async function replace(uri: vscode.Uri, newText: string) {
 		edit.replace(uri, range, newText);
 		
 		await vscode.workspace.applyEdit(edit);
+		await document.save();
 	} catch (error) {
 		vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
 	}
