@@ -36,7 +36,32 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": []
+		"commands": [
+			{
+				"command": "extension.convertJson",
+
+				"title": "Convert To YML"
+			},
+			{
+				"command": "extension.convertYaml",
+
+				"title": "Convert To JSON"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"group": "1_modification",
+					"command": "extension.convertJson",
+					"when": "resourceExtname == .json"
+				},
+				{
+					"group": "1_modification",
+					"command": "extension.convertYaml",
+					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

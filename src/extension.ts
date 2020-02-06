@@ -6,6 +6,16 @@ import { promisify } from 'util';
 const readFileAsync = promisify(readFile);
 
 export function activate(context: vscode.ExtensionContext) {
+	vscode.commands.registerCommand('extension.convertJson', (uri: vscode.Uri) => {
+		console.log('connvert to json');
+		console.log('uri', uri);
+	});
+	vscode.commands.registerCommand('extension.convertYaml', (uri: vscode.Uri) => {
+		console.log('connvert to yaml');
+		console.log('uri', uri);
+	});
+
+	// console.log(await vscode.commands.getCommands(true));
 	vscode.workspace.onDidRenameFiles(onRename);
 }
 
