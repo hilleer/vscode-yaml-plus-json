@@ -1,7 +1,7 @@
 {
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
-	"description": "Easily convert yaml to json and vice versa",
+	"description": "Easily convert yaml to json and json to yaml",
 	"version": "0.0.6",
 	"publisher": "hilleer",
 	"engines": {
@@ -26,8 +26,8 @@
 		"converter",
 		"yaml",
 		"json",
-		"yml to json",
-		"json to yml"
+		"yaml to json",
+		"json to yaml"
 	],
 	"activationEvents": [
 		"workspaceContains:**/**.json",
