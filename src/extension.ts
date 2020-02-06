@@ -9,9 +9,6 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidRenameFiles(onRename);
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() { }
-
 function onRename(e: vscode.FileRenameEvent) {
 	e.files.forEach((change) => {
 		const { oldUri, newUri } = change;
