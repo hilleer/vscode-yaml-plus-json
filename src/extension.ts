@@ -3,91 +3,109 @@ import * as YAML from 'yaml';
 
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('extension.convertJson', onRightclickJson);
-	vscode.commands.registerCommand('extension.convertYaml', (uri: vscode.Uri) => {
-		console.log('connvert to yaml');
-		console.log('uri', uri);
-	});
+	vscode.commands.registerCommand('extension.convertYaml', onRightClickYaml);
 
-	// console.log(await vscode.commands.getCommands(true));
 	vscode.workspace.onDidRenameFiles(onRename);
 }
 
-function onRightclickJson() {
-	return (uri: vscode.Uri) => {
+async function onRightclickJson(oldUri: vscode.Uri) {
+	const { path } = oldUri;
+	const newFilePath = path.replace('.json', '.yml');
+	const newUri = vscode.Uri.parse(newFilePath);
+	try {
+		const document = await vscode.workspace.openTextDocument(oldUri);
+		const json = document.getText();
+		const yaml = YAML.stringify(JSON.parse(json));
 
-	};
+		await changeFile(oldUri, newUri, document, yaml);
+	} catch (error) {
+		showError(error);
+	}
+}
+
+function onRightClickYaml(uri: vscode.Uri) {
+	console.log('uri', uri);
 }
 
 function onRename(e: vscode.FileRenameEvent) {
-	e.files.forEach((change) => {
+	e.files.forEach(async (change) => {
 		const { oldUri, newUri } = change;
 
 		const oldPath = oldUri.path;
 		const newPath = newUri.path;
 
-		const wasJson = oldPath.endsWith('.json');
-		const isYml = newPath.endsWith('.yml') || newPath.endsWith('.yaml');
+		const shouldConvert = oldPath.endsWith('.json') || oldPath.endsWith('.yaml') || oldPath.endsWith('.yml');
 
-		if (wasJson && isYml) {
-			convertJsonToYml(newUri);
+		if (!shouldConvert) {
+			return;
 		}
 
-		const wasYml = oldPath.endsWith('.yml') || oldPath.endsWith('.yaml');
-		const isJson = newPath.endsWith('json');
+		const document = await vscode.workspace.openTextDocument(newUri);
 
-		if (wasYml && isJson) {
-			convertYmlToJson(newUri);
+		const shouldConvertToYaml = newPath.endsWith('.yml') || newPath.endsWith('.yaml');
+
+		if (shouldConvertToYaml) {
+			convertJsonToYml(document);
 		}
+
+		const shouldConvertToJson = newPath.endsWith('json');
+		if (shouldConvertToJson) {
+			convertYmlToJson(document);
+		}
+
 	});
 }
 
-async function convertJsonToYml(uri: vscode.Uri) {
+async function convertJsonToYml(document: vscode.TextDocument) {
 	try {
-		const document = await vscode.workspace.openTextDocument(uri);
-		const { isDirty } = document;
-
-		if (isDirty) {
-			await doAutoSave(document);
-		}
-
 		const json = document.getText();
 		const yml = YAML.stringify(JSON.parse(json));
 
-		await replaceFileContent(uri, yml);
+		await replaceFileContent(document, yml);
 	} catch (error) {
 		showError(error);
 	}
 }
 
-async function convertYmlToJson(uri: vscode.Uri) {
+async function convertYmlToJson(document: vscode.TextDocument) {
 	try {
-		const document = await vscode.workspace.openTextDocument(uri);
-		const { isDirty } = document;
-
-		if (isDirty) {
-			await doAutoSave(document);
-		}
-
 		const yml = document.getText();
 		const json = YAML.parse(yml);
 		const jsonString = JSON.stringify(json, undefined, 2);
 
-		await replaceFileContent(uri, jsonString);
+		await replaceFileContent(document, jsonString);
 	} catch (error) {
 		showError(error);
 	}
 }
 
-async function replaceFileContent(uri: vscode.Uri, newText: string) {
+async function changeFile(oldUri: vscode.Uri, newUri: vscode.Uri, document: vscode.TextDocument, newText: string) {
+	const { lineCount } = document;
+
+
+	const edit = new vscode.WorkspaceEdit();
+	const range = getFullDocumentRange(lineCount);
+
 	try {
-		const document = await vscode.workspace.openTextDocument(uri);
-		const { lineCount } = document;
+		await vscode.workspace.fs.rename(oldUri, newUri);
+		edit.replace(newUri, range, newText);
+		await vscode.workspace.applyEdit(edit);
+		const newDocument = await vscode.workspace.openTextDocument(newUri);
+		await newDocument.save();
+	} catch (error) {
+		showError(error);
+	}
+}
 
-		const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lineCount, Number.MAX_VALUE));
-		const edit = new vscode.WorkspaceEdit();
+async function replaceFileContent(document: vscode.TextDocument, newText: string) {
+	const { lineCount, isDirty, uri } = document;
 
+	const edit = new vscode.WorkspaceEdit();
+	const range = getFullDocumentRange(lineCount);
+
+	try {
+		isDirty && await doAutoSave(document);
 		edit.replace(uri, range, newText);
-
 		await vscode.workspace.applyEdit(edit);
 		await document.save();
 	} catch (error) {
@@ -95,9 +113,16 @@ async function replaceFileContent(uri: vscode.Uri, newText: string) {
 	}
 }
 
+function getFullDocumentRange(lineCount: number) {
+	return new vscode.Range(
+		new vscode.Position(0, 0),
+		new vscode.Position(lineCount, Number.MAX_VALUE)
+	);
+}
+
 function showError(error: any) {
 	console.error(error);
-	vscode.window.showErrorMessage('Something went wrong, please try again or create an issue if the problem persist');
+	vscode.window.showErrorMessage('Something went wrong, please validate your file and try again or create an issue if the problem persist');
 }
 
 async function doAutoSave(document: vscode.TextDocument) {

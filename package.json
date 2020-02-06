@@ -40,12 +40,12 @@
 			{
 				"command": "extension.convertJson",
 
-				"title": "Convert To YML"
+				"title": "Change file to YAML"
 			},
 			{
 				"command": "extension.convertYaml",
 
-				"title": "Convert To JSON"
+				"title": "Change file to JSON"
 			}
 		],
 		"menus": {
