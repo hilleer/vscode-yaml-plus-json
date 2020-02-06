@@ -43,8 +43,7 @@ async function convertJsonToYml(uri: vscode.Uri) {
 
 		await replace(uri, yml);
 	} catch (error) {
-		console.error(error);
-		vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
+		showError(error);
 	}
 }
 
@@ -56,8 +55,7 @@ async function convertYmlToJson(uri: vscode.Uri) {
 
 		await replace(uri, jsonString);
 	} catch (error) {
-		console.error(error);
-		vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
+		showError(error);
 	}
 }
 
@@ -67,12 +65,17 @@ async function replace(uri: vscode.Uri, newText: string) {
 		const lastLine = document.lineCount;
 		const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastLine, Number.MAX_VALUE));
 		const edit = new vscode.WorkspaceEdit();
-		
+
 		edit.replace(uri, range, newText);
-		
+
 		await vscode.workspace.applyEdit(edit);
 		await document.save();
 	} catch (error) {
-		vscode.window.showErrorMessage('Something went wrong, please try again. Please create an issue if the problem persist');
+		showError(error);
 	}
+}
+
+function showError(error: any) {
+	console.error(error);
+	vscode.window.showErrorMessage('Something went wrong, please try again or create an issue if the problem persist');
 }
