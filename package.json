@@ -24,8 +24,8 @@
 	],
 	"keywords": [
 		"converter",
-		"yaml",
-		"json",
+		"yaml converter",
+		"json converter",
 		"yaml to json",
 		"json to yaml"
 	],
@@ -38,13 +38,11 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.convertJson",
-
+				"command": "extension.rightClickJson",
 				"title": "Change file to YAML"
 			},
 			{
-				"command": "extension.convertYaml",
-
+				"command": "extension.rightClickYaml",
 				"title": "Change file to JSON"
 			}
 		],
@@ -52,12 +50,12 @@
 			"explorer/context": [
 				{
 					"group": "1_modification",
-					"command": "extension.convertJson",
+					"command": "extension.rightClickJson",
 					"when": "resourceExtname == .json"
 				},
 				{
 					"group": "1_modification",
-					"command": "extension.convertYaml",
+					"command": "extension.rightClickYaml",
 					"when": "resourceExtname == .yml || resourceExtname == .yaml"
 				}
 			]
