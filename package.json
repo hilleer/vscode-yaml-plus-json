@@ -24,8 +24,8 @@
 	],
 	"keywords": [
 		"converter",
-		"yaml",
-		"json",
+		"yaml converter",
+		"json converter",
 		"yaml to json",
 		"json to yaml"
 	],
@@ -36,7 +36,30 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": []
+		"commands": [
+			{
+				"command": "extension.rightClickJson",
+				"title": "Change file to YAML"
+			},
+			{
+				"command": "extension.rightClickYaml",
+				"title": "Change file to JSON"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"group": "1_modification",
+					"command": "extension.rightClickJson",
+					"when": "resourceExtname == .json"
+				},
+				{
+					"group": "1_modification",
+					"command": "extension.rightClickYaml",
+					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
