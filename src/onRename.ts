@@ -16,15 +16,15 @@ export function onRename(e: vscode.FileRenameEvent) {
 			return;
 		}
 
-		const newDocument = await vscode.workspace.openTextDocument(newUri);
+		const document = await vscode.workspace.openTextDocument(newUri);
 
 		// language id of NEW file
-		switch (newDocument.languageId) {
+		switch (document.languageId) {
 			case 'json':
-				convertYamlToJson(newDocument);
+				convertYamlToJson(document);
 				break;
 			case 'yaml':
-				convertJsonToYaml(newDocument);
+				convertJsonToYaml(document);
 				break;
 		}
 	});
