@@ -4,6 +4,12 @@ All notable changes to the "yaml-plus-json" extension will be documented in this
 
 ## [Unreleased]
 
+## [0.1.1] 2019-02-8
+
+### Changed
+
+* Updated readme.
+
 ## [0.1.0] 2019-02-8
 
 ### Added
