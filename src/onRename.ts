@@ -9,25 +9,24 @@ export function onRename(e: vscode.FileRenameEvent) {
 		const oldPath = oldUri.path;
 		const newPath = newUri.path;
 
-		const shouldConvert = oldPath.endsWith('.json') || oldPath.endsWith('.yaml') || oldPath.endsWith('.yml');
+		const shouldConvertJson = oldPath.endsWith('.json') && (newPath.endsWith('.yaml') || newPath.endsWith('.yml'));
+		const shouldConvertYaml = (oldPath.endsWith('.yaml') || oldPath.endsWith('.yml')) && newPath.endsWith('.json');
 
-		if (!shouldConvert) {
+		if (!shouldConvertJson && !shouldConvertYaml) {
 			return;
 		}
 
-		const document = await vscode.workspace.openTextDocument(newUri);
+		const newDocument = await vscode.workspace.openTextDocument(newUri);
 
-		const shouldConvertToYaml = newPath.endsWith('.yml') || newPath.endsWith('.yaml');
-
-		if (shouldConvertToYaml) {
-			convertJsonToYaml(document);
+		// language id of NEW file
+		switch (newDocument.languageId) {
+			case 'json':
+				convertYamlToJson(newDocument);
+				break;
+			case 'yaml':
+				convertJsonToYaml(newDocument);
+				break;
 		}
-
-		const shouldConvertToJson = newPath.endsWith('json');
-		if (shouldConvertToJson) {
-			convertYamlToJson(document);
-		}
-
 	});
 }
 
