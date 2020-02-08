@@ -1,6 +1,6 @@
 # YAML plus JSON
 
-Easily convert json to yml and vice versa.
+**Easily** convert **json to yaml** or **yaml to json**.
 
 ## Features
 
