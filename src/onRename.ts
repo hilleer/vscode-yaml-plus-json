@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { doAutoSave, showError, getFullDocumentRange, getJsonFromYaml, getYamlFromJson } from './helpers';
+import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
 
 export function onRename(e: vscode.FileRenameEvent) {
 	e.files.forEach(async (change) => {
@@ -57,10 +57,17 @@ async function replaceFileContent(document: vscode.TextDocument, newText: string
 	const { lineCount, isDirty, uri } = document;
 
 	const edit = new vscode.WorkspaceEdit();
-	const range = getFullDocumentRange(lineCount);
+	const range = new vscode.Range(
+		new vscode.Position(0, 0),
+		new vscode.Position(lineCount, Number.MAX_VALUE)
+	);
 
 	try {
-		isDirty && await doAutoSave(document);
+
+		if (isDirty) {
+			await document.save();
+		}
+
 		edit.replace(uri, range, newText);
 		await vscode.workspace.applyEdit(edit);
 		await document.save();

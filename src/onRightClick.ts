@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { doAutoSave, showError, getFullDocumentRange, getJsonFromYaml, getYamlFromJson } from './helpers';
+import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
 
 export async function onRightclickJson(oldUri: vscode.Uri) {
 	const { path } = oldUri;
@@ -8,13 +8,15 @@ export async function onRightclickJson(oldUri: vscode.Uri) {
 	const newUri = vscode.Uri.parse(newFilePath);
 	try {
 		const document = await vscode.workspace.openTextDocument(oldUri);
-		const { isDirty, lineCount } = document;
 
-		isDirty && await doAutoSave(document);
+		if (document.isDirty) {
+			await document.save();
+		}
+
 		const json = document.getText();
 		const yaml = getYamlFromJson(json);
 
-		await changeFile(oldUri, newUri, lineCount, yaml);
+		await changeFile(oldUri, newUri, yaml);
 	} catch (error) {
 		showError(error);
 	}
@@ -25,9 +27,11 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 
 	try {
 		const document = await vscode.workspace.openTextDocument(oldUri);
-		const { isDirty, lineCount } = document;
 
-		isDirty && await doAutoSave(document);
+		if (document.isDirty) {
+			await document.save();
+		}
+
 		const yaml = document.getText();
 		const json = getJsonFromYaml(yaml);
 
@@ -36,29 +40,18 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 			.replace('.yaml', '.json');
 		const newUri = vscode.Uri.parse(newFilePath);
 
-		await changeFile(oldUri, newUri, lineCount, json);
+		await changeFile(oldUri, newUri, json);
 	} catch (error) {
 		showError(error);
 		throw error;
 	}
 }
 
-async function changeFile(oldUri: vscode.Uri, newUri: vscode.Uri, documentLineCount: number, newText: string) {
-	const edit = new vscode.WorkspaceEdit();
-	const range = getFullDocumentRange(documentLineCount);
+async function changeFile(oldUri: vscode.Uri, newUri: vscode.Uri, newText: string) {
 
 	try {
+		await vscode.workspace.fs.writeFile(oldUri, Buffer.from(newText));
 		await vscode.workspace.fs.rename(oldUri, newUri);
-		const newDocument = await vscode.workspace.openTextDocument(newUri);
-		const { isDirty } = newDocument;
-
-		isDirty && doAutoSave(newDocument);
-		// const lala = await vscode.window.showTextDocument(newDocument);
-		// vscode.window.
-		// console.log('lala', lala);
-		edit.replace(newUri, range, newText);
-		console.log('doing edit', edit);
-		await vscode.workspace.applyEdit(edit);
 	} catch (error) {
 		showError(error);
 	}
