@@ -6,7 +6,7 @@ export function showError(error: any) {
 	vscode.window.showErrorMessage('Something went wrong, please validate your file and try again or create an issue if the problem persist');
 }
 
-export function getYamlFromJson(json: string) {
+export function getYamlFromJson(json: string): string {
 	try {
 		return YAML.stringify(JSON.parse(json));
 	} catch (error) {
@@ -15,7 +15,7 @@ export function getYamlFromJson(json: string) {
 	}
 }
 
-export function getJsonFromYaml(yaml: string) {
+export function getJsonFromYaml(yaml: string): string {
 	try {
 		const json = YAML.parse(yaml);
 		return JSON.stringify(json, undefined, 2);
