@@ -4,6 +4,10 @@ All notable changes to the "yaml-plus-json" extension will be documented in this
 
 ## [Unreleased]
 
+## [0.1.2] 2019-02-10
+
+* Added extension logo. Thanks to [Jonathan](https://github.com/JonathanMH) for help creating it.
+
 ## [0.1.1] 2019-02-8
 
 ### Changed

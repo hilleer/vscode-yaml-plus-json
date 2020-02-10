@@ -7,6 +7,7 @@
 	"engines": {
 		"vscode": "^1.41.0"
 	},
+	"icon": "logo/logo.png",
 	"contributors": [
 		{
 			"name": "Jonatan Pedersen",
@@ -43,7 +44,8 @@
 			},
 			{
 				"command": "extension.rightClickYaml",
-				"title": "Change file to JSON"
+				"title": "Change file to JSON",
+				"enablement": ""
 			}
 		],
 		"menus": {
@@ -51,6 +53,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.rightClickJson",
+					
 					"when": "resourceExtname == .json"
 				},
 				{
