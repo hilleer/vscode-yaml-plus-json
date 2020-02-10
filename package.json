@@ -44,8 +44,7 @@
 			},
 			{
 				"command": "extension.rightClickYaml",
-				"title": "Change file to JSON",
-				"enablement": ""
+				"title": "Change file to JSON"
 			}
 		],
 		"menus": {
@@ -53,7 +52,6 @@
 				{
 					"group": "1_modification",
 					"command": "extension.rightClickJson",
-					
 					"when": "resourceExtname == .json"
 				},
 				{
