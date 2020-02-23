@@ -2,6 +2,10 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
+## [0.2.1] 2019-02-23
+
+* Updated readme.
+
 ## [0.2.0] 2019-02-23
 
 * Remove convert commands from command palette, when they are not applicable.
