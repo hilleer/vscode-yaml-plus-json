@@ -40,14 +40,26 @@
 		"commands": [
 			{
 				"command": "extension.rightClickJson",
-				"title": "Change file to YAML"
+				"title": "Change file to YAML",
+				"enablement": "resourceExtname == .json"
 			},
 			{
 				"command": "extension.rightClickYaml",
-				"title": "Change file to JSON"
+				"title": "Change file to JSON",
+				"enablement": "resourceExtname == .yml || resourceExtname == .yaml"
 			}
 		],
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "extension.rightClickJson",
+					"when": "resourceExtname == .json"
+				},
+				{
+					"command": "extension.rightClickYaml",
+					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+				}
+			],
 			"explorer/context": [
 				{
 					"group": "1_modification",
