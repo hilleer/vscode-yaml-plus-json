@@ -3,6 +3,10 @@ import * as vscode from 'vscode';
 import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
 
 export async function onRightclickJson(oldUri: vscode.Uri) {
+	if (!oldUri) {
+		oldUri = getActiveTextEditorUri();
+	}
+
 	const { path } = oldUri;
 	const newFilePath = path.replace('.json', '.yml');
 	const newUri = vscode.Uri.parse(newFilePath);
@@ -23,6 +27,10 @@ export async function onRightclickJson(oldUri: vscode.Uri) {
 }
 
 export async function onRightClickYaml(oldUri: vscode.Uri) {
+	if (!oldUri) {
+		oldUri = getActiveTextEditorUri();
+	}
+
 	const { path } = oldUri;
 
 	try {
@@ -55,4 +63,12 @@ async function changeFile(oldUri: vscode.Uri, newUri: vscode.Uri, newText: strin
 	} catch (error) {
 		showError(error);
 	}
+}
+
+function getActiveTextEditorUri() {
+	const editor = vscode.window.activeTextEditor;
+	if (!editor) {
+		throw new Error('Failed to get active text editor');
+	}
+	return editor.document.uri;
 }
