@@ -2,7 +2,10 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
-## [Unreleased]
+## [0.2.0] 2019-02-23
+
+* Remove convert commands from command palette, when they are not applciable.
+* Make those commands actually work using the command palette and not only using the right click context menu.
 
 ## [0.1.2] 2019-02-10
 
