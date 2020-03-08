@@ -37,7 +37,8 @@ async function convertJsonToYaml(document: vscode.TextDocument) {
 
 		await replaceFileContent(document, yaml);
 	} catch (error) {
-		showError(error);
+		console.error(error);
+		showError(error.message);
 	}
 }
 
@@ -48,7 +49,8 @@ async function convertYamlToJson(document: vscode.TextDocument) {
 
 		await replaceFileContent(document, json);
 	} catch (error) {
-		showError(error);
+		console.error(error);
+		showError(error.message);
 	}
 }
 
@@ -71,6 +73,7 @@ async function replaceFileContent(document: vscode.TextDocument, newText: string
 		await vscode.workspace.applyEdit(edit);
 		await document.save();
 	} catch (error) {
-		showError(error);
+		console.error(error);
+		showError(error.message);
 	}
 }
