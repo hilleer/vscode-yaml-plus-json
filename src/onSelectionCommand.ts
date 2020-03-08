@@ -3,13 +3,11 @@ import * as vscode from 'vscode';
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 
 export function selectionReplaceHandler(fromType: 'yaml' | 'json') {
-	const converters = {
+	const converter = {
 		json: getYamlFromJson,
 		yaml: getJsonFromYaml
-	};
-	
-	const converter = converters[fromType];
-	
+	}[fromType];
+
 	return async () => {
 		const editor = vscode.window.activeTextEditor;
 
