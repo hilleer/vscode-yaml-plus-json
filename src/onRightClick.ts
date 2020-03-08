@@ -22,7 +22,7 @@ export async function onRightclickJson(oldUri: vscode.Uri) {
 
 		await changeFile(oldUri, newUri, yaml);
 	} catch (error) {
-		showError(error);
+		showError(error.message);
 	}
 }
 
@@ -50,7 +50,7 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 
 		await changeFile(oldUri, newUri, json);
 	} catch (error) {
-		showError(error);
+		showError(error.message);
 		throw error;
 	}
 }
@@ -61,7 +61,7 @@ async function changeFile(oldUri: vscode.Uri, newUri: vscode.Uri, newText: strin
 		await vscode.workspace.fs.writeFile(oldUri, Buffer.from(newText));
 		await vscode.workspace.fs.rename(oldUri, newUri);
 	} catch (error) {
-		showError(error);
+		showError(error.message);
 	}
 }
 
