@@ -10,7 +10,7 @@ export function getYamlFromJson(json: string): string {
 	try {
 		return YAML.stringify(JSON.parse(json));
 	} catch (error) {
-		showError(error);
+		console.error(error);
 		throw error;
 	}
 }
@@ -20,7 +20,7 @@ export function getJsonFromYaml(yaml: string): string {
 		const json = YAML.parse(yaml);
 		return JSON.stringify(json, undefined, 2);
 	} catch (error) {
-		showError(error);
+		console.error(error);
 		throw error;
 	}
 }

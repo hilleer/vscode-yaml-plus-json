@@ -13,5 +13,4 @@
 ## Upcoming features
 
 * Config: Disable automatic conversion when renaming files.
-* Convert highlighted json/yaml accordingly.
 * Any good ideas/requests? Open an issue!
