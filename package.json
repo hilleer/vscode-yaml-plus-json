@@ -2,7 +2,7 @@
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
 	"description": "Easily convert yaml to json and json to yaml",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"publisher": "hilleer",
 	"engines": {
 		"vscode": "^1.41.0"
