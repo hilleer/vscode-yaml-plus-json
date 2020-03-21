@@ -2,17 +2,12 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
-## [0.5.0] 2020-03-21
-
-### Changed
-
-* Ignore `out/` folder when publishing.
-
-## [0.4.0] 2020-03-21
+## [0.4.0-0.6.0] 2020-03-21
 
 ### changed
 
 * Bundle extension.
+* Reduce publish size.
 
 ## [0.3.1] 2020-03-15
 
