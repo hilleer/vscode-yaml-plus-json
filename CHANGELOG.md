@@ -2,6 +2,12 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
+## [0.4.0] 2020-03-21
+
+### changed
+
+* Bundle extension.
+
 ## [0.3.1] 2020-03-15
 
 * Security patch.
