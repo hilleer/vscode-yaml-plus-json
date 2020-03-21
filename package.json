@@ -92,7 +92,19 @@
 					"when": "resourceExtname == .yml || resourceExtname == .yaml"
 				}
 			]
-		}
+		},
+		"configuration": [
+			{
+				"title": "Yaml Plus Json",
+				"properties": {
+					"yaml-plus-json.convertOnRename": {
+						"type": "boolean",
+						"description": "Convert YAML/JSON files on rename",
+						"default": true
+					}
+				}
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "webpack --mode production",

@@ -27,3 +27,7 @@ export function getJsonFromYaml(yaml: string): string {
 		throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
 	}
 }
+
+export function getConfig() {
+	return vscode.workspace.getConfiguration();
+}
