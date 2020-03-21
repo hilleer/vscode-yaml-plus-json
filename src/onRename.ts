@@ -1,16 +1,23 @@
 import * as vscode from 'vscode';
 
-import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
+import { ConfigId } from './extension';
+import { showError, getJsonFromYaml, getYamlFromJson, getConfig } from './helpers';
 
 export function onRename(e: vscode.FileRenameEvent) {
+	const shouldConvertOnRename = getConfig().get(ConfigId.ConvertOnRename);
+
+	if (!shouldConvertOnRename) {
+		return;
+	}
+
 	e.files.forEach(async (change) => {
 		const { oldUri, newUri } = change;
 
 		const oldPath = oldUri.path;
 		const newPath = newUri.path;
 
-		const shouldConvertJson = oldPath.endsWith('.json') && (newPath.endsWith('.yaml') || newPath.endsWith('.yml'));
-		const shouldConvertYaml = (oldPath.endsWith('.yaml') || oldPath.endsWith('.yml')) && newPath.endsWith('.json');
+		const shouldConvertJson = oldPath.endsWith('.json') && (newPath.endsWith('.yaml') || newPath.endsWith('.yml'));
+		const shouldConvertYaml = (oldPath.endsWith('.yaml') || oldPath.endsWith('.yml')) && newPath.endsWith('.json');
 
 		if (!shouldConvertJson && !shouldConvertYaml) {
 			return;

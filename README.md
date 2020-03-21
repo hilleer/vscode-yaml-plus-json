@@ -2,6 +2,8 @@
 
 **Easily** convert **json to yaml** or **yaml to json**.
 
+Any good ideas or feature requests? Pleas, do not hesitate to open [a new issue](https://github.com/hilleer/vscode-yaml-plus-json/issues/new)!
+
 ## Features
 
 * The extension will automatically convert `.json` files renamed to `.yml`/`.yaml` and vice versa.
@@ -10,7 +12,4 @@
 * Convert a yaml file to json, using the `Change file to JSON` command (while having a `.yml` or `.yaml` file open).
 * Convert a json file to yaml, using the `Change file to YAML` command (while having a `.json` file open).
 
-## Upcoming features
-
-* Config: Disable automatic conversion when renaming files.
 * Any good ideas/requests? Open an issue!
