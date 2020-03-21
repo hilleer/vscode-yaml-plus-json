@@ -2,7 +2,7 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
-## [0.4.0-0.6.0] 2020-03-21
+## [0.4.0-0.7.0] 2020-03-21
 
 ### changed
 
