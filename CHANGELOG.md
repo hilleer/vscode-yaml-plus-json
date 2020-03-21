@@ -2,6 +2,13 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
+## [1.0.0] 2020-03-21
+
+### Added
+
+* Yaml Plus Json configurations
+	* `yaml-plus-json.convertOnRename` - disable/enable automatic conversion on file rename. Defaults to true.
+
 ## [0.4.0-0.7.0] 2020-03-21
 
 ### changed
