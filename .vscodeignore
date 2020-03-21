@@ -1,7 +1,7 @@
-.vscode/**
-.vscode-test/**
-out/**
-src/**
+.vscode/
+.vscode-test/
+out/
+src/
 .gitignore
 vsc-extension-quickstart.md
 **/tsconfig.json
@@ -9,3 +9,5 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 .wakatime-project
+webpack.config.js
+node_modules/
