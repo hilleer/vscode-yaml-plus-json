@@ -4,12 +4,22 @@
 
 Any good ideas or feature requests? Pleas, do not hesitate to open [a new issue](https://github.com/hilleer/vscode-yaml-plus-json/issues/new)!
 
-## Features
+## Features and usage
 
-* The extension will automatically convert `.json` files renamed to `.yml`/`.yaml` and vice versa.
-* Right click a `.json` file and select `Change file to YAML` to convert it to yaml.
-* Right click a `.yml` or `.yaml` file and select `Change file to JSON` to convert it to json.
-* Convert a yaml file to json, using the `Change file to JSON` command (while having a `.yml` or `.yaml` file open).
-* Convert a json file to yaml, using the `Change file to YAML` command (while having a `.json` file open).
+* Convert individual files.
+	* Convert a YAML file to JSON by right clicking it and selecting `Convert to JSON`.
+	* Convert a YAML file to JSON by changing file extension to `.json`.
+	* Convert a JSON file to YAML by right clicking it and selecting `Convert to YAML`.
+	* Convert a JSON file to YAML by changing file extension to `.yaml` or `.yml`.
+* Convert text selection.
+	* Convert YAML selection by using command `Convert selection to JSON` - _does not_ change file extension.
+	* Convert JSON selection by using command `Convert selection to YAML` - _does not_ change file extension.
+* Converting multiple files in a directory
+	* Convert directory YAML files to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
+	* Convert directory JSON files to YAML by right clicking the directory and selection `Convert JSON files to YAML`.
 
-* Any good ideas/requests? Open an issue!
+## Config
+
+| id                             | description                       | type    | default | example |
+|--------------------------------|-----------------------------------|---------|---------|---------|
+| yaml-plus-json.convertOnRename | Convert YAML/JSON files on rename | boolean | true    | true    |
