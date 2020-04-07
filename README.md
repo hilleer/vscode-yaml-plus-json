@@ -16,8 +16,8 @@ Any good ideas or feature requests? Pleas, do not hesitate to open [a new issue]
 * Right click a JSON file and select `Convert to YAML`.
 * Rename a file to `.json` from `.yml` or `.yaml`.
 * Rename a file to `.yaml` or `.yml` from `.json`.
-* Make a JSON selection and select command `Convert selection to YAML`.
-* Make a YAML selection and select command `Convert selection to JSON`.
+* Make a JSON selection and select command `Convert selection to YAML` - _does not_ change file extension.
+* Make a YAML selection and select command `Convert selection to JSON` - _does not_ change file extension.
 * Right click a directory and select `Convert JSON files to YAML`.
 * Right click a directory and select `Convert YAML files to JSON`.
 
