@@ -40,12 +40,12 @@
 		"commands": [
 			{
 				"command": "extension.rightClickJson",
-				"title": "Change to YAML",
+				"title": "Convert to YAML",
 				"enablement": "resourceExtname == .json"
 			},
 			{
 				"command": "extension.rightClickYaml",
-				"title": "Change to JSON",
+				"title": "Convert to JSON",
 				"enablement": "resourceExtname == .yml || resourceExtname == .yaml"
 			},
 			{
@@ -57,6 +57,14 @@
 				"command": "extension.jsonSelectionToYaml",
 				"title": "Convert selection to YAML",
 				"enablement": "editorHasSelection"
+			},
+			{
+				"command": "extension.convertFolderToJson",
+				"title": "Convert YAML files to JSON"
+			},
+			{
+				"command": "extension.convertFolderToYaml",
+				"title": "Convert JSON files to YAML"
 			}
 		],
 		"menus": {
@@ -78,9 +86,25 @@
 					"command": "extension.jsonSelectionToYaml",
 					"title": "Convert selection to YAML",
 					"when": "editorHasSelection"
+				},
+				{
+					"command": "extension.convertFolderToJson",
+					"when": "resourceScheme === file"
+				},
+				{
+					"command": "extension.convertFolderToYaml",
+					"when": "resourceScheme === file"
 				}
 			],
 			"explorer/context": [
+				{
+					"group": "1_modification",
+					"command": "extension.convertFolderToJson"
+				},
+				{
+					"group": "1_modification",
+					"command": "extension.convertFolderToYaml"
+				},
 				{
 					"group": "1_modification",
 					"command": "extension.rightClickJson",
