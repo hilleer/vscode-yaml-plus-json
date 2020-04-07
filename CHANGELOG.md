@@ -2,6 +2,12 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
+## [1.1.0] 2020-04-07
+
+### Added
+
+* Convert YAML files in directory to JSON and vice versa.
+
 ## [1.0.0] 2020-03-21
 
 ### Added
