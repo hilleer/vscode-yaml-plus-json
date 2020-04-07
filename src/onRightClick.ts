@@ -57,52 +57,36 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 	}
 }
 
-export async function onConvertFolderToYaml(uri: vscode.Uri) {
-	const { fsPath, scheme } = uri;
+type FileConverter = (fileContent: string) => string;
+type FileFilter = ([filePath, fileType]: [string, vscode.FileType]) => boolean;
+type FilePathCreator = (oldPath: string) => string;
+type DirectoryFilesConverter = {
+	fileConverter: FileConverter;
+	fileFilter: FileFilter;
+	filePathCreator: FilePathCreator;
+	uri: vscode.Uri
+};
 
-	if (scheme !== 'file') {
-		return vscode.window.showErrorMessage('Unexpected file scheme');
-	}
+export async function onConvertJsonFilestoYaml(uri: vscode.Uri) {
+	const fileConverter: FileConverter = (json) => getYamlFromJson(json);
+	const fileFilter: FileFilter = ([filePath, fileType]) => fileType === vscode.FileType.File && filePath.endsWith('.json');
+	const filePathCreator: FilePathCreator = (oldPath) => oldPath
+		.replace('.json', '.yml');
 
-	const stats = fs.lstatSync(fsPath);
-	const isDirectory = stats.isDirectory();
-
-	if (!isDirectory) {
-		return vscode.window.showInformationMessage('The selection was not recognised as a directory');
-	}
-
-	const files = await vscode.workspace.fs.readDirectory(uri);
-
-	const isJsonFile = ([filePath, fileType]: [string, vscode.FileType]) => fileType === vscode.FileType.File && filePath.endsWith('.json');
-	const getFilePath = ([filePath]: [string, vscode.FileType]) => filePath;
-
-	const jsonFiles = files
-		.filter(isJsonFile)
-		.map(getFilePath);
-
-	const getFileUri = (file: string) => vscode.Uri.parse(path.join(fsPath, file));
-	const fileUris = jsonFiles.map(getFileUri);
-
-	if (fileUris.length === 0) {
-		return vscode.window.showInformationMessage('No JSON files found in directory');
-	}
-
-	const convertFiles = async (oldFileUri: vscode.Uri) => {
-		const newFilePath = oldFileUri.fsPath.replace('.json', '.yml');
-		const newFileUri = vscode.Uri.parse(newFilePath);
-
-		const fileContent = await vscode.workspace.fs.readFile(oldFileUri);
-		const json = Buffer.from(fileContent).toString();
-		const yaml = getYamlFromJson(json);
-
-		await changeFile(oldFileUri, newFileUri, yaml);
-	};
-	const promises = fileUris.map(convertFiles);
-
-	await Promise.all(promises);
+	await directoryFilesConverter({ uri, fileConverter, fileFilter, filePathCreator });
 }
 
-export async function onConvertFolderToJson(uri: vscode.Uri) {
+export async function onConvertYamlFilesToJson(uri: vscode.Uri) {
+	const fileConverter: FileConverter = (yaml) => getJsonFromYaml(yaml);
+	const fileFilter: FileFilter = ([filePath, fileType]) => fileType === vscode.FileType.File && /ya?ml/.test(filePath);
+	const filePathCreator: FilePathCreator = (oldPath) => oldPath
+		.replace('.yml', '.json')
+		.replace('.yaml', '.json');
+
+	await directoryFilesConverter({ uri, fileConverter, fileFilter, filePathCreator });
+}
+
+async function directoryFilesConverter({ fileConverter, uri, fileFilter, filePathCreator }: DirectoryFilesConverter) {
 	const { fsPath, scheme } = uri;
 
 	if (scheme !== 'file') {
@@ -116,37 +100,31 @@ export async function onConvertFolderToJson(uri: vscode.Uri) {
 		return vscode.window.showInformationMessage('The selection was not recognised as a directory');
 	}
 
-	const files = await vscode.workspace.fs.readDirectory(uri);
+	const directoryFiles = await vscode.workspace.fs.readDirectory(uri);
 
-	const isYamlFile = ([filePath, fileType]: [string, vscode.FileType]) => fileType === vscode.FileType.File && /ya?ml/.test(filePath);
-	const getFilePath = ([filePath]: [string, vscode.FileType]) => filePath;
+	const getFileUri = ([filePath]: [string, vscode.FileType]) => vscode.Uri.parse(path.join(fsPath, filePath));
 
-	const jsonFiles = files
-		.filter(isYamlFile)
-		.map(getFilePath);
+	const files = directoryFiles
+		.filter(fileFilter)
+		.map(getFileUri);
 
-	const getFileUri = (file: string) => vscode.Uri.parse(path.join(fsPath, file));
-	const fileUris = jsonFiles.map(getFileUri);
-
-	if (fileUris.length === 0) {
-		return vscode.window.showInformationMessage('No YAML files found in directory');
+	if (files.length === 0) {
+		return vscode.window.showInformationMessage('No files to be converted found in the selected directory');
 	}
 
-	const convertFiles = async (oldFileUri: vscode.Uri) => {
-		const newFilePath = oldFileUri.fsPath
-			.replace('.yml', '.json')
-			.replace('.yaml', '.json');
+	const convertFile = async (fileUri: vscode.Uri) => {
+		const fileContent = await vscode.workspace.fs.readFile(fileUri);
 
+		const newFilePath = filePathCreator(fileUri.fsPath);
 		const newFileUri = vscode.Uri.parse(newFilePath);
 
-		const fileContent = await vscode.workspace.fs.readFile(oldFileUri);
-		const yaml = Buffer.from(fileContent).toString();
-		const json = getJsonFromYaml(yaml);
+		const fileString = Buffer.from(fileContent).toString();
+		const convertedFile = fileConverter(fileString);
 
-		await changeFile(oldFileUri, newFileUri, json);
+		await changeFile(fileUri, newFileUri, convertedFile);
 	};
-	const promises = fileUris.map(convertFiles);
 
+	const promises = files.map(convertFile);
 	await Promise.all(promises);
 }
 

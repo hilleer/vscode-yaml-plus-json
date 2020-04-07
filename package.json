@@ -59,11 +59,11 @@
 				"enablement": "editorHasSelection"
 			},
 			{
-				"command": "extension.convertFolderToJson",
+				"command": "extension.convertYamlFilesToJson",
 				"title": "Convert YAML files to JSON"
 			},
 			{
-				"command": "extension.convertFolderToYaml",
+				"command": "extension.convertJsonFilesToYaml",
 				"title": "Convert JSON files to YAML"
 			}
 		],
@@ -88,22 +88,22 @@
 					"when": "editorHasSelection"
 				},
 				{
-					"command": "extension.convertFolderToJson",
+					"command": "extension.convertYamlFilesToJson",
 					"when": "resourceScheme === file"
 				},
 				{
-					"command": "extension.convertFolderToYaml",
+					"command": "extension.convertJsonFilesToYaml",
 					"when": "resourceScheme === file"
 				}
 			],
 			"explorer/context": [
 				{
 					"group": "1_modification",
-					"command": "extension.convertFolderToJson"
+					"command": "extension.convertYamlFilesToJson"
 				},
 				{
 					"group": "1_modification",
-					"command": "extension.convertFolderToYaml"
+					"command": "extension.convertJsonFilesToYaml"
 				},
 				{
 					"group": "1_modification",
