@@ -1,6 +1,6 @@
 # YAML plus JSON
 
-**Easily** convert **json to yaml** or **yaml to json**.
+Easily convert YAML to JSON or vice versa. Conversion can be done by each individual file or by all files in a folder.
 
 Any good ideas or feature requests? Pleas, do not hesitate to open [a new issue](https://github.com/hilleer/vscode-yaml-plus-json/issues/new)!
 
