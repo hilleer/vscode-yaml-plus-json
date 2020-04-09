@@ -130,7 +130,7 @@ function getFileConverter(newFileExtname: '.json' | '.yml', fileContentConverter
 	};
 }
 
-const isSameExtname = (extnames: string[]) => (uri: vscode.Uri) => extnames.includes(path.extname(uri.fsPath));
+const isSameExtname = (validExtnames: string[]) => (uri: vscode.Uri) => validExtnames.includes(path.extname(uri.fsPath));
 
 export async function onConvertYamlSelectionToJson(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
 	const selectionFilter = isSameExtname(['.yaml', '.yml']);
