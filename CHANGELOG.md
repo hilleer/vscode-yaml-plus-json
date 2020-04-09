@@ -2,6 +2,12 @@
 
 All notable changes to the "yaml-plus-json" extension will be documented in this file.
 
+## [1.1.1] 2020-04-09
+
+### Changed
+
+* Folder conversion context menus only shown if selected resources is a folder.
+
 ## [1.1.0] 2020-04-07
 
 ### Added
