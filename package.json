@@ -60,12 +60,12 @@
 			},
 			{
 				"command": "extension.convertYamlFilesToJson",
-				"title": "Convert YAML files to JSON",
+				"title": "Convert folder YAML files to JSON",
 				"enablement": "explorerResourceIsFolder"
 			},
 			{
 				"command": "extension.convertJsonFilesToYaml",
-				"title": "Convert JSON files to YAML",
+				"title": "Convert folder JSON files to YAML",
 				"enablement": "explorerResourceIsFolder"
 			}
 		],
