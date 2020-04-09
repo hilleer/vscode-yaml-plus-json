@@ -70,12 +70,12 @@
 			},
 			{
 				"command": "extension.convertJsonSelectionsToYaml",
-				"title": "Convert selection to YAML",
+				"title": "Convert selected files to YAML",
 				"enablement": "listMultiSelection"
 			},
 			{
 				"command": "extension.convertYamlSelectionsToJson",
-				"title": "Convert selection to JSON",
+				"title": "Convert selected files to JSON",
 				"enablement": "listMultiSelection"
 			}
 		],
