@@ -22,4 +22,4 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 | id                             | description                       | type    | default | example |
 |--------------------------------|-----------------------------------|---------|---------|---------|
-| yaml-plus-json.convertOnRename | Convert YAML/JSON files on rename | boolean | true    | true    |
+| `yaml-plus-json.convertOnRename` | Convert YAML/JSON files on rename | boolean | true    | true    |
