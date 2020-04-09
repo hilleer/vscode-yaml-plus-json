@@ -15,8 +15,8 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 	* Convert YAML selection by using command `Convert selection to JSON` - _does not_ change file extension.
 	* Convert JSON selection by using command `Convert selection to YAML` - _does not_ change file extension.
 * Converting multiple files in a directory
-	* Convert directory YAML files to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
-	* Convert directory JSON files to YAML by right clicking the directory and selecting `Convert JSON files to YAML`.
+	* Convert directory YAML files to JSON by right clicking the directory and selecting `Convert folder YAML files to JSON`.
+	* Convert directory JSON files to YAML by right clicking the directory and selecting `Convert folder JSON files to YAML`.
 
 ## Config
 
