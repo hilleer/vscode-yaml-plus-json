@@ -67,6 +67,16 @@
 				"command": "extension.convertJsonFilesToYaml",
 				"title": "Convert folder JSON files to YAML",
 				"enablement": "explorerResourceIsFolder"
+			},
+			{
+				"command": "extension.convertJsonSelectionsToYaml",
+				"title": "Convert JSON files selection to YAML",
+				"enablement": "listMultiSelection"
+			},
+			{
+				"command": "extension.convertYamlSelectionsToJson",
+				"title": "Convert YAML files selection to JSON",
+				"enablement": "listMultiSelection"
 			}
 		],
 		"menus": {
@@ -110,6 +120,21 @@
 					"group": "1_modification",
 					"command": "extension.rightClickYaml",
 					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+				},
+				{
+					"group": "1_modification",
+					"command": "extension.convertJsonSelectionsToYaml",
+					"when": "listMultiSelection && resourceExtname == .json"
+				},
+				{
+					"group": "1_modification",
+					"command": "extension.convertYamlSelectionsToJson",
+					"when": "listMultiSelection && resourceExtname == .yml"
+				},
+				{
+					"group": "1_modification",
+					"command": "extension.convertYamlSelectionsToJson",
+					"when": "listMultiSelection && resourceExtname == .yaml"
 				}
 			]
 		},
