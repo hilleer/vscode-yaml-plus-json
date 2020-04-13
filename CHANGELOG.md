@@ -4,7 +4,7 @@
 
 ### Changed
 
-* Now hidding commands from command pallette related to multi file conversion:
+* Now hidding commands from command palette related to multi file conversion:
 	* `Convert YAML files to JSON`
 	* `Convert JSON files to YAML`
 	* `Convert selected files to YAML`
