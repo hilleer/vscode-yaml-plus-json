@@ -98,6 +98,22 @@
 					"command": "extension.jsonSelectionToYaml",
 					"title": "Convert selection to YAML",
 					"when": "editorHasSelection"
+				},
+				{
+					"command": "extension.convertYamlFilesToJson",
+					"when": "false"
+				},
+				{
+					"command": "extension.convertJsonFilesToYaml",
+					"when": "false"
+				},
+				{
+					"command": "extension.convertJsonSelectionsToYaml",
+					"when": "false"
+				},
+				{
+					"command": "extension.convertYamlSelectionsToJson",
+					"when": "false"
 				}
 			],
 			"explorer/context": [
