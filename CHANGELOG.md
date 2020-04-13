@@ -1,6 +1,14 @@
 # Change Log
 
-All notable changes to the "yaml-plus-json" extension will be documented in this file.
+## [1.2.1] 2020-04-13
+
+### Changed
+
+* Now hidding commands from command pallette related to multi file conversion:
+	* `Convert YAML files to JSON`
+	* `Convert JSON files to YAML`
+	* `Convert selected files to YAML`
+	* `Convert selected files to JSON`
 
 ## [1.2.0] 2020-04-09
 
