@@ -10,11 +10,6 @@
 	"icon": "logo/logo.png",
 	"contributors": [
 		{
-			"name": "Jonatan Pedersen",
-			"url": "https://www.jonatanpedersen.com/",
-			"email": "jp@jonatanpedersen.com"
-		},
-		{
 			"name": "Daniel Hillmann",
 			"url": "https://github.com/hilleer",
 			"email": "hiller@live.dk"
