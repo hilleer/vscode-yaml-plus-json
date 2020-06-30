@@ -11,10 +11,6 @@ import {
 } from './onRightClick';
 import { selectionReplaceHandler } from './onSelectionCommand';
 
-export enum ConfigId {
-	ConvertOnRename = 'yaml-plus-json.convertOnRename'
-}
-
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('extension.rightClickJson', onRightclickJson),
