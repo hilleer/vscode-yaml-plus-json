@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
 
 import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
@@ -91,8 +90,8 @@ async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileCo
 		return vscode.window.showErrorMessage('Unexpected file scheme');
 	}
 
-	const stats = fs.lstatSync(fsPath);
-	const isDirectory = stats.isDirectory();
+	const stat = await vscode.workspace.fs.stat(uri);
+	const isDirectory = stat.type === vscode.FileType.Directory;
 
 	if (!isDirectory) {
 		return vscode.window.showInformationMessage('The selection was not recognised as a directory');
@@ -100,14 +99,14 @@ async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileCo
 
 	const directoryFiles = await vscode.workspace.fs.readDirectory(uri);
 
-	const getFileUri = ([filePath]: [string, vscode.FileType]) => vscode.Uri.parse(path.join(fsPath, filePath));
+	const getFileUri = ([filePath]: [string, vscode.FileType]) => vscode.Uri.file(path.join(fsPath, filePath));
 
 	const files = directoryFiles
 		.filter(fileFilter)
 		.map(getFileUri);
 
 	if (files.length === 0) {
-		return vscode.window.showInformationMessage('No files to be converted found in the selected directory');
+		return vscode.window.showInformationMessage(`No convertable files found in the selected directory`);
 	}
 
 	const fileConverter = getFileConverter(newFileExtname, fileContentConverter);
@@ -116,12 +115,12 @@ async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileCo
 }
 
 function getFileConverter(newFileExtname: '.json' | '.yml', fileContentConverter: FileContentConverter) {
-	return async (fileUri: vscode.Uri, ) => {
+	return async (fileUri: vscode.Uri) => {
 		const fileContent = await vscode.workspace.fs.readFile(fileUri);
 		const filePath = path.extname(fileUri.fsPath);
 
 		const newFilePath = fileUri.fsPath.replace(filePath, newFileExtname);
-		const newFileUri = vscode.Uri.parse(newFilePath);
+		const newFileUri = vscode.Uri.file(newFilePath);
 
 		const fileString = Buffer.from(fileContent).toString();
 		const convertedFile = fileContentConverter(fileString);
