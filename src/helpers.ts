@@ -10,8 +10,12 @@ export function showError(message?: string) {
 }
 
 export function getYamlFromJson(json: string): string {
+	const indent = getConfig().get<number>(ConfigId.Indent);
+
+	console.log('indent', indent);
+
 	try {
-		return YAML.stringify(JSON.parse(json));
+		return YAML.stringify(JSON.parse(json), { indent });
 	} catch (error) {
 		console.error(error);
 		throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
@@ -26,6 +30,11 @@ export function getJsonFromYaml(yaml: string): string {
 		console.error(error);
 		throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
 	}
+}
+
+export enum ConfigId {
+	ConvertOnRename = 'yaml-plus-json.convertOnRename',
+	Indent = 'yaml-plus-json.yaml-indent'
 }
 
 export function getConfig() {

@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 
-enum ConfigId { ConvertOnRename = 'yaml-plus-json.convertOnRename' }
-
-import { showError, getJsonFromYaml, getYamlFromJson, getConfig } from './helpers';
+import { showError, getJsonFromYaml, getYamlFromJson, getConfig, ConfigId } from './helpers';
 
 export function onRename(e: vscode.FileRenameEvent) {
 	const shouldConvertOnRename = getConfig().get(ConfigId.ConvertOnRename);
