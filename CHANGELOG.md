@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.4.0] 2020-09-07
+
+### Added
+
+* Configure the amount of spaces used for indentation when converting to YAML.
+
 ## [1.3.0] 2020-06-30
 
 ### Fixed
