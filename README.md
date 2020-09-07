@@ -22,7 +22,7 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 ## Config
 
-| id                             | description                         | type    | default | example |
-|--------------------------------|-------------------------------------|---------|---------|---------|
-| `yaml-plus-json.convertOnRename` | Convert YAML/JSON files on rename | boolean | true    | true    |
-| `yaml-plus-json.yaml-indent` | Convert YAML/JSON files on rename     | number  | 2       | 4       |
+| id                               | description                                            | type    | default | example |
+|----------------------------------|--------------------------------------------------------|---------|---------|---------|
+| `yaml-plus-json.convertOnRename` | Convert YAML/JSON files on rename                      | boolean | true    | true    |
+| `yaml-plus-json.yaml-indent`     | The number of spaces to use when indenting code (yaml) | number  | 2       | 4       |
