@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
+import { FileConverter, ConvertFromType } from './revert';
 
 export async function onRightclickJson(oldUri: vscode.Uri) {
 	if (!oldUri) {
@@ -21,7 +22,7 @@ export async function onRightclickJson(oldUri: vscode.Uri) {
 		const json = document.getText();
 		const yaml = getYamlFromJson(json);
 
-		await changeFile(oldUri, newUri, yaml);
+		await convertFile(oldUri, newUri, yaml);
 	} catch (error) {
 		showError(error.message);
 	}
@@ -49,7 +50,7 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 			.replace('.yaml', '.json');
 		const newUri = vscode.Uri.parse(newFilePath);
 
-		await changeFile(oldUri, newUri, json);
+		await convertFile(oldUri, newUri, json);
 	} catch (error) {
 		showError(error.message);
 		throw error;
@@ -61,6 +62,8 @@ export async function onConvertJsonFilestoYaml(uri: vscode.Uri) {
 	const newFileExtname: NewFileExtname = '.yml';
 	const fileFilter: FileFilter = ([filePath, fileType]) => fileType === vscode.FileType.File && filePath.endsWith('.json');
 
+	const fileConverter = new FileConverter(ConvertFromType.Json);
+
 	await directoryFilesConverter({ uri, newFileExtname, fileFilter, fileContentConverter });
 }
 
@@ -68,8 +71,9 @@ export async function onConvertYamlFilesToJson(uri: vscode.Uri) {
 	const newFileExtname: NewFileExtname = '.json';
 	const fileContentConverter: FileContentConverter = getJsonFromYaml;
 	const fileFilter: FileFilter = ([filePath, fileType]) => fileType === vscode.FileType.File && /ya?ml/.test(filePath);
+	const fileConverter = new FileConverter(ConvertFromType.Yaml);
 
-	await directoryFilesConverter({ uri, newFileExtname, fileFilter, fileContentConverter });
+	await directoryFilesConverter({ uri, newFileExtname, fileFilter, fileContentConverter, fileConverter });
 }
 
 type FileContentConverter = (context: string) => string;
@@ -80,10 +84,11 @@ type DirectoryFilesConverter = {
 	fileFilter: FileFilter;
 	newFileExtname: NewFileExtname;
 	/** uri supposedly representing the folder */
-	uri: vscode.Uri
+	uri: vscode.Uri,
+	fileConverter: FileConverter
 };
 
-async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileContentConverter }: DirectoryFilesConverter) {
+async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileContentConverter, fileConverter }: DirectoryFilesConverter) {
 	const { fsPath, scheme } = uri;
 
 	if (scheme !== 'file') {
@@ -109,12 +114,14 @@ async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileCo
 		return vscode.window.showInformationMessage(`No convertable files found in the selected directory`);
 	}
 
-	const fileConverter = getFileConverter(newFileExtname, fileContentConverter);
+	fileConverter.addFiles(files[0]);
+
+	const fileConverter = createFileConverter(newFileExtname, fileContentConverter);
 	const promises = files.map(fileConverter);
 	await Promise.all(promises);
 }
 
-function getFileConverter(newFileExtname: '.json' | '.yml', fileContentConverter: FileContentConverter) {
+function createFileConverter(newFileExtname: '.json' | '.yml', contentConverter: FileContentConverter) {
 	return async (fileUri: vscode.Uri) => {
 		const fileContent = await vscode.workspace.fs.readFile(fileUri);
 		const filePath = path.extname(fileUri.fsPath);
@@ -123,19 +130,18 @@ function getFileConverter(newFileExtname: '.json' | '.yml', fileContentConverter
 		const newFileUri = vscode.Uri.file(newFilePath);
 
 		const fileString = Buffer.from(fileContent).toString();
-		const convertedFile = fileContentConverter(fileString);
+		const convertedFile = contentConverter(fileString);
 
-		await changeFile(fileUri, newFileUri, convertedFile);
+		await convertFile(fileUri, newFileUri, convertedFile);
 	};
 }
 
-const getIncludesExtnameFilter = (extnames: string[]) => (uri: vscode.Uri) => extnames.includes(path.extname(uri.fsPath));
+const extensionNameFilter = (extnames: string[]) => (uri: vscode.Uri) => extnames.includes(path.extname(uri.fsPath));
 
 export async function onConvertYamlSelectionToJson(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
-	const isSameExtname = getIncludesExtnameFilter(['.yaml', '.yml']);
-	const files = selections.filter(isSameExtname);
+	const files = selections.filter(extensionNameFilter(['.yaml', '.yml']));
 
-	const fileConverter = getFileConverter('.json', getJsonFromYaml);
+	const fileConverter = createFileConverter('.json', getJsonFromYaml);
 
 	const promises = files.map(fileConverter);
 
@@ -143,18 +149,16 @@ export async function onConvertYamlSelectionToJson(clickedFile: vscode.Uri, sele
 }
 
 export async function onConvertJsonSelectionToYaml(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
-	const isSameExtname = getIncludesExtnameFilter(['.json']);
-	const files = selections.filter(isSameExtname);
+	const files = selections.filter(extensionNameFilter(['.json']));
 
-	const fileConverter = getFileConverter('.yml', getYamlFromJson);
+	const fileConverter = createFileConverter('.yml', getYamlFromJson);
 
 	const promises = files.map(fileConverter);
 
 	await Promise.all(promises);
 }
 
-async function changeFile(oldUri: vscode.Uri, newUri: vscode.Uri, newText: string) {
-
+export async function convertFile(oldUri: vscode.Uri, newUri: vscode.Uri, newText: string) {
 	try {
 		await vscode.workspace.fs.writeFile(oldUri, Buffer.from(newText));
 		await vscode.workspace.fs.rename(oldUri, newUri);

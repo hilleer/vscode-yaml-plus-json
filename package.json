@@ -153,15 +153,20 @@
 			{
 				"title": "Yaml Plus Json",
 				"properties": {
-					"yaml-plus-json.convertOnRename": {
-						"type": "boolean",
-						"description": "Convert YAML/JSON files on rename",
-						"default": true
-					},
-					"yaml-plus-json.yaml-indent": {
-						"type": "number",
-						"description": "The number of spaces to use when indenting code (yaml)",
-						"default": 2
+					"yaml-plus-json": {
+						"type": "object",
+						"properties": {
+							"convertOnRename": {
+								"type": "boolean",
+								"description": "Convert YAML/JSON files on rename",
+								"default": true
+							},
+							"yaml-indent": {
+								"type": "number",
+								"description": "The number of spaces to use when indenting code (yaml)",
+								"default": 2
+							}
+						}
 					}
 				}
 			}
