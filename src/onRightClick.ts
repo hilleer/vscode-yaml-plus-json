@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
-import { FileConverter, ConvertFromType } from './revert';
+import { FileConverter, ConvertFromType } from './converter';
+import { isEmptyArray } from './array';
 
 export async function onRightclickJson(oldUri: vscode.Uri) {
 	if (!oldUri) {
@@ -58,67 +59,76 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 }
 
 export async function onConvertJsonFilestoYaml(uri: vscode.Uri) {
-	const fileContentConverter: FileContentConverter = getYamlFromJson;
-	const newFileExtname: NewFileExtname = '.yml';
-	const fileFilter: FileFilter = ([filePath, fileType]) => fileType === vscode.FileType.File && filePath.endsWith('.json');
-
 	const fileConverter = new FileConverter(ConvertFromType.Json);
+	const files = await getFilesInDirectory(uri, ['json']);
 
-	await directoryFilesConverter({ uri, newFileExtname, fileFilter, fileContentConverter });
+	if (!files) {
+		return;
+	}
+
+	if (isEmptyArray(files)) {
+		vscode.window.showInformationMessage('Did not find any json files in the selected directory');
+		return;
+	}
+
+	await fileConverter.convertFiles(files);
 }
 
 export async function onConvertYamlFilesToJson(uri: vscode.Uri) {
-	const newFileExtname: NewFileExtname = '.json';
-	const fileContentConverter: FileContentConverter = getJsonFromYaml;
-	const fileFilter: FileFilter = ([filePath, fileType]) => fileType === vscode.FileType.File && /ya?ml/.test(filePath);
 	const fileConverter = new FileConverter(ConvertFromType.Yaml);
+	const files = await getFilesInDirectory(uri, ['yaml', 'yml']);
 
-	await directoryFilesConverter({ uri, newFileExtname, fileFilter, fileContentConverter, fileConverter });
+	if (!files) {
+		return;
+	}
+
+	if (isEmptyArray(files)) {
+		vscode.window.showInformationMessage('Did not find any yaml files in the selected directory');
+		return;
+	}
+
+	await fileConverter.convertFiles(files);
 }
 
 type FileContentConverter = (context: string) => string;
-type NewFileExtname = '.yml' | '.json';
-type FileFilter = ([filePath, fileType]: [string, vscode.FileType]) => boolean;
-type DirectoryFilesConverter = {
-	fileContentConverter: FileContentConverter;
-	fileFilter: FileFilter;
-	newFileExtname: NewFileExtname;
-	/** uri supposedly representing the folder */
-	uri: vscode.Uri,
-	fileConverter: FileConverter
-};
 
-async function directoryFilesConverter({ newFileExtname, uri, fileFilter, fileContentConverter, fileConverter }: DirectoryFilesConverter) {
+type FileExtensions = Array<'json' | 'yaml' | 'yml'>;
+
+async function getFilesInDirectory(uri: vscode.Uri, fileExtensions: FileExtensions) {
 	const { fsPath, scheme } = uri;
 
 	if (scheme !== 'file') {
-		return vscode.window.showErrorMessage('Unexpected file scheme');
+		vscode.window.showErrorMessage('Unexpected file scheme');
+		return;
 	}
 
 	const stat = await vscode.workspace.fs.stat(uri);
 	const isDirectory = stat.type === vscode.FileType.Directory;
 
 	if (!isDirectory) {
-		return vscode.window.showInformationMessage('The selection was not recognised as a directory');
+		vscode.window.showInformationMessage('The selection was not recognised as a directory');
+		return;
 	}
-
-	const directoryFiles = await vscode.workspace.fs.readDirectory(uri);
 
 	const getFileUri = ([filePath]: [string, vscode.FileType]) => vscode.Uri.file(path.join(fsPath, filePath));
 
-	const files = directoryFiles
-		.filter(fileFilter)
+	const directoryFiles = await vscode.workspace.fs.readDirectory(uri);
+
+	return directoryFiles
+		.filter(filterMatchingFilesInDirectory(fileExtensions))
 		.map(getFileUri);
+}
 
-	if (files.length === 0) {
-		return vscode.window.showInformationMessage(`No convertable files found in the selected directory`);
-	}
+function filterMatchingFilesInDirectory(fileExtensions: FileExtensions) {
+	return ([filePath, fileType]: [string, vscode.FileType]) =>
+		fileType === vscode.FileType.File
+		&& fileExtensions.some((extension) => isMatchingFileExtension(filePath, extension));
+}
 
-	fileConverter.addFiles(files[0]);
+function isMatchingFileExtension(filePath: string, extension: string) {
+	const fileExtension = path.extname(filePath);
 
-	const fileConverter = createFileConverter(newFileExtname, fileContentConverter);
-	const promises = files.map(fileConverter);
-	await Promise.all(promises);
+	return fileExtension.includes(extension);
 }
 
 function createFileConverter(newFileExtname: '.json' | '.yml', contentConverter: FileContentConverter) {

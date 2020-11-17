@@ -1,0 +1,1 @@
+export const isEmptyArray = (values: any[]) => values.length === 0;

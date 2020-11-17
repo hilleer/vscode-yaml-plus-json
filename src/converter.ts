@@ -14,7 +14,6 @@ export enum ConvertFromType {
 }
 
 export class FileConverter {
-	private filesToConvert: vscode.Uri[];
 	/** files converted from (old) */
 	private oldFiles: File[];
 	/** files converted to (new) */
@@ -22,18 +21,17 @@ export class FileConverter {
 	private convertFromType: ConvertFromType;
 	constructor(convertFromType: ConvertFromType) {
 		this.oldFiles = [];
-		this.filesToConvert = [];
 		this.createdFiles = [];
 		this.convertFromType = convertFromType;
 	}
 
-	public async convertFiles() {
-		const convertFilePromises = this.filesToConvert.map(this.convertFile);
+	public async convertFiles(files: vscode.Uri[]) {
+		const convertFilePromises = files.map(this.convertFile);
 		await Promise.all(convertFilePromises);
 		await this.showReverterTooltip();
 	}
 
-	private async convertFile(oldFileUri: vscode.Uri) {
+	private convertFile = async (oldFileUri: vscode.Uri) => {
 		const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
 		const oldFileExtension = path.extname(oldFileUri.fsPath);
 
@@ -51,7 +49,7 @@ export class FileConverter {
 		} catch (error) {
 			showError(error);
 		}
-	}
+	};
 
 	private async showReverterTooltip() {
 		const message = `Successfully converted ${this.createdFiles.length}`;
@@ -64,13 +62,9 @@ export class FileConverter {
 		vscode.window.showInformationMessage('Reverting all files converted');
 	}
 
-	private async revertConvertedFiles() {
+	// private async revertConvertedFiles() {
 
-	}
-
-	public set addFiles(files: vscode.Uri) {
-		this.filesToConvert.push(...files);
-	}
+	// }
 
 	private static getFileConverter(convertFromType: ConvertFromType) {
 		return {
@@ -81,8 +75,8 @@ export class FileConverter {
 
 	private static getNewFileExtension(convertFromType: ConvertFromType) {
 		return {
-			[ConvertFromType.Json]: 'yml',
-			[ConvertFromType.Yaml]: 'json'
+			[ConvertFromType.Json]: '.yml',
+			[ConvertFromType.Yaml]: '.json'
 		}[convertFromType];
 	}
 }
