@@ -10,23 +10,8 @@ export async function onRightclickJson(oldUri: vscode.Uri) {
 		oldUri = getActiveTextEditorUri();
 	}
 
-	const { path } = oldUri;
-	const newFilePath = path.replace('.json', '.yml');
-	const newUri = vscode.Uri.parse(newFilePath);
-	try {
-		const document = await vscode.workspace.openTextDocument(oldUri);
-
-		if (document.isDirty) {
-			await document.save();
-		}
-
-		const json = document.getText();
-		const yaml = getYamlFromJson(json);
-
-		await convertFile(oldUri, newUri, yaml);
-	} catch (error) {
-		showError(error.message);
-	}
+	const fileConverter = new FileConverter(ConvertFromType.Json);
+	await fileConverter.convertFiles([oldUri]);
 }
 
 export async function onRightClickYaml(oldUri: vscode.Uri) {
@@ -34,39 +19,15 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 		oldUri = getActiveTextEditorUri();
 	}
 
-	const { path } = oldUri;
-
-	try {
-		const document = await vscode.workspace.openTextDocument(oldUri);
-
-		if (document.isDirty) {
-			await document.save();
-		}
-
-		const yaml = document.getText();
-		const json = getJsonFromYaml(yaml);
-
-		const newFilePath = path
-			.replace('.yml', '.json')
-			.replace('.yaml', '.json');
-		const newUri = vscode.Uri.parse(newFilePath);
-
-		await convertFile(oldUri, newUri, json);
-	} catch (error) {
-		showError(error.message);
-		throw error;
-	}
+	const fileConverter = new FileConverter(ConvertFromType.Yaml);
+	await fileConverter.convertFiles([oldUri]);
 }
 
-export async function onConvertJsonFilestoYaml(uri: vscode.Uri) {
+export async function onConvertJsonFilestoYaml(uri: vscode.Uri): Promise<void> {
 	const fileConverter = new FileConverter(ConvertFromType.Json);
 	const files = await getFilesInDirectory(uri, ['json']);
 
-	if (!files) {
-		return;
-	}
-
-	if (isEmptyArray(files)) {
+	if (!files || isEmptyArray(files)) {
 		vscode.window.showInformationMessage('Did not find any json files in the selected directory');
 		return;
 	}
@@ -74,15 +35,11 @@ export async function onConvertJsonFilestoYaml(uri: vscode.Uri) {
 	await fileConverter.convertFiles(files);
 }
 
-export async function onConvertYamlFilesToJson(uri: vscode.Uri) {
+export async function onConvertYamlFilesToJson(uri: vscode.Uri): Promise<void> {
 	const fileConverter = new FileConverter(ConvertFromType.Yaml);
 	const files = await getFilesInDirectory(uri, ['yaml', 'yml']);
 
-	if (!files) {
-		return;
-	}
-
-	if (isEmptyArray(files)) {
+	if (!files || isEmptyArray(files)) {
 		vscode.window.showInformationMessage('Did not find any yaml files in the selected directory');
 		return;
 	}
