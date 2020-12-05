@@ -105,6 +105,7 @@ function createFileConverter(newFileExtname: '.json' | '.yml', contentConverter:
 
 const extensionNameFilter = (extnames: string[]) => (uri: vscode.Uri) => extnames.includes(path.extname(uri.fsPath));
 
+// TODO revertable
 export async function onConvertYamlSelectionToJson(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
 	const files = selections.filter(extensionNameFilter(['.yaml', '.yml']));
 
@@ -115,6 +116,7 @@ export async function onConvertYamlSelectionToJson(clickedFile: vscode.Uri, sele
 	await Promise.all(promises);
 }
 
+// TODO revertable
 export async function onConvertJsonSelectionToYaml(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
 	const files = selections.filter(extensionNameFilter(['.json']));
 
