@@ -38,7 +38,6 @@ export class FileConverter {
 		await this.convertFile(oldFileUri, newFileUri, newFileContent);
 
 		return { oldFileUri, oldFileContent, newFileUri };
-		// this.convertedFiles.push({ oldFileUri, oldFileContent, newFileUri });
 	};
 
 	private async showReverterTooltip(convertedFiles: ConvertedFile[]) {
