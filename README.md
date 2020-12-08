@@ -20,6 +20,8 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 	* Convert YAML files in a directory to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
 	* Convert JSON files in a directory to YAML by right clicking the directory and selecting `Convert JSON files to YAML`.
 
+After converting one or multiple files a _revert_ prompt will be shown, allowing to revert conversion. Using this will also return YAML comments.
+
 ## Config
 
 | id                               | description                                            | type    | default | example |
