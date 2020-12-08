@@ -49,9 +49,9 @@ export class FileConverter {
 			? `Successfully converted file`
 			: `Successfully converted ${filesLength} files`;
 
-		const userChoice = await vscode.window.showInformationMessage(message, 'Revert');
+		const revertSelection = await vscode.window.showInformationMessage(message, 'Revert');
 
-		if (userChoice !== 'Revert') {
+		if (revertSelection !== 'Revert') {
 			return;
 		}
 
