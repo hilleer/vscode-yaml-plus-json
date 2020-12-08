@@ -1,17 +1,19 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
+import { showError } from './helpers';
 import { FileConverter, ConvertFromType } from './converter';
 import { isEmptyArray } from './array';
+
+const jsonFileConverter = new FileConverter(ConvertFromType.Json);
+const yamlFileConverter = new FileConverter(ConvertFromType.Yaml);
 
 export async function onRightclickJson(oldUri: vscode.Uri) {
 	if (!oldUri) {
 		oldUri = getActiveTextEditorUri();
 	}
 
-	const fileConverter = new FileConverter(ConvertFromType.Json);
-	await fileConverter.convertFiles([oldUri]);
+	await jsonFileConverter.convertFiles([oldUri]);
 }
 
 export async function onRightClickYaml(oldUri: vscode.Uri) {
@@ -19,12 +21,10 @@ export async function onRightClickYaml(oldUri: vscode.Uri) {
 		oldUri = getActiveTextEditorUri();
 	}
 
-	const fileConverter = new FileConverter(ConvertFromType.Yaml);
-	await fileConverter.convertFiles([oldUri]);
+	await yamlFileConverter.convertFiles([oldUri]);
 }
 
 export async function onConvertJsonFilestoYaml(uri: vscode.Uri): Promise<void> {
-	const fileConverter = new FileConverter(ConvertFromType.Json);
 	const files = await getFilesInDirectory(uri, ['json']);
 
 	if (!files || isEmptyArray(files)) {
@@ -32,11 +32,10 @@ export async function onConvertJsonFilestoYaml(uri: vscode.Uri): Promise<void> {
 		return;
 	}
 
-	await fileConverter.convertFiles(files);
+	await jsonFileConverter.convertFiles(files);
 }
 
 export async function onConvertYamlFilesToJson(uri: vscode.Uri): Promise<void> {
-	const fileConverter = new FileConverter(ConvertFromType.Yaml);
 	const files = await getFilesInDirectory(uri, ['yaml', 'yml']);
 
 	if (!files || isEmptyArray(files)) {
@@ -44,10 +43,8 @@ export async function onConvertYamlFilesToJson(uri: vscode.Uri): Promise<void> {
 		return;
 	}
 
-	await fileConverter.convertFiles(files);
+	await yamlFileConverter.convertFiles(files);
 }
-
-type FileContentConverter = (context: string) => string;
 
 type FileExtensions = Array<'json' | 'yaml' | 'yml'>;
 
@@ -88,43 +85,20 @@ function isMatchingFileExtension(filePath: string, extension: string) {
 	return fileExtension.includes(extension);
 }
 
-function createFileConverter(newFileExtname: '.json' | '.yml', contentConverter: FileContentConverter) {
-	return async (fileUri: vscode.Uri) => {
-		const fileContent = await vscode.workspace.fs.readFile(fileUri);
-		const filePath = path.extname(fileUri.fsPath);
-
-		const newFilePath = fileUri.fsPath.replace(filePath, newFileExtname);
-		const newFileUri = vscode.Uri.file(newFilePath);
-
-		const fileString = Buffer.from(fileContent).toString();
-		const convertedFile = contentConverter(fileString);
-
-		await convertFile(fileUri, newFileUri, convertedFile);
-	};
-}
-
-const extensionNameFilter = (extnames: string[]) => (uri: vscode.Uri) => extnames.includes(path.extname(uri.fsPath));
-
-// TODO revertable
 export async function onConvertYamlSelectionToJson(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
-	const files = selections.filter(extensionNameFilter(['.yaml', '.yml']));
+	const files = selections.filter(createExtensionNameFilter(['.yaml', '.yml']));
 
-	const fileConverter = createFileConverter('.json', getJsonFromYaml);
-
-	const promises = files.map(fileConverter);
-
-	await Promise.all(promises);
+	await yamlFileConverter.convertFiles(files);
 }
 
-// TODO revertable
 export async function onConvertJsonSelectionToYaml(clickedFile: vscode.Uri, selections: vscode.Uri[]) {
-	const files = selections.filter(extensionNameFilter(['.json']));
+	const files = selections.filter(createExtensionNameFilter(['.json']));
 
-	const fileConverter = createFileConverter('.yml', getYamlFromJson);
+	await jsonFileConverter.convertFiles(files);
+}
 
-	const promises = files.map(fileConverter);
-
-	await Promise.all(promises);
+function createExtensionNameFilter(extensions: string[]) {
+	return (uri: vscode.Uri) => extensions.includes(path.extname(uri.fsPath));
 }
 
 export async function convertFile(oldUri: vscode.Uri, newUri: vscode.Uri, newText: string) {

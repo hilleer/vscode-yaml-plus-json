@@ -15,20 +15,18 @@ export enum ConvertFromType {
 }
 
 export class FileConverter {
-	private convertedFiles: ConvertedFile[];
 	private convertFromType: ConvertFromType;
 	constructor(convertFromType: ConvertFromType) {
-		this.convertedFiles = [];
 		this.convertFromType = convertFromType;
 	}
 
-	public async convertFiles(files: vscode.Uri[]) {
+	public async convertFiles(files: vscode.Uri[]): Promise<void> {
 		const convertFilePromises = files.map(this.transformAndConvertFile);
-		await Promise.all(convertFilePromises);
-		await this.showReverterTooltip();
+		const convertedFiles = await Promise.all(convertFilePromises);
+		await this.showReverterTooltip(convertedFiles);
 	}
 
-	private transformAndConvertFile = async (oldFileUri: vscode.Uri) => {
+	private transformAndConvertFile = async (oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
 		const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
 		const oldFileExtension = path.extname(oldFileUri.fsPath);
 
@@ -38,15 +36,18 @@ export class FileConverter {
 		const newFileContent = FileConverter.getFileConverter(this.convertFromType)(oldFileContent.toString());
 
 		await this.convertFile(oldFileUri, newFileUri, newFileContent);
-		this.convertedFiles.push({ oldFileUri, oldFileContent, newFileUri });
+
+		return { oldFileUri, oldFileContent, newFileUri };
+		// this.convertedFiles.push({ oldFileUri, oldFileContent, newFileUri });
 	};
 
-	private async showReverterTooltip() {
-		const filesLength = this.convertedFiles.length;
-		const didConvertOneFile = filesLength === 1;
-		const message = didConvertOneFile
+	private async showReverterTooltip(convertedFiles: ConvertedFile[]) {
+		const filesLength = convertedFiles.length;
+		const didConvertSingleFile = filesLength === 1;
+
+		const message = didConvertSingleFile
 			? `Successfully converted file`
-			: `Successfully converted ${this.convertedFiles.length} files`;
+			: `Successfully converted ${filesLength} files`;
 
 		const userChoice = await vscode.window.showInformationMessage(message, 'Revert');
 
@@ -54,11 +55,12 @@ export class FileConverter {
 			return;
 		}
 
-		await Promise.all(this.convertedFiles.map(this.revertTransformedAndConvertedFile));
+		await Promise.all(convertedFiles.map(this.revertTransformedAndConvertedFile));
 
-		const revertedMessage = didConvertOneFile
+		const revertedMessage = didConvertSingleFile
 			? 'Successfully reverted converted file'
 			: `Successfully reverted conversion of ${filesLength} files`;
+
 		vscode.window.showInformationMessage(revertedMessage);
 	}
 
