@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.5.0] 2020-12-08
+
+### Added
+
+* Revert files converted. After converting one or multiple files (using features that includes right click on file(s)), a prompt will be shown allowing to revert. Reverting will including YAML comments.
+
 ## [1.4.0] 2020-09-07
 
 ### Added
