@@ -156,12 +156,41 @@
 					"yaml-plus-json.convertOnRename": {
 						"type": "boolean",
 						"description": "Convert YAML/JSON files on rename",
-						"default": true
+						"deprecationMessage": "please refer to use yaml-plus-json configuration object"
 					},
 					"yaml-plus-json.yaml-indent": {
 						"type": "number",
 						"description": "The number of spaces to use when indenting code (yaml)",
-						"default": 2
+						"deprecationMessage": "please refer to use yaml-plus-json configuration object"
+					},
+					"yaml-plus-json": {
+						"type": "object",
+						"default": {
+							"convertOnRename": true
+						},
+						"properties": {
+							"convertOnRename": {
+								"type": "boolean",
+								"description": "Convert YAML/JSON files on rename",
+								"default": true
+							},
+							"yamlSchema": {
+								"type": "string",
+								"description": "See yaml module documentation for details https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas",
+								"enum": [
+									"core",
+									"failsafe",
+									"json",
+									"yaml-1.1"
+								],
+								"default": "core"
+							},
+							"yamlIndent": {
+								"type": "number",
+								"description": "The number of spaces to use when indenting code (yaml)",
+								"default": 2
+							}
+						}
 					}
 				}
 			}

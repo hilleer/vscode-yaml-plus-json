@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.6.0] 2020-12-10
+
+### Changed
+
+* Old configurations keys has been marked as deprecated
+* New configurations keys are grouped in an object `yaml-plus-json`.
+
+### Added
+
+* `yamlSchema` configuration. See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas) for details.
+
 ## [1.5.0] 2020-12-08
 
 ### Added

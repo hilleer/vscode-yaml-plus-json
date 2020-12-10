@@ -10,10 +10,16 @@ export function showError(message?: string) {
 }
 
 export function getYamlFromJson(json: string): string {
-	const indent = getConfig().get<number>(ConfigId.Indent);
+	const indent = getConfig<number>(ConfigId.YamlIndent);
+	const schema = getConfig<YamlSchema>(ConfigId.YamlSchema);
+
+	const options: YAML.Options = {
+		...(indent && { indent }),
+		...(schema && { schema })
+	};
 
 	try {
-		return YAML.stringify(JSON.parse(json), { indent });
+		return YAML.stringify(JSON.parse(json), options);
 	} catch (error) {
 		console.error(error);
 		throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
@@ -30,11 +36,36 @@ export function getJsonFromYaml(yaml: string): string {
 	}
 }
 
-export enum ConfigId {
-	ConvertOnRename = 'yaml-plus-json.convertOnRename',
-	Indent = 'yaml-plus-json.yaml-indent'
+enum ConfigIdLegacy {
+	// Same key as new - only here for convenience
+	ConvertOnRename = 'convertOnRename',
+	Indent = 'yaml-indent'
 }
 
-export function getConfig() {
-	return vscode.workspace.getConfiguration();
+export enum ConfigId {
+	ConvertOnRename = 'convertOnRename',
+	YamlSchema = 'yamlSchema',
+	YamlIndent = 'yamlIndent'
+}
+
+type YamlSchema = YAML.Options['schema'];
+
+const CONFIG_ID = 'yaml-plus-json';
+
+const LEGACY_CONFIGS = Object.freeze({
+	[ConfigId.ConvertOnRename]: ConfigIdLegacy.ConvertOnRename,
+	[ConfigId.YamlIndent]: ConfigIdLegacy.Indent
+});
+
+export function getConfig<T = any>(configId: ConfigId): T | undefined {
+	const config = vscode.workspace.getConfiguration(CONFIG_ID);
+
+	const legacyConfigKey = getLegacyConfigKey(configId);
+
+	return config.get<T>(legacyConfigKey) || config.get<T>(configId);
+}
+
+function getLegacyConfigKey(configId: ConfigId) {
+	// @ts-ignore
+	return LEGACY_CONFIGS[configId];
 }
