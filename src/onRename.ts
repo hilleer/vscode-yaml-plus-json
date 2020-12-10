@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { showError, getJsonFromYaml, getYamlFromJson, getConfig, ConfigId } from './helpers';
 
 export function onRename(e: vscode.FileRenameEvent) {
-	const shouldConvertOnRename = getConfig().get(ConfigId.ConvertOnRename);
+	const shouldConvertOnRename = getConfig<boolean>(ConfigId.ConvertOnRename);
 
 	if (!shouldConvertOnRename) {
 		return;

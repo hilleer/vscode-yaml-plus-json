@@ -24,7 +24,10 @@ After converting one or multiple files a _revert_ prompt will be shown, allowing
 
 ## Config
 
-| id                               | description                                            | type    | default | example |
-|----------------------------------|--------------------------------------------------------|---------|---------|---------|
-| `yaml-plus-json.convertOnRename` | Convert YAML/JSON files on rename                      | boolean | true    | true    |
-| `yaml-plus-json.yaml-indent`     | The number of spaces to use when indenting code (yaml) | number  | 2       | 4       |
+All configurations should can be defined in `yaml-plus-json`.
+
+| id                | description                                                                                                             | type    | default | example |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------|---------|---------|---------|
+| `convertOnRename` | Convert YAML/JSON files on rename                                                                                       | boolean | true    | false   |
+| `yamlIndent`      | The number of spaces to use when indenting code (yaml)                                                                  | number  | 2       | 4       |
+| `yamlSchema`      | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas) for details | string  | core    | json    |
