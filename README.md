@@ -6,7 +6,7 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 ## Features and usage
 
-* **Convert single file:**
+* **Convert a single file:**
 	* Convert a YAML file to JSON by right clicking it and selecting `Convert to JSON`.
 	* Convert a YAML file to JSON by changing file extension to `.json`.
 	* Convert a JSON file to YAML by right clicking it and selecting `Convert to YAML`.
