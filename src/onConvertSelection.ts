@@ -1,12 +1,10 @@
 import * as vscode from 'vscode';
+import { ConvertFromType } from './converter';
 
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 
-export function selectionReplaceHandler(fromType: 'yaml' | 'json') {
-	const converter = {
-		json: getYamlFromJson,
-		yaml: getJsonFromYaml
-	}[fromType];
+export function onConvertSelection(fromType: ConvertFromType) {
+	const converter = getSelectionConverter(fromType);
 
 	return async () => {
 		try {
@@ -15,6 +13,7 @@ export function selectionReplaceHandler(fromType: 'yaml' | 'json') {
 			if (!editor) {
 				return;
 			}
+
 			const { selection, document } = editor;
 			const text = document.getText(selection);
 			const newText = converter(text);
@@ -29,6 +28,13 @@ export function selectionReplaceHandler(fromType: 'yaml' | 'json') {
 			showError(error.message);
 		}
 	};
+}
+
+function getSelectionConverter(fromType: ConvertFromType) {
+	return {
+		[ConvertFromType.Json]: getYamlFromJson,
+		[ConvertFromType.Yaml]: getJsonFromYaml
+	}[fromType];
 }
 
 function getSelectionRange(selection: vscode.Selection) {

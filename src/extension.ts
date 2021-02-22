@@ -1,26 +1,22 @@
 import * as vscode from 'vscode';
 
 import { onRename } from './onRename';
-import {
-	onConvertJsonFilestoYaml,
-	onConvertJsonSelectionToYaml,
-	onConvertYamlFilesToJson,
-	onConvertYamlSelectionToJson,
-	onRightclickJson,
-	onRightClickYaml
-} from './onRightClick';
-import { selectionReplaceHandler } from './onSelectionCommand';
+import { onRightClickAndConvertJsonFile, onRightClickAndConvertYamlFile } from './onRightClickAndConvertFile';
+import { onRightClickAndConvertJsonFilestoYaml, onRightClickConvertYamlFilesToJson } from './onRightClickAndConvertDirectoryFiles';
+import { onConvertSelectedJsonFilesToYaml, onConvertSelectedYamlFilesToJson } from './onRightClickAndConvertSelectedFiles';
+import { onConvertSelection } from './onConvertSelection';
+import { ConvertFromType } from './converter';
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
-		vscode.commands.registerCommand('extension.rightClickJson', onRightclickJson),
-		vscode.commands.registerCommand('extension.rightClickYaml', onRightClickYaml),
-		vscode.commands.registerCommand('extension.yamlSelectionToJson', selectionReplaceHandler('yaml')),
-		vscode.commands.registerCommand('extension.jsonSelectionToYaml', selectionReplaceHandler('json')),
-		vscode.commands.registerCommand('extension.convertYamlFilesToJson', onConvertYamlFilesToJson),
-		vscode.commands.registerCommand('extension.convertJsonFilesToYaml', onConvertJsonFilestoYaml),
-		vscode.commands.registerCommand('extension.convertJsonSelectionsToYaml', onConvertJsonSelectionToYaml),
-		vscode.commands.registerCommand('extension.convertYamlSelectionsToJson', onConvertYamlSelectionToJson)
+		vscode.commands.registerCommand('extension.rightClickJson', onRightClickAndConvertJsonFile),
+		vscode.commands.registerCommand('extension.rightClickYaml', onRightClickAndConvertYamlFile),
+		vscode.commands.registerCommand('extension.yamlSelectionToJson', onConvertSelection(ConvertFromType.Yaml)),
+		vscode.commands.registerCommand('extension.jsonSelectionToYaml', onConvertSelection(ConvertFromType.Json)),
+		vscode.commands.registerCommand('extension.convertYamlFilesToJson', onRightClickConvertYamlFilesToJson),
+		vscode.commands.registerCommand('extension.convertJsonFilesToYaml', onRightClickAndConvertJsonFilestoYaml),
+		vscode.commands.registerCommand('extension.convertJsonSelectionsToYaml', onConvertSelectedJsonFilesToYaml),
+		vscode.commands.registerCommand('extension.convertYamlSelectionsToJson', onConvertSelectedYamlFilesToJson)
 	);
 
 	vscode.workspace.onDidRenameFiles(onRename);
