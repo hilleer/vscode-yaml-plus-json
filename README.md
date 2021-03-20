@@ -33,4 +33,4 @@ All configurations should can be defined in `yaml-plus-json`.
 | `yamlSchema`           | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas) for details | string  | core    | json    |
 |  `fileExtensions`      | define what filename extension(s) to use when converting file(s)                                                        | object  |         |         |
 |  `fileExtensions.yaml` | yaml filename extension                                                                                                 | string  | yaml    | yml     |
-|  `fileExtensions.json` | json filename extension                                                                                                 | string  | json    | jsonc   |
+|  `fileExtensions.json` | json filename extension                                                                                                 | string  | json    | json    |
