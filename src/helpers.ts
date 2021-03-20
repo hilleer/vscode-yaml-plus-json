@@ -45,7 +45,9 @@ enum ConfigIdLegacy {
 export enum ConfigId {
 	ConvertOnRename = 'convertOnRename',
 	YamlSchema = 'yamlSchema',
-	YamlIndent = 'yamlIndent'
+	YamlIndent = 'yamlIndent',
+	FileExtensionsYaml = 'fileExtensions.yaml',
+	FileExtensionsJson = 'fileExtensions.json'
 }
 
 type YamlSchema = YAML.Options['schema'];
