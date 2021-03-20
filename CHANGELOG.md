@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.7.0] 2021-03-20
+
+### Added
+
+* Configurable filename extensions:
+	* yaml can be `.yaml` or `.yml`
+	* json can be `json`
+
 ## [1.6.0] 2020-12-10
 
 ### Changed

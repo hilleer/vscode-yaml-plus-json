@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import { ConfigId, getConfig, getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 
 type ConvertedFile = {
 	oldFileUri: vscode.Uri;
@@ -90,9 +90,12 @@ export class FileConverter {
 	}
 
 	private static getNewFileExtension(convertFromType: ConvertFromType) {
+		const toJsonFileExtension = getConfig(ConfigId.FileExtensionsJson);
+		const toYamlFileExtension = getConfig(ConfigId.FileExtensionsYaml);
+
 		return {
-			[ConvertFromType.Json]: '.yml',
-			[ConvertFromType.Yaml]: '.json'
+			[ConvertFromType.Json]: toYamlFileExtension,
+			[ConvertFromType.Yaml]: toJsonFileExtension
 		}[convertFromType];
 	}
 }

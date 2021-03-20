@@ -166,7 +166,12 @@
 					"yaml-plus-json": {
 						"type": "object",
 						"default": {
-							"convertOnRename": true
+							"convertOnRename": true,
+							"yamlIndent": 2,
+							"fileExtensions": {
+								"yaml": ".yaml",
+								"json": ".json"
+							}
 						},
 						"properties": {
 							"convertOnRename": {
@@ -187,8 +192,28 @@
 							},
 							"yamlIndent": {
 								"type": "number",
-								"description": "The number of spaces to use when indenting code (yaml)",
-								"default": 2
+								"description": "The number of spaces to use when indenting code (yaml)"
+							},
+							"fileExtensions": {
+								"type": "object",
+								"description": "define what filename extension(s) to use when converting file(s)",
+								"properties": {
+									"yaml": {
+										"type": "string",
+										"description": "yaml filename extension",
+										"enum": [
+											".yaml",
+											".yml"
+										]
+									},
+									"json": {
+										"type": "string",
+										"description": "json filename extension",
+										"enum": [
+											".json"
+										]
+									}
+								}
 							}
 						}
 					}
