@@ -60,7 +60,6 @@ const LEGACY_CONFIGS = Object.freeze({
 });
 
 export function getConfig<T = any>(configId: ConfigId): T | undefined {
-	console.log('all config', vscode.workspace.getConfiguration('yaml-plus-json'));
 	const config = vscode.workspace.getConfiguration(CONFIG_ID);
 
 	const legacyConfigKey = getLegacyConfigKey(configId);

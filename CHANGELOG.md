@@ -10,6 +10,10 @@
 
 `jsonc` might be supported at a later point if requested as the extension should also support converting from `jsonc` then.
 
+### Changed
+
+* Default configurations correction for `yamlIndent` (no affect on usage)
+
 ## [1.6.0] 2020-12-10
 
 ### Changed
