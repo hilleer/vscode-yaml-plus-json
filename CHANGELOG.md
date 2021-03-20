@@ -8,6 +8,8 @@
 	* yaml can be `.yaml` or `.yml`
 	* json can be `json`
 
+`jsonc` might be supported at a later point if requested as the extension should also support converting from `jsonc` then.
+
 ## [1.6.0] 2020-12-10
 
 ### Changed
