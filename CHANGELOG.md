@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.8.0] 2021-05-27
+
+### Fixed
+
+* extension not being activated when workspace don't contain any `.json` or `.y(a)ml` file(s)
+
 ## [1.7.0] 2021-03-20
 
 ### Added
