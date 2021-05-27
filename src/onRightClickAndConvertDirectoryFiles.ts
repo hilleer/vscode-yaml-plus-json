@@ -4,7 +4,7 @@ import { isEmptyArray } from './array';
 import { ConvertFromType, FileConverter } from './converter';
 import { getFilesInDirectory } from './files';
 
-export async function onRightClickAndConvertJsonFilestoYaml(uri: vscode.Uri): Promise<void> {
+export async function onRightClickAndConvertJsonFilesToYaml(uri: vscode.Uri): Promise<void> {
 	const files = await getFilesInDirectory(uri, 'json');
 
 	if (!files || isEmptyArray(files)) {
