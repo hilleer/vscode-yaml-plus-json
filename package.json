@@ -28,7 +28,15 @@
 	"activationEvents": [
 		"workspaceContains:**/**.json",
 		"workspaceContains:**/**.yml",
-		"workspaceContains:**/**.yaml"
+		"workspaceContains:**/**.yaml",
+		"onCommand:extension.rightClickJson",
+		"onCommand:extension.rightClickYaml",
+		"onCommand:extension.yamlSelectionToJson",
+		"onCommand:extension.jsonSelectionToYaml",
+		"onCommand:extension.convertYamlFilesToJson",
+		"onCommand:extension.convertJsonFilesToYaml",
+		"onCommand:extension.convertJsonSelectionsToYaml",
+		"onCommand:extension.convertYamlSelectionsToJson"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -236,7 +244,7 @@
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^7.0.1",
-		"@types/node": "^12.11.7",
+		"@types/node": "^15.6.1",
 		"@types/vscode": "^1.54.0",
 		"@types/yaml": "1.9.7",
 		"@typescript-eslint/eslint-plugin": "^2.18.0",
@@ -245,7 +253,7 @@
 		"glob": "^7.1.6",
 		"mocha": "^7.1.1",
 		"ts-loader": "^8.0.18",
-		"typescript": "^4.2.3",
+		"typescript": "^4.3.2",
 		"vscode-test": "^1.5.1",
 		"webpack": "5.27.0",
 		"webpack-cli": "^4.5.0"
