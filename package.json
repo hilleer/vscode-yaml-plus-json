@@ -222,6 +222,17 @@
 										]
 									}
 								}
+							},
+							"keepOriginalFiles": {
+								"type": [
+									"string",
+									"null"
+								],
+								"description": "",
+								"enum": [
+									"ask",
+									"always"
+								]
 							}
 						}
 					}
