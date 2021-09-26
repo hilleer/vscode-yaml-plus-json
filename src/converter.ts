@@ -77,12 +77,6 @@ export class FileConverter {
 		await this.convertFile(shouldKeepOriginalFiles, oldFileUri, newFileUri, newFileContent.toString());
 	};
 
-	/**
-	 * @param oldFileUri 
-	 * @param shouldRename 
-	 * @param newFileUri 
-	 * @param newFileContent 
-	 */
 	private convertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri, newFileUri: vscode.Uri, newFileContent: string) => {
 		const newFile = Buffer.from(newFileContent);
 
