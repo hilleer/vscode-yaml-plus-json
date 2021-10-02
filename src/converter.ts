@@ -128,7 +128,7 @@ export class FileConverter {
 
 		if (keepOriginalFiles === 'ask') {
 			const isSingular = length === 1;
-			const message = `Do you want to keep original file${isSingular ? '' : 's'}?`;
+			const message = `Do you want to keep the original file${isSingular ? '' : 's'}?`;
 			const selection = await vscode.window.showInformationMessage(message, 'Keep', 'Dont keep');
 
 			return selection === 'Keep';
