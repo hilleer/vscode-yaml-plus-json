@@ -35,7 +35,8 @@ export class FileConverter {
 		const newFileExtension = FileConverter.getNewFileExtension(this.convertFromType);
 		const newFilePath = oldFileUri.fsPath.replace(oldFileExtension, newFileExtension);
 		const newFileUri = vscode.Uri.file(newFilePath);
-		const newFileContent = FileConverter.getFileConverter(this.convertFromType)(oldFileContent.toString());
+
+		const newFileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
 
 		await this.convertFile(shouldKeepOriginalFile, oldFileUri, newFileUri, newFileContent);
 
@@ -137,20 +138,29 @@ export class FileConverter {
 		return false;
 	}
 
-	private static getFileConverter(convertFromType: ConvertFromType) {
-		return {
+	private static getNewFileContent(convertFromType: ConvertFromType, oldContent: string) {
+		const converter = {
 			[ConvertFromType.Json]: getYamlFromJson,
 			[ConvertFromType.Yaml]: getJsonFromYaml
 		}[convertFromType];
+
+		return converter(oldContent);
 	}
 
 	private static getNewFileExtension(convertFromType: ConvertFromType) {
-		const toJsonFileExtension = getConfig(ConfigId.FileExtensionsJson);
-		const toYamlFileExtension = getConfig(ConfigId.FileExtensionsYaml);
+		const toJsonFileExtension = getConfig<'.json'>(ConfigId.FileExtensionsJson);
+		const toYamlFileExtension = getConfig<'.yaml' | '.yml'>(ConfigId.FileExtensionsYaml);
 
-		return {
+		const fileExtension = {
 			[ConvertFromType.Json]: toYamlFileExtension,
 			[ConvertFromType.Yaml]: toJsonFileExtension
 		}[convertFromType];
+
+		// should not happen
+		if (!fileExtension) {
+			throw new Error(`new file extension from type not found: ${convertFromType}`);
+		}
+
+		return fileExtension;
 	}
 }
