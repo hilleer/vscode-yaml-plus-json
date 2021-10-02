@@ -28,7 +28,7 @@ export class FileConverter {
 		!shouldKeepOriginalFiles && await this.showReverterTooltip(convertedFiles);
 	}
 
-	private transformAndConvertFile = async (shouldRenameFile: boolean, oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
+	private transformAndConvertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
 		const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
 		const oldFileExtension = path.extname(oldFileUri.fsPath);
 
@@ -37,7 +37,7 @@ export class FileConverter {
 		const newFileUri = vscode.Uri.file(newFilePath);
 		const newFileContent = FileConverter.getFileConverter(this.convertFromType)(oldFileContent.toString());
 
-		await this.convertFile(shouldRenameFile, oldFileUri, newFileUri, newFileContent);
+		await this.convertFile(shouldKeepOriginalFile, oldFileUri, newFileUri, newFileContent);
 
 		return { oldFileUri, oldFileContent, newFileUri };
 	};
@@ -56,7 +56,7 @@ export class FileConverter {
 			return;
 		}
 
-		const shouldKeepOriginalFiles = false; // always revert created file(s)
+		const shouldKeepOriginalFiles = false; // never keep "original" files when reverting
 		const promises = convertedFiles.map(async (convertedFile) => this.revertTransformedAndConvertedFile(shouldKeepOriginalFiles, convertedFile));
 		await Promise.all(promises);
 
@@ -126,9 +126,8 @@ export class FileConverter {
 		}
 
 		if (keepOriginalFiles === 'ask') {
-			const message = length === 1
-				? 'Do you want to keep original file?'
-				: 'Do you want to keep original files?';
+			const isSingular = length === 1;
+			const message = `Do you want to keep original file${isSingular ? '' : 's'}?`;
 			const selection = await vscode.window.showInformationMessage(message, 'Keep', 'Dont keep');
 
 			return selection === 'Keep';
