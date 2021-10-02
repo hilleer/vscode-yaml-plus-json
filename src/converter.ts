@@ -110,6 +110,7 @@ export class FileConverter {
 			await vscode.workspace.fs.readFile(fileUri);
 			return true;
 		} catch (error) {
+			// vscode throws this error when file is not found
 			if (error instanceof vscode.FileSystemError) {
 				return false;
 			}
