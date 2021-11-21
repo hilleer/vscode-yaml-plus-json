@@ -25,7 +25,12 @@ export class FileConverter {
 		const shouldKeepOriginalFiles = await this.shouldKeepOriginalFiles(files.length);
 		const convertFilePromises = files.map((file) => this.transformAndConvertFile(shouldKeepOriginalFiles, file));
 		const convertedFiles = await Promise.all(convertFilePromises);
-		!shouldKeepOriginalFiles && await this.showReverterTooltip(convertedFiles);
+
+		// no need to show revert tooltip if we already keeping original files
+		// might consider to redo this behaviour so instead the reverting the user would have the possibility of delete created files
+		if (!shouldKeepOriginalFiles) {
+			await this.showReverterTooltip(convertedFiles);
+		}
 	}
 
 	private transformAndConvertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
