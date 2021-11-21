@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.9.0] 2021-11-21
+
+### Added
+
+* feature: keep original files on conversion, based on configuration; `ask` to be asked to keep original files and `always` to always keep original files.
+
 ## [1.8.0] 2021-05-27
 
 ### Fixed

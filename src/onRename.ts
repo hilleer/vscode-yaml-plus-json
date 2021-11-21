@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
+import { ConfigId, getConfig } from './config';
 
-import { showError, getJsonFromYaml, getYamlFromJson, getConfig, ConfigId } from './helpers';
+import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
 
 export function onRename(e: vscode.FileRenameEvent) {
 	const shouldConvertOnRename = getConfig<boolean>(ConfigId.ConvertOnRename);
@@ -42,9 +43,8 @@ async function convertJsonToYaml(document: vscode.TextDocument) {
 		const yaml = getYamlFromJson(json);
 
 		await replaceFileContent(document, yaml);
-	} catch (error) {
-		console.error(error);
-		showError(error.message);
+	} catch (error: any) {
+		showError(error);
 	}
 }
 
@@ -54,9 +54,8 @@ async function convertYamlToJson(document: vscode.TextDocument) {
 		const json = getJsonFromYaml(yaml);
 
 		await replaceFileContent(document, json);
-	} catch (error) {
-		console.error(error);
-		showError(error.message);
+	} catch (error: any) {
+		showError(error);
 	}
 }
 
@@ -78,8 +77,7 @@ async function replaceFileContent(document: vscode.TextDocument, newText: string
 		edit.replace(uri, range, newText);
 		await vscode.workspace.applyEdit(edit);
 		await document.save();
-	} catch (error) {
-		console.error(error);
-		showError(error.message);
+	} catch (error: any) {
+		showError(error);
 	}
 }

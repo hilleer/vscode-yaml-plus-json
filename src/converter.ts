@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { ConfigId, getConfig, getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import { ConfigId, Configs, getConfig } from './config';
 
 type ConvertedFile = {
 	oldFileUri: vscode.Uri;
@@ -21,21 +22,28 @@ export class FileConverter {
 	}
 
 	public async convertFiles(files: vscode.Uri[]): Promise<void> {
-		const convertFilePromises = files.map(this.transformAndConvertFile);
+		const shouldKeepOriginalFiles = await this.shouldKeepOriginalFiles(files.length);
+		const convertFilePromises = files.map((file) => this.transformAndConvertFile(shouldKeepOriginalFiles, file));
 		const convertedFiles = await Promise.all(convertFilePromises);
-		await this.showReverterTooltip(convertedFiles);
+
+		// no need to show revert tooltip if we already keeping original files
+		// might consider to redo this behaviour so instead the reverting the user would have the possibility of delete created files
+		if (!shouldKeepOriginalFiles) {
+			await this.showReverterTooltip(convertedFiles);
+		}
 	}
 
-	private transformAndConvertFile = async (oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
+	private transformAndConvertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
 		const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
 		const oldFileExtension = path.extname(oldFileUri.fsPath);
 
 		const newFileExtension = FileConverter.getNewFileExtension(this.convertFromType);
 		const newFilePath = oldFileUri.fsPath.replace(oldFileExtension, newFileExtension);
 		const newFileUri = vscode.Uri.file(newFilePath);
-		const newFileContent = FileConverter.getFileConverter(this.convertFromType)(oldFileContent.toString());
 
-		await this.convertFile(oldFileUri, newFileUri, newFileContent);
+		const newFileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
+
+		await this.convertFile(shouldKeepOriginalFile, oldFileUri, newFileUri, newFileContent);
 
 		return { oldFileUri, oldFileContent, newFileUri };
 	};
@@ -54,7 +62,9 @@ export class FileConverter {
 			return;
 		}
 
-		await Promise.all(convertedFiles.map(this.revertTransformedAndConvertedFile));
+		const shouldKeepOriginalFiles = false; // never keep "original" files when reverting
+		const promises = convertedFiles.map(async (convertedFile) => this.revertTransformedAndConvertedFile(shouldKeepOriginalFiles, convertedFile));
+		await Promise.all(promises);
 
 		const revertedMessage = didConvertSingleFile
 			? 'Successfully reverted converted file'
@@ -63,39 +73,96 @@ export class FileConverter {
 		vscode.window.showInformationMessage(revertedMessage);
 	}
 
-	private revertTransformedAndConvertedFile = async (convertedFile: ConvertedFile) => {
+	private revertTransformedAndConvertedFile = async (shouldKeepOriginalFiles: boolean, convertedFile: ConvertedFile) => {
 		const {
 			oldFileUri: newFileUri,
 			oldFileContent: newFileContent,
 			newFileUri: oldFileUri
 		} = convertedFile;
 
-		await this.convertFile(oldFileUri, newFileUri, newFileContent.toString());
+		await this.convertFile(shouldKeepOriginalFiles, oldFileUri, newFileUri, newFileContent.toString());
 	};
 
-	private convertFile = async (oldFileUri: vscode.Uri, newFileUri: vscode.Uri, newFileContent: string) => {
+	private convertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri, newFileUri: vscode.Uri, newFileContent: string) => {
+		const newFile = Buffer.from(newFileContent);
+
+		const existentFile = await this.doFileExist(newFileUri);
+		if (existentFile) {
+			return vscode.window.showInformationMessage(`file already exist: ${newFileUri}`);
+		}
+
+		if (shouldKeepOriginalFile) {
+			try {
+				await vscode.workspace.fs.writeFile(newFileUri, newFile);
+			} catch (error: any) {
+				showError(error);
+			}
+			return;
+		}
+
 		try {
-			await vscode.workspace.fs.writeFile(oldFileUri, Buffer.from(newFileContent));
+			await vscode.workspace.fs.writeFile(oldFileUri, newFile);
 			await vscode.workspace.fs.rename(oldFileUri, newFileUri);
-		} catch (error) {
+		} catch (error: any) {
 			showError(error);
 		}
 	};
 
-	private static getFileConverter(convertFromType: ConvertFromType) {
-		return {
+	private async doFileExist(fileUri: vscode.Uri): Promise<boolean> {
+		try {
+			await vscode.workspace.fs.readFile(fileUri);
+			return true;
+		} catch (error) {
+			// vscode throws this error when file is not found
+			if (error instanceof vscode.FileSystemError) {
+				return false;
+			}
+
+			throw error;
+		}
+	}
+
+	private async shouldKeepOriginalFiles(length: number): Promise<boolean> {
+		const keepOriginalFiles = getConfig<Configs['keepOriginalFiles']>(ConfigId.KeepOriginalFiles);
+
+		if (keepOriginalFiles === 'always') {
+			return true;
+		}
+
+		if (keepOriginalFiles === 'ask') {
+			const isSingular = length === 1;
+			const message = `Do you want to keep the original file${isSingular ? '' : 's'}?`;
+			const selection = await vscode.window.showInformationMessage(message, 'Keep', 'Dont keep');
+
+			return selection === 'Keep';
+		}
+
+		return false;
+	}
+
+	private static getNewFileContent(convertFromType: ConvertFromType, oldContent: string) {
+		const converter = {
 			[ConvertFromType.Json]: getYamlFromJson,
 			[ConvertFromType.Yaml]: getJsonFromYaml
 		}[convertFromType];
+
+		return converter(oldContent);
 	}
 
 	private static getNewFileExtension(convertFromType: ConvertFromType) {
-		const toJsonFileExtension = getConfig(ConfigId.FileExtensionsJson);
-		const toYamlFileExtension = getConfig(ConfigId.FileExtensionsYaml);
+		const toJsonFileExtension = getConfig<'.json'>(ConfigId.FileExtensionsJson);
+		const toYamlFileExtension = getConfig<'.yaml' | '.yml'>(ConfigId.FileExtensionsYaml);
 
-		return {
+		const fileExtension = {
 			[ConvertFromType.Json]: toYamlFileExtension,
 			[ConvertFromType.Yaml]: toJsonFileExtension
 		}[convertFromType];
+
+		// should not happen
+		if (!fileExtension) {
+			throw new Error(`new file extension from type not found: ${convertFromType}`);
+		}
+
+		return fileExtension;
 	}
 }

@@ -222,6 +222,18 @@
 										]
 									}
 								}
+							},
+							"keepOriginalFiles": {
+								"type": [
+									"string",
+									"null"
+								],
+								"default": "null",
+								"description": "Keep original files when converting. Use ask to be asked- or use always to always keep files on conversion",
+								"enum": [
+									"ask",
+									"always"
+								]
 							}
 						}
 					}
@@ -230,8 +242,8 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "webpack --mode production",
-		"webpack": "webpack --mode development",
+		"vscode:prepublish": "npm run webpack",
+		"webpack": "webpack --mode production",
 		"webpack-dev": "webpack --mode development --watch",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
