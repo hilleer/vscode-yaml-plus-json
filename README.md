@@ -34,12 +34,11 @@ All configurations should can be defined in `yaml-plus-json`.
 | `fileExtensions`      | define what filename extension(s) to use when converting file(s)                                                          | object  |           |            |
 | `fileExtensions.yaml` | yaml filename extension                                                                                                   | string  | `".yaml"` | `".yml"`   |
 | `fileExtensions.json` | json filename extension                                                                                                   | string  | `".json"` | `".json"`  |
-| `keepOriginalFiles`   | Keep original files when converting. Use `"ask"` to be asked and `always` to always keep                                  | string  | `"null"`  | `"always"` |
+| `keepOriginalFiles`   | Keep original files when converting. Use `"ask"` to be asked and `always` to always keep                                  | string  |           | `"always"` |
 
 ### Keep original files
 
 If you want to keep the original file(s) when converting, you can use the configuration `keepOriginalFiles` to achieve that. The configuration has two different values:
 
-* `null` (default): do not consider keeping original files
 * `ask`: Be asked each time when you convert, if you want to keep original files
 * `always`: Always keep original files

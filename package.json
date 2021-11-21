@@ -225,10 +225,8 @@
 							},
 							"keepOriginalFiles": {
 								"type": [
-									"string",
-									"null"
+									"string"
 								],
-								"default": "null",
 								"description": "Keep original files when converting. Use ask to be asked- or use always to always keep files on conversion",
 								"enum": [
 									"ask",
