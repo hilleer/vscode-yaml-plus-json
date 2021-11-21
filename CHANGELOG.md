@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.9.2] 2021-11-21
+
+### Changes
+
+* remove `null` default from `keepOriginalFiles` config
+
 ## [1.9.1] 2021-11-21
 
 ### Fixed
