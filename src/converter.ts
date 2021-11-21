@@ -88,15 +88,13 @@ export class FileConverter {
 
 		const existentFile = await this.doFileExist(newFileUri);
 		if (existentFile) {
-			vscode.window.showInformationMessage(`file already exist: ${newFileUri}`);
-			return;
+			return vscode.window.showInformationMessage(`file already exist: ${newFileUri}`);
 		}
 
 		if (shouldKeepOriginalFile) {
 			try {
 				await vscode.workspace.fs.writeFile(newFileUri, newFile);
 			} catch (error: any) {
-				console.error(error);
 				showError(error);
 			}
 			return;
@@ -106,7 +104,6 @@ export class FileConverter {
 			await vscode.workspace.fs.writeFile(oldFileUri, newFile);
 			await vscode.workspace.fs.rename(oldFileUri, newFileUri);
 		} catch (error: any) {
-			console.error(error);
 			showError(error);
 		}
 	};

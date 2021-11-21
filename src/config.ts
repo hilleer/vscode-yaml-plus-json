@@ -19,16 +19,19 @@ enum ConfigIdLegacy {
 	Indent = 'yaml-indent'
 }
 
-const CONFIG_ID = 'yaml-plus-json';
+const EXTENSION_CONFIG_ID = 'yaml-plus-json';
 
 export function getConfig<T = any>(configId: ConfigId): T | undefined {
-	const config = vscode.workspace.getConfiguration(CONFIG_ID);
+	const config = vscode.workspace.getConfiguration(EXTENSION_CONFIG_ID);
 
 	const legacyConfigKey = getLegacyConfigKey(configId);
 
 	return config.get<T>(legacyConfigKey) || config.get<T>(configId);
 }
 
+/**
+ * @deprecated do not add new configs here
+ */
 const LEGACY_CONFIGS = Object.freeze({
 	[ConfigId.ConvertOnRename]: ConfigIdLegacy.ConvertOnRename,
 	[ConfigId.YamlIndent]: ConfigIdLegacy.Indent

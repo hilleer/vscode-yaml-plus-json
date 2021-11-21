@@ -3,11 +3,15 @@ import * as YAML from 'yaml';
 
 import { ConfigId, getConfig } from './config';
 
-export function showError(message?: string) {
-	const defaultMessage = 'Something went wrong, please validate your file and try again or create an issue if the problem persist';
-	if (!message) {
-		message = defaultMessage;
-	}
+const DEFAULT_ERROR_MESSAGE = 'Something went wrong, please validate your file and try again or create an issue if the problem persist';
+
+/**
+ * prints errors to console and shows its error message to the user.
+ */
+export function showError(error: any) {
+	console.error(error);
+
+	const message = error.message || DEFAULT_ERROR_MESSAGE;
 	vscode.window.showErrorMessage(message);
 }
 

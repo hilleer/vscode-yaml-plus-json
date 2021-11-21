@@ -24,8 +24,7 @@ export function onConvertSelection(fromType: ConvertFromType) {
 			const { end } = selection;
 			editor.selection = new vscode.Selection(end, end);
 		} catch (error) {
-			console.error(error);
-			showError(error.message);
+			showError(error);
 		}
 	};
 }
@@ -53,7 +52,6 @@ async function replaceSelection(document: vscode.TextDocument, range: vscode.Ran
 		edit.replace(uri, range, replacement);
 		await vscode.workspace.applyEdit(edit);
 	} catch (error) {
-		console.error(error);
-		showError(error.message);
+		showError(error);
 	}
 }
