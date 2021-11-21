@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.9.1] 2021-11-21
+
+### Fixed
+
+* npm audit to fix security concerns with dependencies
+
 ## [1.9.0] 2021-11-21
 
 ### Added
