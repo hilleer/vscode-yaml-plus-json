@@ -27,10 +27,7 @@ export function getYamlFromJson(json: string): string {
 	};
 
 	try {
-		console.log('getYamlFromJson:::::::', json);
 		const jsonObject = JSON.parse(json);
-
-		console.log('object', jsonObject);
 
 		return YAML.stringify(jsonObject, options);
 	} catch (error) {
@@ -41,10 +38,7 @@ export function getYamlFromJson(json: string): string {
 
 export function getJsonFromYaml(yaml: string): string {
 	try {
-		console.log('yaml:', yaml);
 		const json = YAML.parse(yaml, {});
-
-		console.log('jsoooon', json);
 
 		return JSON.stringify(json, undefined, 2);
 	} catch (error) {

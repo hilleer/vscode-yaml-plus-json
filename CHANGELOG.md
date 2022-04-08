@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.10.0] 2022-04-08
+
+### Added
+
+* Feature: Preview YAML selection as JSON by using command `YAML+JSON: Preview as JSON (from YAML. Opens in new file)`
+* Feature: Preview JSON selection as YAML `YAML+JSON: Preview as YAML (from JSON. Opens in new file)`
+
 ## [1.9.2] 2021-11-21
 
 ### Changes
