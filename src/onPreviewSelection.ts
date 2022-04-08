@@ -4,11 +4,9 @@ import { ConvertFromType } from './converter';
 import { getSelectionConverter } from './onConvertSelection';
 
 export function onPreviewSelection(fromType: ConvertFromType) {
-	console.log('preview selection handler, from type:', fromType);
 	const converter = getSelectionConverter(fromType);
 
-	return async (args: any) => {
-		console.log('args:::', args);
+	return async () => {
 		try {
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
@@ -19,7 +17,6 @@ export function onPreviewSelection(fromType: ConvertFromType) {
 			const text = document.getText(selection);
 
 			const previewText = converter(text);
-
 			const previewDocument = await vscode.workspace.openTextDocument({
 				content: previewText,
 				language: getTextDocumentLanguage(fromType)
@@ -27,7 +24,8 @@ export function onPreviewSelection(fromType: ConvertFromType) {
 
 			await vscode.window.showTextDocument(previewDocument);
 		} catch (error) {
-			console.log('error:::', error);
+			console.error(error);
+			vscode.window.showErrorMessage(`an error occurred converting content from ${fromType.toLowerCase()}`);
 		}
 	};
 }

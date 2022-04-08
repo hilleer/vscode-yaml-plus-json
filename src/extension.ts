@@ -21,8 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
 		registerCommand('extension.convertJsonFilesToYaml', onRightClickAndConvertJsonFilesToYaml),
 		registerCommand('extension.convertJsonSelectionsToYaml', onConvertSelectedJsonFilesToYaml),
 		registerCommand('extension.convertYamlSelectionsToJson', onConvertSelectedYamlFilesToJson),
-		registerCommand('extension.previewYaml', onPreviewSelection(ConvertFromType.Json)),
-		registerCommand('extension.previewJson', onPreviewSelection(ConvertFromType.Yaml))
+		registerCommand('extension.previewAsYaml', onPreviewSelection(ConvertFromType.Json)),
+		registerCommand('extension.previewAsJson', onPreviewSelection(ConvertFromType.Yaml))
 	);
 
 	vscode.workspace.onDidRenameFiles(onRename);

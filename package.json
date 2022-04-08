@@ -82,12 +82,12 @@
 				"enablement": "listMultiSelection"
 			},
 			{
-				"command": "extension.previewYaml",
-				"title": "YAML+JSON: Preview YAML (opens in new file)"
+				"command": "extension.previewAsYaml",
+				"title": "YAML+JSON: Preview as YAML (from JSON. Opens in new file)"
 			},
 			{
-				"command": "extension.previewJson",
-				"title": "YAML+JSON: Preview JSON (opens in new file)"
+				"command": "extension.previewAsJson",
+				"title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
 			}
 		],
 		"menus": {
