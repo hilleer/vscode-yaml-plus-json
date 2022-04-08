@@ -29,7 +29,7 @@ export function onConvertSelection(fromType: ConvertFromType) {
 	};
 }
 
-function getSelectionConverter(fromType: ConvertFromType) {
+export function getSelectionConverter(fromType: ConvertFromType) {
 	return {
 		[ConvertFromType.Json]: getYamlFromJson,
 		[ConvertFromType.Yaml]: getJsonFromYaml

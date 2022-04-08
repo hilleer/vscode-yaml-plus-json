@@ -37,6 +37,7 @@ export function getYamlFromJson(json: string): string {
 export function getJsonFromYaml(yaml: string): string {
 	try {
 		const json = YAML.parse(yaml, {});
+
 		return JSON.stringify(json, undefined, 2);
 	} catch (error) {
 		console.error(error);
