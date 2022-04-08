@@ -1,4 +1,4 @@
-# YAML plus JSON
+# YAML :heart: JSON
 
 [![CodeQL](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql-analysis.yml)
 
