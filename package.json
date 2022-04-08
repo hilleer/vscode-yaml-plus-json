@@ -80,6 +80,14 @@
 				"command": "extension.convertYamlSelectionsToJson",
 				"title": "Convert selected files to JSON",
 				"enablement": "listMultiSelection"
+			},
+			{
+				"command": "extension.previewAsYaml",
+				"title": "YAML+JSON: Preview as YAML (from JSON. Opens in new file)"
+			},
+			{
+				"command": "extension.previewAsJson",
+				"title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
 			}
 		],
 		"menus": {
@@ -138,7 +146,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.rightClickYaml",
-					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+					"when": "resourceExtname == .yml || resourceExtname == .yaml"
 				},
 				{
 					"group": "1_modification",
