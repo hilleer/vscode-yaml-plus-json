@@ -14,8 +14,8 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 	* Convert a JSON file to YAML by right clicking it and selecting `Convert to YAML`.
 	* Convert a JSON file to YAML by changing file extension to `.yaml` or `.yml`.
 * **Convert selection as preview:**
-	* Convert YAML selection to JSON as preview by using command `YAML+JSON: Preview as JSON (from YAML. Opens in new file)`
-	* Convert JSON selection to YAML as preview by using command `YAML+JSON: Preview as YAML (from JSON. Opens in new file)`
+	* Convert YAML selection as preview by using command `YAML+JSON: Preview as JSON (from YAML. Opens in new file)`
+	* Convert JSON selection as preview by using command `YAML+JSON: Preview as YAML (from JSON. Opens in new file)`
 * **Convert text selection:**
 	* Convert YAML selection by using command `Convert selection to JSON` - _does not_ change file extension.
 	* Convert JSON selection by using command `Convert selection to YAML` - _does not_ change file extension.
