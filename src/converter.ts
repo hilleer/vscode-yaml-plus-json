@@ -66,11 +66,15 @@ export class FileConverter {
 		const promises = convertedFiles.map(async (convertedFile) => this.revertTransformedAndConvertedFile(shouldKeepOriginalFiles, convertedFile));
 		await Promise.all(promises);
 
-		const revertedMessage = didConvertSingleFile
-			? 'Successfully reverted converted file'
-			: `Successfully reverted conversion of ${filesLength} files`;
+		const showSuccessMessage = getConfig<Configs['showSuccessMessages']>(ConfigId.ShowSuccessMessages);
+		if (showSuccessMessage) {
+			const revertedMessage = didConvertSingleFile
+				? 'Successfully reverted converted file'
+				: `Successfully reverted conversion of ${filesLength} files`;
+	
+			vscode.window.showInformationMessage(revertedMessage);
+		}
 
-		vscode.window.showInformationMessage(revertedMessage);
 	}
 
 	private revertTransformedAndConvertedFile = async (shouldKeepOriginalFiles: boolean, convertedFile: ConvertedFile) => {
@@ -88,7 +92,7 @@ export class FileConverter {
 
 		const existentFile = await this.doFileExist(newFileUri);
 		if (existentFile) {
-			return vscode.window.showInformationMessage(`file already exist: ${newFileUri}`);
+			return vscode.window.showWarningMessage(`file already exist, skipping conversion: ${newFileUri}`);
 		}
 
 		if (shouldKeepOriginalFile) {
@@ -124,7 +128,6 @@ export class FileConverter {
 
 	private async shouldKeepOriginalFiles(length: number): Promise<boolean> {
 		const keepOriginalFiles = getConfig<Configs['keepOriginalFiles']>(ConfigId.KeepOriginalFiles);
-
 		if (keepOriginalFiles === 'always') {
 			return true;
 		}

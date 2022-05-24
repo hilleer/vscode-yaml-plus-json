@@ -15,7 +15,7 @@ export async function getFilesInDirectory(uri: vscode.Uri, fileExtensions: FileE
 	const isDirectory = stat.type === vscode.FileType.Directory;
 
 	if (!isDirectory) {
-		vscode.window.showInformationMessage('The selection was not recognised as a directory');
+		vscode.window.showWarningMessage('The selection was not recognized as a directory');
 		return;
 	}
 

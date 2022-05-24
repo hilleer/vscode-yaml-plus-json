@@ -8,7 +8,7 @@ export async function onRightClickAndConvertJsonFilesToYaml(uri: vscode.Uri): Pr
 	const files = await getFilesInDirectory(uri, 'json');
 
 	if (!files || isEmptyArray(files)) {
-		vscode.window.showInformationMessage('Did not find any json files in the selected directory');
+		vscode.window.showWarningMessage('Did not find any json files in the selected directory');
 		return;
 	}
 
@@ -20,7 +20,7 @@ export async function onRightClickConvertYamlFilesToJson(uri: vscode.Uri): Promi
 	const files = await getFilesInDirectory(uri, ['yaml', 'yml']);
 
 	if (!files || isEmptyArray(files)) {
-		vscode.window.showInformationMessage('Did not find any yaml files in the selected directory');
+		vscode.window.showWarningMessage('Did not find any yaml files in the selected directory');
 		return;
 	}
 

@@ -240,6 +240,10 @@
 									"ask",
 									"always"
 								]
+							},
+							"showSuccessMessages": {
+								"type": "boolean",
+								"default": false
 							}
 						}
 					}

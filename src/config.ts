@@ -7,10 +7,12 @@ export enum ConfigId {
 	FileExtensionsYaml = 'fileExtensions.yaml',
 	FileExtensionsJson = 'fileExtensions.json',
 	KeepOriginalFiles = 'keepOriginalFiles',
+	ShowSuccessMessages = 'showSuccessMessages'
 }
 
 export type Configs = {
-	keepOriginalFiles: 'ask' | 'always';
+	[ConfigId.KeepOriginalFiles]: 'ask' | 'always' | 'off';
+	[ConfigId.ShowSuccessMessages]: boolean;
 };
 
 enum ConfigIdLegacy {
