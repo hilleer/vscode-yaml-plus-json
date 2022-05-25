@@ -29,7 +29,7 @@ After converting one or multiple files a _revert_ prompt will be shown, allowing
 
 ## Config
 
-All configurations should can be defined in `yaml-plus-json`.
+All configurations set in the root-object `yaml-plus-json`.
 
 | id                    | description                                                                                                               | type    | default   | example    |
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------|---------|-----------|------------|
