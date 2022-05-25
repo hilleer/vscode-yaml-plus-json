@@ -48,8 +48,8 @@ export function getJsonFromYaml(yaml: string): string {
 }
 
 export function showSuccessMessageWhenEnabled(message: string) {
-	const showSuccessMessage = getConfig<Configs['showSuccessMessages']>(ConfigId.ShowSuccessMessages);
-	if (!showSuccessMessage) {
+	const shouldShow = getConfig<Configs['showSuccessMessages']>(ConfigId.ShowSuccessMessages);
+	if (!shouldShow) {
 		return;
 	}
 
