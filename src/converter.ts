@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import { getJsonFromYaml, getYamlFromJson, showError, showSuccessMessageWhenEnabled } from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
 
 type ConvertedFile = {
@@ -66,15 +66,10 @@ export class FileConverter {
 		const promises = convertedFiles.map(async (convertedFile) => this.revertTransformedAndConvertedFile(shouldKeepOriginalFiles, convertedFile));
 		await Promise.all(promises);
 
-		const showSuccessMessage = getConfig<Configs['showSuccessMessages']>(ConfigId.ShowSuccessMessages);
-		if (showSuccessMessage) {
-			const revertedMessage = didConvertSingleFile
-				? 'Successfully reverted converted file'
-				: `Successfully reverted conversion of ${filesLength} files`;
-	
-			vscode.window.showInformationMessage(revertedMessage);
-		}
-
+		const revertedMessage = didConvertSingleFile
+			? 'Successfully reverted converted file'
+			: `Successfully reverted conversion of ${filesLength} files`;
+		showSuccessMessageWhenEnabled(revertedMessage);
 	}
 
 	private revertTransformedAndConvertedFile = async (shouldKeepOriginalFiles: boolean, convertedFile: ConvertedFile) => {

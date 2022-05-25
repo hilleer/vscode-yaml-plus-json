@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as YAML from 'yaml';
 
-import { ConfigId, getConfig } from './config';
+import { ConfigId, Configs, getConfig } from './config';
 
 const DEFAULT_ERROR_MESSAGE = 'Something went wrong, please validate your file and try again or create an issue if the problem persist';
 
@@ -45,4 +45,13 @@ export function getJsonFromYaml(yaml: string): string {
 		console.error(error);
 		throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
 	}
+}
+
+export function showSuccessMessageWhenEnabled(message: string) {
+	const showSuccessMessage = getConfig<Configs['showSuccessMessages']>(ConfigId.ShowSuccessMessages);
+	if (!showSuccessMessage) {
+		return;
+	}
+
+	vscode.window.showInformationMessage(message);
 }
