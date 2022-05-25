@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.11.0] 22-
+
+### Added
+
+* Feature: New config `showSuccessMessages` to enable or disable showing success messages. Are turned off by default.
+
+### Changed
+
+* Success messages are turned **off** by default by configs
+
 ## [1.10.0] 2022-04-08
 
 ### Added

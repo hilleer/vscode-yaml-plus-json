@@ -41,6 +41,8 @@ All configurations should can be defined in `yaml-plus-json`.
 | `fileExtensions.json` | json filename extension                                                                                                   | string  | `".json"` | `".json"`  |
 | `keepOriginalFiles`   | Keep original files when converting. Use `"ask"` to be asked and `always` to always keep                                  | string  |           | `"always"` |
 
+TODO add config for `showSuccessMessages`
+
 ### Keep original files
 
 If you want to keep the original file(s) when converting, you can use the configuration `keepOriginalFiles` to achieve that. The configuration has two different values:
