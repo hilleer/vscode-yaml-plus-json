@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.11.0] 2022-08-28
+
+### Changed
+
+* Remove information message after successfully doing revert of converted files
+
 ## [1.10.0] 2022-04-08
 
 ### Added
