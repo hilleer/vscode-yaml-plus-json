@@ -6,6 +6,10 @@
 
 * Remove information message after successfully doing revert of converted files
 
+### Added
+
+* Additional extension activation events
+
 ## [1.10.0] 2022-04-08
 
 ### Added
