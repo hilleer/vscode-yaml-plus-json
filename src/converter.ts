@@ -53,8 +53,8 @@ export class FileConverter {
 		const didConvertSingleFile = filesLength === 1;
 
 		const message = didConvertSingleFile
-			? `Successfully converted file`
-			: `Successfully converted ${filesLength} files`;
+			? `Revert converted file?`
+			: `Revert ${filesLength} converted files files?`;
 
 		const revertSelection = await vscode.window.showInformationMessage(message, 'Revert');
 
@@ -66,11 +66,6 @@ export class FileConverter {
 		const promises = convertedFiles.map(async (convertedFile) => this.revertTransformedAndConvertedFile(shouldKeepOriginalFiles, convertedFile));
 		await Promise.all(promises);
 
-		const revertedMessage = didConvertSingleFile
-			? 'Successfully reverted converted file'
-			: `Successfully reverted conversion of ${filesLength} files`;
-
-		vscode.window.showInformationMessage(revertedMessage);
 	}
 
 	private revertTransformedAndConvertedFile = async (shouldKeepOriginalFiles: boolean, convertedFile: ConvertedFile) => {
@@ -132,7 +127,7 @@ export class FileConverter {
 		if (keepOriginalFiles === 'ask') {
 			const isSingular = length === 1;
 			const message = `Do you want to keep the original file${isSingular ? '' : 's'}?`;
-			const selection = await vscode.window.showInformationMessage(message, 'Keep', 'Dont keep');
+			const selection = await vscode.window.showInformationMessage(message, 'Keep', 'Do not keep');
 
 			return selection === 'Keep';
 		}
