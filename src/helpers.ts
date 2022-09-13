@@ -15,13 +15,15 @@ export function showError(error: any) {
 	vscode.window.showErrorMessage(message);
 }
 
-type YamlSchema = YAML.Options['schema'];
+type YamlSchema = YAML.SchemaOptions['schema'];
+
+// ParseOptions & DocumentOptions & SchemaOptions
 
 export function getYamlFromJson(json: string): string {
 	const indent = getConfig<number>(ConfigId.YamlIndent);
 	const schema = getConfig<YamlSchema>(ConfigId.YamlSchema);
 
-	const options: YAML.Options = {
+	const options: YAML.DocumentOptions & YAML.ParseOptions & YAML.SchemaOptions = {
 		...(indent && { indent }),
 		...(schema && { schema })
 	};
