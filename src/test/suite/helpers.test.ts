@@ -1,36 +1,38 @@
 import * as assert from 'assert';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { getJsonFromYaml } from '../../helpers';
 
+import { getJsonFromYaml, getYamlFromJson } from '../../helpers';
+
+// __dirname points to compiled file in "out/" folder
 const fixturesRoot = path.join(__dirname, '..', '..', '..', 'src', 'test', 'fixtures');
 
-console.log('dirname::', __dirname);	
-console.log('fixtures root', fixturesRoot);
+const readFixture = async (fileName: string) => fs.readFile(path.join(fixturesRoot, fileName), 'utf-8');
 
 suite('helpers', () => {
 	suite('getYamlFromJson()', () => {
-		test('should convert yaml to json', async () => {
-			// const [input, expected] = await Promise.all([
-			// 	fs.readFile(path.join(fixturesRoot, 'input.yaml'), 'utf-8'),
-			// 	fs.readFile(path.join(fixturesRoot, 'expected.json'), 'utf-8'),
-			// ]);
+		test('should convert json to yaml', async () => {
+			const [inputJson, expectedYaml] = await Promise.all([
+				readFixture('input.json'),
+				readFixture('expected.yaml'),
+			]);
 
-			// const actual = getYamlFromJson()
+			const actualYaml = getYamlFromJson(inputJson);
 
-			// console.log('input:::', input);
-			// console.log('expected', expected);
+			assert.deepStrictEqual(actualYaml, expectedYaml);
 		});
 	});
 
 	suite('getJsonFromYaml', async () => {
-		const [yamlInput, expected] = await Promise.all([
-			fs.readFile(path.join(fixturesRoot, 'input.yaml'), 'utf-8'),
-			fs.readFile(path.join(fixturesRoot, 'expected.json'), 'utf-8'),
-		]);
-
-		const actual = getJsonFromYaml(yamlInput);
-
-		assert.deepStrictEqual(actual, expected);
+		test('should convert yaml to json', async () => {
+			const [yamlInput, expectedJson] = await Promise.all([
+				readFixture('input.yaml'),
+				readFixture('expected.json'),
+			]);
+	
+			const actualJson = getJsonFromYaml(yamlInput);
+	
+			assert.deepStrictEqual(actualJson, expectedJson);
+		});
 	});
 });
