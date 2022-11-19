@@ -83,9 +83,9 @@ export class FileConverter {
 
 		const existentFile = await this.doFileExist(newFileUri);
 		if (existentFile) {
-			const answer = await vscode.window.showInformationMessage(`file already exist${newFileUri}\nDo you want to overwrite it?`, 'Yes', 'No');
-			const shoudOverWriteFile = answer === 'Yes';
-			if (!shoudOverWriteFile) {
+			const overwriteResponse = await vscode.window.showInformationMessage(`file already exist${newFileUri}\nDo you want to overwrite it?`, 'Yes', 'No');
+			const doOverwriteFile = overwriteResponse === 'Yes';
+			if (!doOverwriteFile) {
 				return;
 			}
 		}
