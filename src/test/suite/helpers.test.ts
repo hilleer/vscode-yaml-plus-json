@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import { getJsonFromYaml, getYamlFromJson } from '../../helpers';
-import { loadFixture } from '../testHelpers';
+import { loadFixture, stripNewLines } from '../testHelpers';
 
 suite('helpers', () => {
 	suite('getYamlFromJson()', () => {
@@ -13,7 +13,7 @@ suite('helpers', () => {
 
 			const actualYaml = getYamlFromJson(inputJson);
 
-			assert.deepStrictEqual(actualYaml, expectedYaml);
+			assert.deepStrictEqual(stripNewLines(actualYaml), stripNewLines(expectedYaml));
 		});
 	});
 
@@ -26,7 +26,7 @@ suite('helpers', () => {
 	
 			const actualJson = getJsonFromYaml(yamlInput);
 	
-			assert.deepStrictEqual(actualJson, expectedJson);
+			assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
 		});
 	});
 });
