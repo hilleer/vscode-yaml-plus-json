@@ -86,7 +86,7 @@ export class FileConverter {
 			const overwriteResponse = await vscode.window.showInformationMessage(`file already exist${newFileUri}\nDo you want to overwrite it?`, 'Yes', 'No');
 			const doOverwriteFile = overwriteResponse === 'Yes';
 			if (!doOverwriteFile) {
-				return;
+				return; // exist if user do not want to overwrite
 			}
 		}
 
@@ -100,6 +100,15 @@ export class FileConverter {
 		}
 
 		try {
+			// todo make work with keep original files config
+			if (existentFile) {
+				// write to existent file and delete old
+				await vscode.workspace.fs.writeFile(newFileUri, newFile);
+				await vscode.workspace.fs.delete(oldFileUri);
+				return;
+			}
+
+			// write file and rename to new uri
 			await vscode.workspace.fs.writeFile(oldFileUri, newFile);
 			await vscode.workspace.fs.rename(oldFileUri, newFileUri);
 		} catch (error: any) {

@@ -10,7 +10,7 @@ export enum ConfigId {
 }
 
 export type Configs = {
-	keepOriginalFiles: 'ask' | 'always';
+	keepOriginalFiles: 'ask' | 'always';
 };
 
 enum ConfigIdLegacy {
