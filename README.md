@@ -53,3 +53,7 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
 | `fileExtensions.yaml` | yaml filename extension                                                                                                   | string  | `".yaml"` | `".yml"`   |
 | `fileExtensions.json` | json filename extension                                                                                                   | string  | `".json"` | `".json"`  |
 | `keepOriginalFiles`   | Keep original files when converting. Use `"ask"` to be asked every time or `always` to always keep original files         | string  |           | `"always"` |
+
+---
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/hilleer)
