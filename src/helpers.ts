@@ -15,21 +15,18 @@ export function showError(error: any) {
 	vscode.window.showErrorMessage(message);
 }
 
-type StringifyYamlOptions = YAML.SchemaOptions & YAML.ToStringOptions;
-
 export function getYamlFromJson(json: string): string {
 	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-
-	const options: StringifyYamlOptions = {
-		...(indent && { indent }),
-		...(schema && { schema }),
-	};
-
+	
 	try {
 		const jsonObject = JSON.parse(json);
-
-		return YAML.stringify(jsonObject, options);
+		
+		return YAML.stringify(jsonObject, {
+			...(indent && { indent }),
+			...(schema && { schema }),
+			merge: true
+		});
 	} catch (error) {
 		console.error(error);
 		throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
@@ -37,8 +34,13 @@ export function getYamlFromJson(json: string): string {
 }
 
 export function getJsonFromYaml(yaml: string): string {
+	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
+	
 	try {
-		const json = YAML.parse(yaml, {});
+		const json = YAML.parse(yaml, {
+			merge: true,
+			...(schema && { schema })
+		});
 
 		return JSON.stringify(json, undefined, 2);
 	} catch (error) {

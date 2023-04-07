@@ -23,9 +23,20 @@ suite('helpers', () => {
 				loadFixture('input.yaml'),
 				loadFixture('expected.json'),
 			]);
-	
+
 			const actualJson = getJsonFromYaml(yamlInput);
-	
+
+			assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
+		});
+
+		test('should convert json to yaml with merge tags', async () => {
+			const [yamlInput, expectedJson] = await Promise.all([
+				loadFixture('inputMergeTag.yaml'),
+				loadFixture('expectedMergeTag.json'),
+			]);
+
+			const actualJson = getJsonFromYaml(yamlInput);
+
 			assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
 		});
 	});
