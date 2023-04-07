@@ -1,0 +1,8 @@
+anchor: &default
+  first: 1
+  second: 2
+  other : the default
+alias: *default
+merge: 
+  <<: *default
+  other: not the default
