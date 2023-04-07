@@ -212,6 +212,6 @@ export class FileConverter {
 			return overwriteResponse === UserInputPrompt.Yes;
 		}
 
-		throw new Error('overwriteExistentFiles config key has an unexpected value');
+		throw new Error('config of overwriteExistentFiles has an unexpected or unsupported value');
 	}
 }
