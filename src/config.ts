@@ -13,6 +13,8 @@ export enum ConfigId {
 export type Configs = {
 	keepOriginalFiles: 'ask' | 'always';
 	overwriteExistentFiles: 'ask' | 'always';
+	YamlSchema: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
+	YamlIndent: number;
 };
 
 enum ConfigIdLegacy {
