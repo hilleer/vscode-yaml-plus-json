@@ -7,10 +7,12 @@ export enum ConfigId {
 	FileExtensionsYaml = 'fileExtensions.yaml',
 	FileExtensionsJson = 'fileExtensions.json',
 	KeepOriginalFiles = 'keepOriginalFiles',
+	OverwriteExistentFiles = 'overwriteExistentFiles'
 }
 
 export type Configs = {
-	keepOriginalFiles: 'ask' | 'always';
+	keepOriginalFiles: 'ask' | 'always';
+	overwriteExistentFiles: 'ask' | 'always';
 };
 
 enum ConfigIdLegacy {
@@ -21,6 +23,7 @@ enum ConfigIdLegacy {
 
 const EXTENSION_CONFIG_ID = 'yaml-plus-json';
 
+// TODO set extended type of generic
 export function getConfig<T = any>(configId: ConfigId): T | undefined {
 	const config = vscode.workspace.getConfiguration(EXTENSION_CONFIG_ID);
 
