@@ -5,7 +5,7 @@
 	"version": "1.12.0",
 	"publisher": "hilleer",
 	"engines": {
-		"vscode": "^1.56.0"
+		"vscode": "^1.75.1"
 	},
 	"icon": "logo/logo.png",
 	"contributors": [
