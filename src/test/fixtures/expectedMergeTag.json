@@ -1,0 +1,17 @@
+{
+  "anchor": {
+    "first": 1,
+    "second": 2,
+    "other": "the default"
+  },
+  "alias": {
+    "first": 1,
+    "second": 2,
+    "other": "the default"
+  },
+  "merge": {
+    "first": 1,
+    "second": 2,
+    "other": "not the default"
+  }
+}

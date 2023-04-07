@@ -15,6 +15,18 @@ export enum ConvertFromType {
 	Json = 'JSON'
 }
 
+enum UserInputPrompt {
+	Yes = 'Yes',
+	No = 'No'
+}
+
+type ConvertFileContext = {
+	shouldKeepOriginalFile: boolean;
+	oldFileUri: vscode.Uri;
+	newFileUri: vscode.Uri;
+	fileContent: string;
+};
+
 export class FileConverter {
 	private convertFromType: ConvertFromType;
 	constructor(convertFromType: ConvertFromType) {
@@ -25,15 +37,19 @@ export class FileConverter {
 		const shouldKeepOriginalFiles = await this.shouldKeepOriginalFiles(files.length);
 		const convertFilePromises = files.map((file) => this.transformAndConvertFile(shouldKeepOriginalFiles, file));
 		const convertedFiles = await Promise.all(convertFilePromises);
+		const filtered = convertedFiles.filter(Boolean) as ConvertedFile[];
 
 		// no need to show revert tooltip if we already keeping original files
-		// might consider to redo this behaviour so instead the reverting the user would have the possibility of delete created files
-		if (!shouldKeepOriginalFiles) {
-			await this.showReverterTooltip(convertedFiles);
+		// might consider to redo this behavior so instead the reverting the user would have the possibility of delete created files
+		if (!shouldKeepOriginalFiles && filtered.length > 0) {
+			await this.showReverterTooltip(filtered);
 		}
 	}
 
-	private transformAndConvertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri): Promise<ConvertedFile> => {
+	/**
+	 * @returns null if file was not converted
+	 */
+	private transformAndConvertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri): Promise<ConvertedFile | null> => {
 		const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
 		const oldFileExtension = path.extname(oldFileUri.fsPath);
 
@@ -41,9 +57,18 @@ export class FileConverter {
 		const newFilePath = oldFileUri.fsPath.replace(oldFileExtension, newFileExtension);
 		const newFileUri = vscode.Uri.file(newFilePath);
 
-		const newFileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
+		const fileExists = await this.doFileExist(newFileUri);
+		if (fileExists) {
+			const shouldOverwriteFile = await this.isAllowOverwriteExistentFile(newFileUri);
+			if (!shouldOverwriteFile) {
+				vscode.window.showInformationMessage(`File already exist.\n${newFileUri}`);
+				return null;
+			}
+		}
 
-		await this.convertFile(shouldKeepOriginalFile, oldFileUri, newFileUri, newFileContent);
+		const fileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
+
+		await this.convertFile({ newFileUri, oldFileUri, shouldKeepOriginalFile, fileContent });
 
 		return { oldFileUri, oldFileContent, newFileUri };
 	};
@@ -68,36 +93,42 @@ export class FileConverter {
 
 	}
 
-	private revertTransformedAndConvertedFile = async (shouldKeepOriginalFiles: boolean, convertedFile: ConvertedFile) => {
+	private revertTransformedAndConvertedFile = async (shouldKeepOriginalFile: boolean, convertedFile: ConvertedFile) => {
 		const {
 			oldFileUri: newFileUri,
 			oldFileContent: newFileContent,
 			newFileUri: oldFileUri
 		} = convertedFile;
 
-		await this.convertFile(shouldKeepOriginalFiles, oldFileUri, newFileUri, newFileContent.toString());
+		const fileContent = newFileContent.toString();
+		await this.convertFile({ shouldKeepOriginalFile, oldFileUri, newFileUri, fileContent });
 	};
 
-	private convertFile = async (shouldKeepOriginalFile: boolean, oldFileUri: vscode.Uri, newFileUri: vscode.Uri, newFileContent: string) => {
-		const newFile = Buffer.from(newFileContent);
+	/**
+	 * @returns a boolean signaling if file was converted or not.
+	 */
+	private convertFile = async (context: ConvertFileContext): Promise<void> => {
+		const { fileContent, newFileUri, oldFileUri, shouldKeepOriginalFile } = context;
+		const newFile = Buffer.from(fileContent);
 
-		const existentFile = await this.doFileExist(newFileUri);
-		if (existentFile) {
-			return vscode.window.showInformationMessage(`file already exist: ${newFileUri}`);
+		try {
+			if (!shouldKeepOriginalFile) {
+				await vscode.workspace.fs.delete(oldFileUri);
+			}
+
+			await vscode.workspace.fs.writeFile(newFileUri, newFile);
+		} catch (error) {
+			showError(error);
 		}
 
 		if (shouldKeepOriginalFile) {
 			try {
-				await vscode.workspace.fs.writeFile(newFileUri, newFile);
 			} catch (error: any) {
 				showError(error);
 			}
-			return;
 		}
 
 		try {
-			await vscode.workspace.fs.writeFile(oldFileUri, newFile);
-			await vscode.workspace.fs.rename(oldFileUri, newFileUri);
 		} catch (error: any) {
 			showError(error);
 		}
@@ -159,5 +190,27 @@ export class FileConverter {
 		}
 
 		return fileExtension;
+	}
+
+	private async isAllowOverwriteExistentFile(fileUri: vscode.Uri): Promise<boolean> {
+		const config = getConfig<Configs['overwriteExistentFiles']>(ConfigId.OverwriteExistentFiles);
+
+		if (!config) {
+			return false;
+		}
+
+		if (config === 'always') {
+			return true;
+		}
+
+		if (config === 'ask') {
+			const question = `file already exist${fileUri}\nDo you want to overwrite it?`;
+			const answerOptions = Object.values(UserInputPrompt);
+			const userResponse = await vscode.window.showInformationMessage(question, ...answerOptions);
+
+			return userResponse === UserInputPrompt.Yes;
+		}
+
+		throw new Error('config of overwriteExistentFiles has an unexpected or unsupported value');
 	}
 }

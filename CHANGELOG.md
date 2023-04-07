@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.12.0] 2022-04-07
+
+### Added
+
+* Config: Allow overwriting existent files
+
+### Changed
+
+* Update YAML stringify/parse library
+* set `merge: true` in options when using YAML library
+
 ## [1.11.0] 2022-08-28
 
 ### Changed

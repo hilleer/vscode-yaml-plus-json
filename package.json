@@ -2,10 +2,10 @@
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
 	"description": "Easily convert yaml to json and json to yaml",
-	"version": "1.9.2",
+	"version": "1.12.0",
 	"publisher": "hilleer",
 	"engines": {
-		"vscode": "^1.56.0"
+		"vscode": "^1.75.1"
 	},
 	"icon": "logo/logo.png",
 	"contributors": [
@@ -237,7 +237,17 @@
 								"type": [
 									"string"
 								],
-								"description": "Keep original files when converting. Use ask to be asked- or use always to always keep files on conversion",
+								"description": "Keep original files when converting. Use 'ask' to be asked every time or use 'always' to always keep files on conversion",
+								"enum": [
+									"ask",
+									"always"
+								]
+							},
+							"overwriteExistentFiles": {
+								"type": [
+									"string"
+								],
+								"description": "Overwrite existent files when converting. Use 'ask' to be asked every time or 'always' to always overwrite existent files",
 								"enum": [
 									"ask",
 									"always"
@@ -264,22 +274,22 @@
 	"devDependencies": {
 		"@types/glob": "^8.0.1",
 		"@types/mocha": "^10.0.1",
-		"@types/node": "^18.14.0",
+		"@types/node": "^18.15.11",
 		"@types/vscode": "^1.75.1",
 		"@types/yaml": "1.9.7",
-		"@typescript-eslint/eslint-plugin": "^5.52.0",
-		"@typescript-eslint/parser": "^5.53.0",
+		"@typescript-eslint/eslint-plugin": "^5.57.1",
+		"@typescript-eslint/parser": "^5.57.1",
 		"eslint": "8.36.0",
 		"glob": "^9.3.4",
 		"mocha": "^10.2.0",
 		"ts-loader": "^9.4.2",
-		"typescript": "^4.9.5",
+		"typescript": "^5.0.3",
 		"vscode-test": "^1.6.1",
 		"webpack": "5.77.0",
 		"webpack-cli": "^5.0.1"
 	},
 	"dependencies": {
-		"yaml": "1.10.2"
+		"yaml": "2.2.1"
 	},
 	"bugs": {
 		"url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
