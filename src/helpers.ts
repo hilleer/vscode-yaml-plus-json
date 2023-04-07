@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as YAML from 'yaml';
 
-import { ConfigId, getConfig } from './config';
+import { ConfigId, Configs, getConfig } from './config';
 
 const DEFAULT_ERROR_MESSAGE = 'Something went wrong, please validate your file and try again or create an issue if the problem persist';
 
@@ -15,15 +15,15 @@ export function showError(error: any) {
 	vscode.window.showErrorMessage(message);
 }
 
-type YamlSchema = YAML.Options['schema'];
+type StringifyYamlOptions = YAML.SchemaOptions & YAML.ToStringOptions;
 
 export function getYamlFromJson(json: string): string {
-	const indent = getConfig<number>(ConfigId.YamlIndent);
-	const schema = getConfig<YamlSchema>(ConfigId.YamlSchema);
+	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
+	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
 
-	const options: YAML.Options = {
+	const options: StringifyYamlOptions = {
 		...(indent && { indent }),
-		...(schema && { schema })
+		...(schema && { schema }),
 	};
 
 	try {
