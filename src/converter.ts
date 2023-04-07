@@ -25,7 +25,6 @@ type ConvertFileContext = {
 	oldFileUri: vscode.Uri;
 	newFileUri: vscode.Uri;
 	fileContent: string;
-	overwriteFile?: boolean;
 };
 
 export class FileConverter {
