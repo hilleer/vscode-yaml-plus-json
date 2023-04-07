@@ -206,9 +206,9 @@ export class FileConverter {
 		if (config === 'ask') {
 			const question = `file already exist${fileUri}\nDo you want to overwrite it?`;
 			const answerOptions = Object.values(UserInputPrompt);
-			const overwriteResponse = await vscode.window.showInformationMessage(question, ...answerOptions);
+			const userResponse = await vscode.window.showInformationMessage(question, ...answerOptions);
 
-			return overwriteResponse === UserInputPrompt.Yes;
+			return userResponse === UserInputPrompt.Yes;
 		}
 
 		throw new Error('config of overwriteExistentFiles has an unexpected or unsupported value');
