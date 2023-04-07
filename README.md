@@ -28,8 +28,6 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 * Reverting converted files: When a file has been reverted, a _"revert"_ prompt will be shown to revert it. Using this will return the entirety of the original file, including YAML comments.
 * Overwriting existent files: When trying to convert a file into a destination that already exist, you can use the `overwriteExistentFiles` configuration to overwrite such. **Notice** if you use the revert feature after overwriting a file, the extension cannot (currently) revert the overwritten file. Also, due to limitation in vscode of active user prompts, if you set it to `"ask"` you will only be prompted to overwrite N number of files, while others will be skipped.
 
-After converting one or multiple files a _revert_ prompt will be shown, allowing to revert conversion. Using this will also return YAML comments.
-
 ## Config
 
 All configurations should be defined in `yaml-plus-json` in vscode settings (e.g. `.vscode/settings.json`), like:
