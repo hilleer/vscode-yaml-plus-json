@@ -1,6 +1,7 @@
 # YAML :heart: JSON
 
 [![CodeQL](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql-analysis.yml)
+[![extension CI](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml/badge.svg)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml)
 
 Easily convert YAML to JSON or vice versa. Conversion can be done by each individual file or by all files in a folder.
 
