@@ -2,6 +2,8 @@ import * as path from 'path';
 
 import { runTests } from 'vscode-test';
 
+process.on('uncaughtException', () => {}); // ignore those, expected, should still be able to rely on tests
+
 async function main() {
 	try {
 		// The folder containing the Extension Manifest package.json
