@@ -41,21 +41,27 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
     "fileExtensions": {
       "yaml": ".yaml",
       "json": ".json"
+    },
+    "enforceNamingConvention": {
+      "yaml": "kebab-kase",
+      "json": "none"
     }
   }
 }
 ```
 
-| id                       | description                                                                                                               | type    | default   | example    |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------|---------|-----------|------------|
-| `convertOnRename`        | Convert YAML/JSON files on rename                                                                                         | boolean | `true`    | `false`    |
-| `yamlIndent`             | The number of spaces to use when indenting code (yaml)                                                                    | number  | `2`       | `4`        |
-| `yamlSchema`             | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details | string  | `"core"`  | `"json"`   |
-| `fileExtensions`         | define what filename extension(s) to use when converting file(s)                                                          | object  |           |            |
-| `fileExtensions.yaml`    | yaml filename extension                                                                                                   | string  | `".yaml"` | `".yml"`   |
-| `fileExtensions.json`    | json filename extension                                                                                                   | string  | `".json"` | `".json"`  |
-| `keepOriginalFiles`      | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files       | string  |           | `"always"` |
-| `overwriteExistentFiles` | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite            | string  |           | `"always"` |
+| id                                | description                                                                                                               | type    | default   | example          |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------|-----------|------------------|
+| `convertOnRename`                 | Convert YAML/JSON files on rename                                                                                         | boolean | `true`    | `false`          |
+| `yamlIndent`                      | The number of spaces to use when indenting code (yaml)                                                                    | number  | `2`       | `4`              |
+| `yamlSchema`                      | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details | string  | `"core"`  | `"json"`         |
+| `fileExtensions`                  | define what filename extension(s) to use when converting file(s)                                                          | object  |           |                  |
+| `fileExtensions.yaml`             | yaml filename extension                                                                                                   | string  | `".yaml"` | `".yml"`         |
+| `fileExtensions.json`             | json filename extension                                                                                                   | string  | `".json"` | `".json"`        |
+| `enforceNamingConvention.yaml`    | apply a naming convention to converted yaml files                                                                         | string  | `"none"`  | `"kebab-case"`   |
+| `enforceNamingConvention.json`    | apply a naming convention to converted json files                                                                         | string  | `"none"`  | `"PascalCase"`   |
+| `keepOriginalFiles`               | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files       | string  |           | `"always"`       |
+| `overwriteExistentFiles`          | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite            | string  |           | `"always"`       |
 
 ---
 
