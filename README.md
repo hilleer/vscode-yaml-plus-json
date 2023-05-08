@@ -44,7 +44,7 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
       "json": ".json"
     },
     "enforceNamingConvention": {
-      "yaml": "kebab-kase",
+      "yaml": "kebab-case",
       "json": "none"
     }
   }
