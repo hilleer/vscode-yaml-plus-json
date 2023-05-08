@@ -233,6 +233,34 @@
 									}
 								}
 							},
+							"enforceNamingConvention":{
+								"type": "object",
+								"description": "enforce naming convention when converting file(s)",
+								"properties": {
+									"yaml": {
+										"type": "string",
+										"description": "yaml target naming convention",
+										"enum": [
+											"kebab-case",
+											"snake_case",
+											"camelCase",
+											"PascalCase",
+											"none"	
+										]
+									},
+									"json": {
+										"type": "string",
+										"description": "json target naming convention",
+										"enum": [
+											"kebab-case",
+											"snake_case",
+											"camelCase",
+											"PascalCase",
+											"none"
+										]
+									}
+								}	
+							},
 							"keepOriginalFiles": {
 								"type": [
 									"string"
