@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { runTests } from 'vscode-test';
+import { runTests } from '@vscode/test-electron';
 
 process.on('uncaughtException', () => {}); // ignore those, expected, should still be able to rely on tests
 
