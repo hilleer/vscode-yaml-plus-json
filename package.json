@@ -5,7 +5,8 @@
 	"version": "1.12.1",
 	"publisher": "hilleer",
 	"engines": {
-		"vscode": "^1.75.1"
+		"vscode": "^1.78.1",
+		"node": ">=16"
 	},
 	"icon": "logo/logo.png",
 	"contributors": [
@@ -302,21 +303,21 @@
 		"@types/glob": "^8.0.1",
 		"@types/mocha": "^10.0.1",
 		"@types/node": "^18.15.11",
-		"@types/vscode": "^1.77.0",
+		"@types/vscode": "^1.78.0",
 		"@types/yaml": "1.9.7",
-		"@typescript-eslint/eslint-plugin": "^5.57.1",
-		"@typescript-eslint/parser": "^5.57.1",
+		"@typescript-eslint/eslint-plugin": "^5.59.6",
+		"@typescript-eslint/parser": "^5.59.6",
+		"@vscode/test-electron": "2.3.2",
 		"eslint": "8.38.0",
-		"glob": "^10.0.0",
+		"glob": "^10.2.5",
 		"mocha": "^10.2.0",
 		"ts-loader": "^9.4.2",
 		"typescript": "^5.0.4",
-		"vscode-test": "^1.6.1",
-		"webpack": "5.79.0",
+		"webpack": "5.83.1",
 		"webpack-cli": "^5.0.1"
 	},
 	"dependencies": {
-		"yaml": "2.2.1",
+		"yaml": "2.2.2",
 		"change-case": "4.1.2"
 	},
 	"bugs": {
