@@ -19,13 +19,13 @@ export function showError(error: any) {
 export function getYamlFromJson(json: string): string {
 	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-	const nConvention = getConfig<Configs['EnforceNamingConvention']>(ConfigId.EnforceNamingConventionYaml);
+	const convention = getConfig<Configs['EnforceNamingConvention']>(ConfigId.EnforceNamingConventionYaml);
 	
 	try {
 		let jsonObject = JSON.parse(json);
 
-		if(nConvention !== 'none' && nConvention !== undefined) {
-			let cFunc = getConventionFunction(nConvention!);
+		if(convention !== undefined) {
+			let cFunc = getConventionFunction(convention!);
 			jsonObject = changeObjectKeys(jsonObject, cFunc);
 		}
 		
@@ -42,7 +42,7 @@ export function getYamlFromJson(json: string): string {
 
 export function getJsonFromYaml(yaml: string): string {
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-	const nConvention = getConfig<Configs['EnforceNamingConvention']>(ConfigId.EnforceNamingConventionJson);
+	const convention = getConfig<Configs['EnforceNamingConvention']>(ConfigId.EnforceNamingConventionJson);
 	
 	try {
 		let json = YAML.parse(yaml, {
@@ -50,8 +50,8 @@ export function getJsonFromYaml(yaml: string): string {
 			...(schema && { schema })
 		});
 
-		if(nConvention !== 'none' && nConvention !== undefined) {
-			let cFunc = getConventionFunction(nConvention!);
+		if(convention !== undefined) {
+			let cFunc = getConventionFunction(convention!);
 			json = changeObjectKeys(json, cFunc);
 		}
 

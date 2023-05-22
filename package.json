@@ -2,7 +2,7 @@
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
 	"description": "Easily convert yaml to json and json to yaml",
-	"version": "1.12.2",
+	"version": "1.12.1",
 	"publisher": "hilleer",
 	"engines": {
 		"vscode": "^1.75.1"
@@ -13,11 +13,6 @@
 			"name": "Daniel Hillmann",
 			"url": "https://github.com/hilleer",
 			"email": "hiller@live.dk"
-		},
-		{
-			"name": "Michael Stocks",
-			"url": "https://github.com/Droxx",
-			"email": "michaelstocks1@gmail.com"
 		}
 	],
 	"categories": [
@@ -260,8 +255,7 @@
 											"kebab-case",
 											"snake_case",
 											"camelCase",
-											"PascalCase",
-											"none"
+											"PascalCase"
 										]
 									}
 								}	
