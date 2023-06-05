@@ -284,7 +284,7 @@
 		"eslint": "8.42.0",
 		"glob": "^10.2.5",
 		"mocha": "^10.2.0",
-		"ts-loader": "^9.4.2",
+		"ts-loader": "^9.4.3",
 		"typescript": "^5.0.4",
 		"webpack": "5.83.1",
 		"webpack-cli": "^5.1.3"
