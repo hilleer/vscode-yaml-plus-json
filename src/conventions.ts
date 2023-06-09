@@ -13,17 +13,14 @@ export function getConventionFunction(toCase: NamingConvention): (kIn: string) =
     return converter;
 }
 
-export function changeObjectKeys(oIn: object, caseChange: (kIn: string) => string): object{
-    return Object.keys(oIn).reduce(function (newObj, key) {
-        // @ts-ignore
+export function changeObjectKeys(oIn: {[k: string]: any}, caseChange: (kIn: string) => string): object{
+    return Object.keys(oIn).reduce(function (newObj: {[k: string]: any}, key: string) {
         let val = oIn[key];
         let newVal = (typeof val === 'object') ? changeObjectKeys(val, caseChange) : val;
         if(Object.prototype.toString.call(val) !== '[object Array]'){
-            // @ts-ignore
             newObj[caseChange(key)] = newVal;
         }
         else{
-            // @ts-ignore
             newObj[caseChange(key)] = Object.values(newVal);
         }
         return newObj;
