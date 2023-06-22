@@ -6,6 +6,8 @@ export enum ConfigId {
 	YamlIndent = 'yamlIndent',
 	FileExtensionsYaml = 'fileExtensions.yaml',
 	FileExtensionsJson = 'fileExtensions.json',
+	EnforceNamingConventionYaml = 'enforceNamingConvention.yaml',
+	EnforceNamingConventionJson = 'enforceNamingConvention.json',
 	KeepOriginalFiles = 'keepOriginalFiles',
 	OverwriteExistentFiles = 'overwriteExistentFiles'
 }
@@ -15,7 +17,16 @@ export type Configs = {
 	overwriteExistentFiles: 'ask' | 'always';
 	YamlSchema: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
 	YamlIndent: number;
+	EnforceNamingConvention: NamingConvention;
 };
+
+export enum NamingConvention {
+	None = 'none',	
+	Pascal = 'PascalCase',
+	Camel = 'camelCase',
+	Snake = 'snake_case',
+	Kebab = 'kebab-case'
+}
 
 enum ConfigIdLegacy {
 	// Same key as new - only here for convenience
