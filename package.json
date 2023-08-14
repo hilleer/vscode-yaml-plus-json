@@ -280,7 +280,7 @@
 		"@types/yaml": "1.9.7",
 		"@typescript-eslint/eslint-plugin": "^5.60.0",
 		"@typescript-eslint/parser": "^5.60.1",
-		"@vscode/test-electron": "2.3.3",
+		"@vscode/test-electron": "2.3.4",
 		"eslint": "8.46.0",
 		"glob": "^10.3.3",
 		"mocha": "^10.2.0",
