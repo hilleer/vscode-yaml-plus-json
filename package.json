@@ -278,7 +278,7 @@
 		"@types/node": "^20.8.0",
 		"@types/vscode": "^1.82.0",
 		"@types/yaml": "1.9.7",
-		"@typescript-eslint/eslint-plugin": "^5.60.0",
+		"@typescript-eslint/eslint-plugin": "^6.7.3",
 		"@typescript-eslint/parser": "^5.62.0",
 		"@vscode/test-electron": "2.3.4",
 		"eslint": "8.50.0",
