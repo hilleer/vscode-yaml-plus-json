@@ -8,20 +8,21 @@ const DEFAULT_ERROR_MESSAGE = 'Something went wrong, please validate your file a
 /**
  * prints errors to console and shows its error message to the user.
  */
-export function showError(error: any) {
+export function showError(error: unknown) {
 	console.error(error);
 
-	const message = error.message || DEFAULT_ERROR_MESSAGE;
+	const message = error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE;
+
 	vscode.window.showErrorMessage(message);
 }
 
 export function getYamlFromJson(json: string): string {
 	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-	
+
 	try {
 		const jsonObject = JSON.parse(json);
-		
+
 		return YAML.stringify(jsonObject, {
 			...(indent && { indent }),
 			...(schema && { schema }),
@@ -35,7 +36,7 @@ export function getYamlFromJson(json: string): string {
 
 export function getJsonFromYaml(yaml: string): string {
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-	
+
 	try {
 		const json = YAML.parse(yaml, {
 			merge: true,

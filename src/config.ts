@@ -26,7 +26,7 @@ enum ConfigIdLegacy {
 const EXTENSION_CONFIG_ID = 'yaml-plus-json';
 
 // TODO set extended type of generic
-export function getConfig<T = any>(configId: ConfigId): T | undefined {
+export function getConfig<T = unknown>(configId: ConfigId): T | undefined {
 	const config = vscode.workspace.getConfiguration(EXTENSION_CONFIG_ID);
 
 	const legacyConfigKey = getLegacyConfigKey(configId);
@@ -43,6 +43,7 @@ const LEGACY_CONFIGS = Object.freeze({
 });
 
 function getLegacyConfigKey(configId: ConfigId) {
-	// @ts-ignore
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-expect-error
 	return LEGACY_CONFIGS[configId];
 }

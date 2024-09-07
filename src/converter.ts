@@ -123,13 +123,17 @@ export class FileConverter {
 
 		if (shouldKeepOriginalFile) {
 			try {
-			} catch (error: any) {
+				// TODO check if can be removed
+				// introduced here: https://github.com/hilleer/vscode-yaml-plus-json/pull/68/files#diff-2c718087c1fd72979602bd9da34119fb956d070d90109b6bc01ea23b2ad7eae1L91
+			} catch (error: unknown) {
 				showError(error);
 			}
 		}
 
 		try {
-		} catch (error: any) {
+			// TODO check if can be removed
+			// introduced here: https://github.com/hilleer/vscode-yaml-plus-json/pull/68/files#diff-2c718087c1fd72979602bd9da34119fb956d070d90109b6bc01ea23b2ad7eae1L99
+		} catch (error: unknown) {
 			showError(error);
 		}
 	};
