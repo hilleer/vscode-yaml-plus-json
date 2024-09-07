@@ -38,6 +38,7 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
   "yaml-plus-json": {
     "convertOnRename": true,
     "yamlIndent": 2,
+    "yamlLineWidth": 0,
     "fileExtensions": {
       "yaml": ".yaml",
       "json": ".json"
@@ -45,6 +46,8 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
   }
 }
 ```
+
+<!-- use table generator to parse and update: https://www.tablesgenerator.com/markdown_tables -->
 
 |  | description | type | default | example |
 |---|---|---|---|---|
