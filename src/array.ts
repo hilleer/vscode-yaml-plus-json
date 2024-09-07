@@ -1,1 +1,1 @@
-export const isEmptyArray = (values: any[]) => values.length === 0;
+export const isEmptyArray = <T = unknown>(values: T[]) => values.length === 0;

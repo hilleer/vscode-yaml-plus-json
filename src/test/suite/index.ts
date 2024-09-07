@@ -11,6 +11,7 @@ const mocha = new Mocha({
 const testsRoot = path.resolve(__dirname, '..');
 
 export function run(): Promise<void> {
+	// eslint-disable-next-line no-async-promise-executor
 	return new Promise(async (c, e) => {
 		const files = await glob('**/**.test.js', { cwd: testsRoot });
 		// Add files to the test suite
