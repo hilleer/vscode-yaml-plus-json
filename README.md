@@ -46,17 +46,17 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
 }
 ```
 
-|                          | description                                                                                                                                           | type    | default   | example    |
-|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|---------|-----------|------------|
-| `convertOnRename`        | Convert YAML/JSON files on rename                                                                                                                     | boolean | `true`    | `false`    |
-| `yamlIndent`             | The number of spaces to use when indenting code (yaml)                                                                                                | number  | `2`       | `4`        |
-| `yamlSchema`             | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details                             | string  | `"core"`  | `"json"`   |
-| `yamlLineWidth`          | Set to 0 to disable line wrapping. See [line width options](https://github.com/eemeli/yaml/blob/main/docs/03_options.md#tostring-options) for details | number  |           | `100`      |
-| `fileExtensions`         | define what filename extension(s) to use when converting file(s)                                                                                      | object  |           |            |
-| `fileExtensions.yaml`    | yaml filename extension                                                                                                                               | string  | `".yaml"` | `".yml"`   |
-| `fileExtensions.json`    | json filename extension                                                                                                                               | string  | `".json"` | `".json"`  |
-| `keepOriginalFiles`      | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files                                   | string  |           | `"always"` |
-| `overwriteExistentFiles` | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite                                        | string  |           | `"always"` |
+|  | description | type | default | example |
+|---|---|---|---|---|
+| `convertOnRename` | Convert YAML/JSON files on rename | boolean | `true` | `false` |
+| `yamlIndent` | The number of spaces to use when indenting code (yaml) | number | `2` | `4` |
+| `yamlSchema` | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details | string | `"core"` | `"json"` |
+| `yamlLineWidth` | Set to 0 to disable line wrapping. See [line width options](https://github.com/eemeli/yaml/blob/main/docs/03_options.md#tostring-options) for details | number |  | `100` |
+| `fileExtensions` | define what filename extension(s) to use when converting file(s) | object |  |  |
+| `fileExtensions.yaml` | yaml filename extension | string | `".yaml"` | `".yml"` |
+| `fileExtensions.json` | json filename extension | string | `".json"` | `".json"` |
+| `keepOriginalFiles` | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files | string |  | `"always"` |
+| `overwriteExistentFiles` | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite | string |  | `"always"` |
 
 ---
 
