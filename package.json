@@ -205,6 +205,11 @@
 								"type": "number",
 								"description": "The number of spaces to use when indenting code (yaml)"
 							},
+							"yamlLineWidth": {
+								"type": "number",
+								"description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
+								"examples": [0, 100]
+							},
 							"fileExtensions": {
 								"type": "object",
 								"description": "define what filename extension(s) to use when converting file(s)",
