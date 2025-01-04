@@ -208,7 +208,10 @@
 							"yamlLineWidth": {
 								"type": "number",
 								"description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
-								"examples": [0, 100]
+								"examples": [
+									0,
+									100
+								]
 							},
 							"fileExtensions": {
 								"type": "object",
@@ -270,29 +273,29 @@
 		"postversion": "git push && git push --tags"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.10.0",
+		"@eslint/js": "^9.17.0",
 		"@types/glob": "^8.1.0",
-		"@types/mocha": "^10.0.7",
-		"@types/node": "^22.5.4",
-		"@types/sinon": "^17.0.3",
-		"@types/vscode": "^1.93.0",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^22.10.2",
+		"@types/sinon": "17.0.3",
+		"@types/vscode": "^1.96.0",
 		"@types/yaml": "1.9.7",
-		"@typescript-eslint/eslint-plugin": "^8.4.0",
-		"@typescript-eslint/parser": "^8.4.0",
+		"@typescript-eslint/eslint-plugin": "^8.18.2",
+		"@typescript-eslint/parser": "^8.18.2",
 		"@vscode/test-electron": "2.4.1",
-		"eslint": "^9.10.0",
+		"eslint": "^9.17.0",
 		"glob": "^11.0.0",
-		"globals": "^15.9.0",
-		"mocha": "^10.7.3",
-		"sinon": "18.0.0",
+		"globals": "^15.14.0",
+		"mocha": "^11.0.1",
+		"sinon": "19.0.2",
 		"ts-loader": "^9.5.1",
-		"typescript": "^5.5.4",
-		"typescript-eslint": "^8.4.0",
-		"webpack": "5.94.0",
-		"webpack-cli": "^5.1.4"
+		"typescript": "^5.7.2",
+		"typescript-eslint": "^8.18.2",
+		"webpack": "5.97.1",
+		"webpack-cli": "^6.0.1"
 	},
 	"dependencies": {
-		"yaml": "2.5.0"
+		"yaml": "2.6.1"
 	},
 	"bugs": {
 		"url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
