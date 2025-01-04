@@ -2,12 +2,13 @@ import * as vscode from 'vscode';
 
 export enum ConfigId {
 	ConvertOnRename = 'convertOnRename',
-	YamlSchema = 'yamlSchema',
-	YamlIndent = 'yamlIndent',
-	FileExtensionsYaml = 'fileExtensions.yaml',
 	FileExtensionsJson = 'fileExtensions.json',
+	FileExtensionsYaml = 'fileExtensions.yaml',
 	KeepOriginalFiles = 'keepOriginalFiles',
-	OverwriteExistentFiles = 'overwriteExistentFiles'
+	OverwriteExistentFiles = 'overwriteExistentFiles',
+	YamlIndent = 'yamlIndent',
+	YamlSchema = 'yamlSchema',
+	YamlLineWidth = 'yamlLineWidth',
 }
 
 export type Configs = {
@@ -15,6 +16,7 @@ export type Configs = {
 	overwriteExistentFiles: 'ask' | 'always';
 	YamlSchema: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
 	YamlIndent: number;
+	YamlLineWidth: number;
 };
 
 enum ConfigIdLegacy {

@@ -19,14 +19,16 @@ export function showError(error: unknown) {
 export function getYamlFromJson(json: string): string {
 	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
+	const lineWidth = getConfig<Configs['YamlLineWidth']>(ConfigId.YamlLineWidth);
 
 	try {
 		const jsonObject = JSON.parse(json);
 
 		return YAML.stringify(jsonObject, {
-			...(indent && { indent }),
-			...(schema && { schema }),
-			merge: true
+			...(indent !== undefined && { indent }),
+			...(schema !== undefined && { schema }),
+			...(lineWidth !== undefined && { lineWidth }),
+			merge: true,
 		});
 	} catch (error) {
 		console.error(error);

@@ -2,7 +2,7 @@
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
 	"description": "Easily convert yaml to json and json to yaml",
-	"version": "1.12.2",
+	"version": "1.13.0",
 	"publisher": "hilleer",
 	"engines": {
 		"vscode": "^1.78.1",
@@ -205,6 +205,14 @@
 								"type": "number",
 								"description": "The number of spaces to use when indenting code (yaml)"
 							},
+							"yamlLineWidth": {
+								"type": "number",
+								"description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
+								"examples": [
+									0,
+									100
+								]
+							},
 							"fileExtensions": {
 								"type": "object",
 								"description": "define what filename extension(s) to use when converting file(s)",
@@ -269,7 +277,8 @@
 		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^22.10.2",
-		"@types/vscode": "^1.96.0",
+		"@types/sinon": "17.0.3",
+		"@types/vscode": "^1.78.1",
 		"@types/yaml": "1.9.7",
 		"@typescript-eslint/eslint-plugin": "^8.18.2",
 		"@typescript-eslint/parser": "^8.18.2",
@@ -278,6 +287,7 @@
 		"glob": "^11.0.0",
 		"globals": "^15.14.0",
 		"mocha": "^11.0.1",
+		"sinon": "19.0.2",
 		"ts-loader": "^9.5.1",
 		"typescript": "^5.7.2",
 		"typescript-eslint": "^8.18.2",
