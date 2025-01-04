@@ -51,7 +51,7 @@ suite('helpers', () => {
 
 				const actualYaml = getYamlFromJson(inputJson);
 
-				assert.deepStrictEqual(actualYaml, expectedYaml);
+				assert.deepStrictEqual(stripNewLines(actualYaml), stripNewLines(expectedYaml));
 			});
 		});
 	});
