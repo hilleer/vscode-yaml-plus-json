@@ -46,6 +46,8 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
     },
     // note specific extension configs set takes precedence
     // for example "yamlIndent"
+    // see the YAML module documentation for details:
+    // https://github.com/eemeli/yaml/blob/main/docs/03_options.md#options
     "yamlOptions": {
       "ident": 2,
       "lineWidth": 0
