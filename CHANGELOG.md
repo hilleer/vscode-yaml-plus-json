@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.13.0] 2025-04-13
+
+### Added
+
+* Config: `yamlLineWidth` to control YAML line width (and option to disable line wrapping)
+* Config: Expose `yamlMerge` config currently defaulted to true always.
+* Config: Enable users to configure all available YAML module options that is available using `yamlOptions` object
+
+### Changed
+
+* Dependency version of [YAML](https://www.npmjs.com/package/yaml) module to `2.7.1`
+
 ## [1.12.1] 2023-04-13
 
 #### Fixed
