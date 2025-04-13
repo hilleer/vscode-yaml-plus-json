@@ -264,7 +264,15 @@
 							},
 							"yamlOptions": {
 								"description": "Options used to convert from JSON to YAML. Note that specific extension configs set takes precedence over this config.",
-								"type": "object"
+								"type": "object",
+								"examples": [
+									{
+										"schema": "core",
+										"indent": 2,
+										"lineWidth": 0,
+										"merge": true
+									}
+								]
 							}
 						}
 					}
