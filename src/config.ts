@@ -9,6 +9,9 @@ export enum ConfigId {
 	YamlIndent = 'yamlIndent',
 	YamlSchema = 'yamlSchema',
 	YamlLineWidth = 'yamlLineWidth',
+	YamlMerge = 'yamlMerge',
+	yamlOptions = 'yamlOptions',
+	jsonOptions = 'jsonOptions',
 }
 
 export type Configs = {
@@ -17,6 +20,9 @@ export type Configs = {
 	YamlSchema: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
 	YamlIndent: number;
 	YamlLineWidth: number;
+	YamlMerge: boolean;
+	YamlOptions: object;
+	[ConfigId.jsonOptions]: object;
 };
 
 enum ConfigIdLegacy {

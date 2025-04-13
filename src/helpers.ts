@@ -20,15 +20,18 @@ export function getYamlFromJson(json: string): string {
 	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
 	const lineWidth = getConfig<Configs['YamlLineWidth']>(ConfigId.YamlLineWidth);
+	const options = getConfig<Configs['YamlOptions']>(ConfigId.yamlOptions) || {};
+	const merge = getConfig<Configs['YamlMerge']>(ConfigId.YamlMerge) || true;
 
 	try {
 		const jsonObject = JSON.parse(json);
 
 		return YAML.stringify(jsonObject, {
+			...options, // do first so specific options take precedence
 			...(indent !== undefined && { indent }),
 			...(schema !== undefined && { schema }),
 			...(lineWidth !== undefined && { lineWidth }),
-			merge: true,
+			merge
 		});
 	} catch (error) {
 		console.error(error);
@@ -38,9 +41,11 @@ export function getYamlFromJson(json: string): string {
 
 export function getJsonFromYaml(yaml: string): string {
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
+	const options = getConfig<Configs['jsonOptions']>(ConfigId.jsonOptions) || {};
 
 	try {
 		const json = YAML.parse(yaml, {
+			...options, // do first so specific options take precedence
 			merge: true,
 			...(schema && { schema })
 		});

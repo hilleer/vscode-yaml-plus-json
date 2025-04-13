@@ -192,6 +192,7 @@
 							},
 							"yamlSchema": {
 								"type": "string",
+								"$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
 								"description": "See yaml module documentation for details https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas",
 								"enum": [
 									"core",
@@ -202,16 +203,23 @@
 								"default": "core"
 							},
 							"yamlIndent": {
+								"$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
 								"type": "number",
 								"description": "The number of spaces to use when indenting code (yaml)"
 							},
 							"yamlLineWidth": {
+								"$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
 								"type": "number",
 								"description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
 								"examples": [
 									0,
 									100
 								]
+							},
+							"yamlMerge": {
+								"$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
+								"type": "boolean",
+								"default": true
 							},
 							"fileExtensions": {
 								"type": "object",
@@ -253,6 +261,10 @@
 									"ask",
 									"always"
 								]
+							},
+							"yamlOptions": {
+								"description": "Options used to convert from JSON to YAML. Note that specific extension configs set takes precedence over this config.",
+								"type": "object"
 							}
 						}
 					}
