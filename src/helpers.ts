@@ -21,7 +21,7 @@ export function getYamlFromJson(json: string): string {
 	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
 	const lineWidth = getConfig<Configs['YamlLineWidth']>(ConfigId.YamlLineWidth);
 	const options = getConfig<Configs['YamlOptions']>(ConfigId.yamlOptions) || {};
-	const merge = getConfig<Configs['YamlMerge']>(ConfigId.YamlMerge) || true;
+	const merge = getConfig<Configs['YamlMerge']>(ConfigId.YamlMerge) ?? true;
 
 	try {
 		const jsonObject = JSON.parse(json);
