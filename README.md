@@ -44,10 +44,10 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
       "yaml": ".yaml",
       "json": ".json"
     },
-    // note specific extension configs set takes precedence
-    // for example "yamlIndent"
+    // for more advanced parser configurations
     // see the YAML module documentation for details:
     // https://github.com/eemeli/yaml/blob/main/docs/03_options.md#options
+    // note specific extension configs set takes precedence ("yamlIndent" for example)
     "yamlOptions": {
       "indent": 2,
       "lineWidth": 0
