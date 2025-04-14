@@ -1,0 +1,5 @@
+.vscode-test/
+dist/
+out/
+src/test/fixtures/
+node_modules/

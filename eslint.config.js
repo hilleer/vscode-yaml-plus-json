@@ -1,10 +1,11 @@
-const globals = require("globals");
-const pluginJs = require("@eslint/js");
-const tseslint = require("typescript-eslint");
+const globals = require('globals');
+const pluginJs = require('@eslint/js');
+const tseslint = require('typescript-eslint');
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
 
 module.exports = [
   {
-    files: ["**/*.{js,ts}"],
+    files: ['**/*.{js,ts}'],
     languageOptions: {
       globals: globals.node,
       ecmaVersion: 6,
@@ -12,8 +13,9 @@ module.exports = [
     },
     rules: {
       semi: 0,
-    }
+    },
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  eslintPluginPrettierRecommended,
 ];
