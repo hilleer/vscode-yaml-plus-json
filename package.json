@@ -1,327 +1,327 @@
 {
-	"name": "yaml-plus-json",
-	"displayName": "YAML ❤️ JSON",
-	"description": "Easily convert yaml to json and json to yaml",
-	"version": "1.13.0",
-	"publisher": "hilleer",
-	"engines": {
-		"vscode": "^1.78.1",
-		"node": ">=18"
-	},
-	"icon": "logo/logo.png",
-	"contributors": [
-		{
-			"name": "Daniel Hillmann",
-			"url": "https://github.com/hilleer",
-			"email": "hiller@live.dk"
-		}
-	],
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"converter",
-		"yaml converter",
-		"json converter",
-		"yaml to json",
-		"json to yaml"
-	],
-	"activationEvents": [
-		"workspaceContains:**/**.json",
-		"workspaceContains:**/**.yml",
-		"workspaceContains:**/**.yaml",
-		"onLanguage:json",
-		"onLanguage:yaml"
-	],
-	"main": "./dist/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.rightClickJson",
-				"title": "Convert to YAML",
-				"enablement": "resourceExtname == .json"
-			},
-			{
-				"command": "extension.rightClickYaml",
-				"title": "Convert to JSON",
-				"enablement": "resourceExtname == .yml || resourceExtname == .yaml"
-			},
-			{
-				"command": "extension.yamlSelectionToJson",
-				"title": "Convert selection to JSON",
-				"enablement": "editorHasSelection"
-			},
-			{
-				"command": "extension.jsonSelectionToYaml",
-				"title": "Convert selection to YAML",
-				"enablement": "editorHasSelection"
-			},
-			{
-				"command": "extension.convertYamlFilesToJson",
-				"title": "Convert YAML files to JSON",
-				"enablement": "explorerResourceIsFolder"
-			},
-			{
-				"command": "extension.convertJsonFilesToYaml",
-				"title": "Convert JSON files to YAML",
-				"enablement": "explorerResourceIsFolder"
-			},
-			{
-				"command": "extension.convertJsonSelectionsToYaml",
-				"title": "Convert selected files to YAML",
-				"enablement": "listMultiSelection"
-			},
-			{
-				"command": "extension.convertYamlSelectionsToJson",
-				"title": "Convert selected files to JSON",
-				"enablement": "listMultiSelection"
-			},
-			{
-				"command": "extension.previewAsYaml",
-				"title": "YAML+JSON: Preview as YAML (from JSON. Opens in new file)"
-			},
-			{
-				"command": "extension.previewAsJson",
-				"title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
-			}
-		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "extension.rightClickJson",
-					"when": "resourceExtname == .json"
-				},
-				{
-					"command": "extension.rightClickYaml",
-					"when": "resourceExtname == .yml || resourceExtname == .yaml"
-				},
-				{
-					"command": "extension.yamlSelectionToJson",
-					"title": "Convert selection to JSON",
-					"when": "editorHasSelection"
-				},
-				{
-					"command": "extension.jsonSelectionToYaml",
-					"title": "Convert selection to YAML",
-					"when": "editorHasSelection"
-				},
-				{
-					"command": "extension.convertYamlFilesToJson",
-					"when": "false"
-				},
-				{
-					"command": "extension.convertJsonFilesToYaml",
-					"when": "false"
-				},
-				{
-					"command": "extension.convertJsonSelectionsToYaml",
-					"when": "false"
-				},
-				{
-					"command": "extension.convertYamlSelectionsToJson",
-					"when": "false"
-				}
-			],
-			"explorer/context": [
-				{
-					"group": "1_modification",
-					"command": "extension.convertYamlFilesToJson",
-					"when": "explorerResourceIsFolder"
-				},
-				{
-					"group": "1_modification",
-					"command": "extension.convertJsonFilesToYaml",
-					"when": "explorerResourceIsFolder"
-				},
-				{
-					"group": "1_modification",
-					"command": "extension.rightClickJson",
-					"when": "resourceExtname == .json"
-				},
-				{
-					"group": "1_modification",
-					"command": "extension.rightClickYaml",
-					"when": "resourceExtname == .yml || resourceExtname == .yaml"
-				},
-				{
-					"group": "1_modification",
-					"command": "extension.convertJsonSelectionsToYaml",
-					"when": "listMultiSelection && resourceExtname == .json"
-				},
-				{
-					"group": "1_modification",
-					"command": "extension.convertYamlSelectionsToJson",
-					"when": "listMultiSelection && resourceExtname == .yml"
-				},
-				{
-					"group": "1_modification",
-					"command": "extension.convertYamlSelectionsToJson",
-					"when": "listMultiSelection && resourceExtname == .yaml"
-				}
-			]
-		},
-		"configuration": [
-			{
-				"title": "Yaml Plus Json",
-				"properties": {
-					"yaml-plus-json.convertOnRename": {
-						"type": "boolean",
-						"description": "Convert YAML/JSON files on rename",
-						"deprecationMessage": "please refer to use yaml-plus-json configuration object"
-					},
-					"yaml-plus-json.yaml-indent": {
-						"type": "number",
-						"description": "The number of spaces to use when indenting code (yaml)",
-						"deprecationMessage": "please refer to use yaml-plus-json configuration object"
-					},
-					"yaml-plus-json": {
-						"type": "object",
-						"default": {
-							"convertOnRename": true,
-							"yamlIndent": 2,
-							"fileExtensions": {
-								"yaml": ".yaml",
-								"json": ".json"
-							}
-						},
-						"properties": {
-							"convertOnRename": {
-								"type": "boolean",
-								"description": "Convert YAML/JSON files on rename",
-								"default": true
-							},
-							"yamlSchema": {
-								"type": "string",
-								"description": "See yaml module documentation for details https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas",
-								"enum": [
-									"core",
-									"failsafe",
-									"json",
-									"yaml-1.1"
-								],
-								"default": "core"
-							},
-							"yamlIndent": {
-								"type": "number",
-								"description": "The number of spaces to use when indenting code (yaml)"
-							},
-							"yamlLineWidth": {
-								"type": "number",
-								"description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
-								"examples": [
-									0,
-									100
-								]
-							},
-							"yamlMerge": {
-								"$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
-								"type": "boolean",
-								"default": true
-							},
-							"fileExtensions": {
-								"type": "object",
-								"description": "define what filename extension(s) to use when converting file(s)",
-								"properties": {
-									"yaml": {
-										"type": "string",
-										"description": "yaml filename extension",
-										"enum": [
-											".yaml",
-											".yml"
-										]
-									},
-									"json": {
-										"type": "string",
-										"description": "json filename extension",
-										"enum": [
-											".json"
-										]
-									}
-								}
-							},
-							"keepOriginalFiles": {
-								"type": [
-									"string"
-								],
-								"description": "Keep original files when converting. Use 'ask' to be asked every time or use 'always' to always keep files on conversion",
-								"enum": [
-									"ask",
-									"always"
-								]
-							},
-							"overwriteExistentFiles": {
-								"type": [
-									"string"
-								],
-								"description": "Overwrite existent files when converting. Use 'ask' to be asked every time or 'always' to always overwrite existent files",
-								"enum": [
-									"ask",
-									"always"
-								]
-							},
-							"yamlOptions": {
-								"description": "Options used to convert from JSON to YAML. Note that specific extension configs set takes precedence over this config.",
-								"type": "object",
-								"examples": [
-									{
-										"schema": "core",
-										"indent": 2,
-										"lineWidth": 0,
-										"merge": true
-									}
-								]
-							}
-						}
-					}
-				}
-			}
-		]
-	},
-	"scripts": {
-		"compile": "tsc -p ./",
-		"format": "prettier --check .",
-		"format:fix": "prettier --write .",
-		"lint": "eslint src/",
-		"postversion": "git push && git push --tags",
-		"pretest": "npm run compile && npm run webpack && npm run lint",
-		"preversion": "npm run pretest",
-		"test": "node ./out/test/runTest.js",
-		"vscode:prepublish": "npm run webpack",
-		"watch": "tsc -watch -p ./",
-		"webpack-dev": "webpack --mode development --watch",
-		"webpack": "webpack --mode production"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.24.0",
-		"@types/glob": "^8.1.0",
-		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.14.1",
-		"@types/sinon": "17.0.3",
-		"@types/vscode": "^1.78.1",
-		"@types/yaml": "1.9.7",
-		"@typescript-eslint/eslint-plugin": "^8.29.1",
-		"@typescript-eslint/parser": "^8.29.1",
-		"@vscode/test-electron": "2.5.2",
-		"eslint": "^9.24.0",
-		"eslint-plugin-prettier": "5.2.6",
-		"glob": "^11.0.1",
-		"globals": "^16.0.0",
-		"mocha": "^11.0.1",
-		"sinon": "20.0.0",
-		"ts-loader": "^9.5.2",
-		"typescript": "^5.8.3",
-		"typescript-eslint": "^8.29.1",
-		"webpack": "5.99.5",
-		"webpack-cli": "^6.0.1"
-	},
-	"dependencies": {
-		"yaml": "2.7.1"
-	},
-	"bugs": {
-		"url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
-	},
-	"repository": {
-		"url": "https://github.com/hilleer/vscode-yaml-plus-json",
-		"type": "git"
-	}
+  "name": "yaml-plus-json",
+  "displayName": "YAML ❤️ JSON",
+  "description": "Easily convert yaml to json and json to yaml",
+  "version": "1.13.0",
+  "publisher": "hilleer",
+  "engines": {
+    "vscode": "^1.78.1",
+    "node": ">=18"
+  },
+  "icon": "logo/logo.png",
+  "contributors": [
+    {
+      "name": "Daniel Hillmann",
+      "url": "https://github.com/hilleer",
+      "email": "hiller@live.dk"
+    }
+  ],
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "converter",
+    "yaml converter",
+    "json converter",
+    "yaml to json",
+    "json to yaml"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/**.json",
+    "workspaceContains:**/**.yml",
+    "workspaceContains:**/**.yaml",
+    "onLanguage:json",
+    "onLanguage:yaml"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.rightClickJson",
+        "title": "Convert to YAML",
+        "enablement": "resourceExtname == .json"
+      },
+      {
+        "command": "extension.rightClickYaml",
+        "title": "Convert to JSON",
+        "enablement": "resourceExtname == .yml || resourceExtname == .yaml"
+      },
+      {
+        "command": "extension.yamlSelectionToJson",
+        "title": "Convert selection to JSON",
+        "enablement": "editorHasSelection"
+      },
+      {
+        "command": "extension.jsonSelectionToYaml",
+        "title": "Convert selection to YAML",
+        "enablement": "editorHasSelection"
+      },
+      {
+        "command": "extension.convertYamlFilesToJson",
+        "title": "Convert YAML files to JSON",
+        "enablement": "explorerResourceIsFolder"
+      },
+      {
+        "command": "extension.convertJsonFilesToYaml",
+        "title": "Convert JSON files to YAML",
+        "enablement": "explorerResourceIsFolder"
+      },
+      {
+        "command": "extension.convertJsonSelectionsToYaml",
+        "title": "Convert selected files to YAML",
+        "enablement": "listMultiSelection"
+      },
+      {
+        "command": "extension.convertYamlSelectionsToJson",
+        "title": "Convert selected files to JSON",
+        "enablement": "listMultiSelection"
+      },
+      {
+        "command": "extension.previewAsYaml",
+        "title": "YAML+JSON: Preview as YAML (from JSON. Opens in new file)"
+      },
+      {
+        "command": "extension.previewAsJson",
+        "title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "extension.rightClickJson",
+          "when": "resourceExtname == .json"
+        },
+        {
+          "command": "extension.rightClickYaml",
+          "when": "resourceExtname == .yml || resourceExtname == .yaml"
+        },
+        {
+          "command": "extension.yamlSelectionToJson",
+          "title": "Convert selection to JSON",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "extension.jsonSelectionToYaml",
+          "title": "Convert selection to YAML",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "extension.convertYamlFilesToJson",
+          "when": "false"
+        },
+        {
+          "command": "extension.convertJsonFilesToYaml",
+          "when": "false"
+        },
+        {
+          "command": "extension.convertJsonSelectionsToYaml",
+          "when": "false"
+        },
+        {
+          "command": "extension.convertYamlSelectionsToJson",
+          "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "group": "1_modification",
+          "command": "extension.convertYamlFilesToJson",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "group": "1_modification",
+          "command": "extension.convertJsonFilesToYaml",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "group": "1_modification",
+          "command": "extension.rightClickJson",
+          "when": "resourceExtname == .json"
+        },
+        {
+          "group": "1_modification",
+          "command": "extension.rightClickYaml",
+          "when": "resourceExtname == .yml || resourceExtname == .yaml"
+        },
+        {
+          "group": "1_modification",
+          "command": "extension.convertJsonSelectionsToYaml",
+          "when": "listMultiSelection && resourceExtname == .json"
+        },
+        {
+          "group": "1_modification",
+          "command": "extension.convertYamlSelectionsToJson",
+          "when": "listMultiSelection && resourceExtname == .yml"
+        },
+        {
+          "group": "1_modification",
+          "command": "extension.convertYamlSelectionsToJson",
+          "when": "listMultiSelection && resourceExtname == .yaml"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "title": "Yaml Plus Json",
+        "properties": {
+          "yaml-plus-json.convertOnRename": {
+            "type": "boolean",
+            "description": "Convert YAML/JSON files on rename",
+            "deprecationMessage": "please refer to use yaml-plus-json configuration object"
+          },
+          "yaml-plus-json.yaml-indent": {
+            "type": "number",
+            "description": "The number of spaces to use when indenting code (yaml)",
+            "deprecationMessage": "please refer to use yaml-plus-json configuration object"
+          },
+          "yaml-plus-json": {
+            "type": "object",
+            "default": {
+              "convertOnRename": true,
+              "yamlIndent": 2,
+              "fileExtensions": {
+                "yaml": ".yaml",
+                "json": ".json"
+              }
+            },
+            "properties": {
+              "convertOnRename": {
+                "type": "boolean",
+                "description": "Convert YAML/JSON files on rename",
+                "default": true
+              },
+              "yamlSchema": {
+                "type": "string",
+                "description": "See yaml module documentation for details https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas",
+                "enum": [
+                  "core",
+                  "failsafe",
+                  "json",
+                  "yaml-1.1"
+                ],
+                "default": "core"
+              },
+              "yamlIndent": {
+                "type": "number",
+                "description": "The number of spaces to use when indenting code (yaml)"
+              },
+              "yamlLineWidth": {
+                "type": "number",
+                "description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
+                "examples": [
+                  0,
+                  100
+                ]
+              },
+              "yamlMerge": {
+                "$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
+                "type": "boolean",
+                "default": true
+              },
+              "fileExtensions": {
+                "type": "object",
+                "description": "define what filename extension(s) to use when converting file(s)",
+                "properties": {
+                  "yaml": {
+                    "type": "string",
+                    "description": "yaml filename extension",
+                    "enum": [
+                      ".yaml",
+                      ".yml"
+                    ]
+                  },
+                  "json": {
+                    "type": "string",
+                    "description": "json filename extension",
+                    "enum": [
+                      ".json"
+                    ]
+                  }
+                }
+              },
+              "keepOriginalFiles": {
+                "type": [
+                  "string"
+                ],
+                "description": "Keep original files when converting. Use 'ask' to be asked every time or use 'always' to always keep files on conversion",
+                "enum": [
+                  "ask",
+                  "always"
+                ]
+              },
+              "overwriteExistentFiles": {
+                "type": [
+                  "string"
+                ],
+                "description": "Overwrite existent files when converting. Use 'ask' to be asked every time or 'always' to always overwrite existent files",
+                "enum": [
+                  "ask",
+                  "always"
+                ]
+              },
+              "yamlOptions": {
+                "description": "Options used to convert from JSON to YAML. Note that specific extension configs set takes precedence over this config.",
+                "type": "object",
+                "examples": [
+                  {
+                    "schema": "core",
+                    "indent": 2,
+                    "lineWidth": 0,
+                    "merge": true
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "eslint src/",
+    "postversion": "git push && git push --tags",
+    "pretest": "npm run compile && npm run webpack && npm run lint",
+    "preversion": "npm run pretest",
+    "test": "node ./out/test/runTest.js",
+    "vscode:prepublish": "npm run webpack",
+    "watch": "tsc -watch -p ./",
+    "webpack-dev": "webpack --mode development --watch",
+    "webpack": "webpack --mode production"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.14.1",
+    "@types/sinon": "17.0.3",
+    "@types/vscode": "^1.78.1",
+    "@types/yaml": "1.9.7",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "@vscode/test-electron": "2.5.2",
+    "eslint": "^9.24.0",
+    "eslint-plugin-prettier": "5.2.6",
+    "glob": "^11.0.1",
+    "globals": "^16.0.0",
+    "mocha": "^11.0.1",
+    "sinon": "20.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1",
+    "webpack": "5.99.5",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "yaml": "2.7.1"
+  },
+  "bugs": {
+    "url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
+  },
+  "repository": {
+    "url": "https://github.com/hilleer/vscode-yaml-plus-json",
+    "type": "git"
+  }
 }
