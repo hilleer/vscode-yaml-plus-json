@@ -1,4 +1,0 @@
-'**/*.ts':
-  # - 'npm run webpack'
-  - 'npm run lint'
-  - 'npm run format'
