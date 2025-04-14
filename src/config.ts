@@ -29,7 +29,7 @@ export type Configs = {
 };
 
 enum ConfigIdLegacy {
-  // Same key as new - only here for convenience
+  // Same key as new - only here for convenience/transparency
   ConvertOnRename = 'convertOnRename',
   Indent = 'yaml-indent',
 }
