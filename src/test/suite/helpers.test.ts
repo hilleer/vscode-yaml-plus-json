@@ -1,10 +1,10 @@
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
 
 import { getJsonFromYaml, getYamlFromJson } from '../../helpers';
 import { loadFixture, stripNewLines } from '../testHelpers';
 import { ConfigId } from '../../config';
+import { mockWorkspaceGetConfigurationMethod } from '../testUtil';
 
 suite('helpers', () => {
 	suite('getYamlFromJson()', () => {
@@ -21,7 +21,9 @@ suite('helpers', () => {
 
 		suite('when json lines are long and line width is not limited', () => {
 			let vscodeWorkspaceStub: sinon.SinonStub;
-			suiteSetup(() => vscodeWorkspaceStub = createLongLinesConfigStub(0));
+			suiteSetup(() => vscodeWorkspaceStub = mockWorkspaceGetConfigurationMethod({
+				[ConfigId.YamlLineWidth]: 0,
+			}));
 
 			suiteTeardown(() => vscodeWorkspaceStub.restore());
 
@@ -39,7 +41,9 @@ suite('helpers', () => {
 
 		suite('when json lines are long and line width is limited', () => {
 			let vscodeWorkspaceStub: sinon.SinonStub;
-			suiteSetup(() => vscodeWorkspaceStub = createLongLinesConfigStub(100));
+			suiteSetup(() => vscodeWorkspaceStub = mockWorkspaceGetConfigurationMethod({
+				[ConfigId.YamlLineWidth]: 100,
+			}))
 
 			suiteTeardown(() => vscodeWorkspaceStub.restore());
 
@@ -80,17 +84,3 @@ suite('helpers', () => {
 		});
 	});
 });
-
-function createLongLinesConfigStub(lineWidth: number) {
-	const stub = sinon.stub(vscode.workspace, 'getConfiguration');
-
-	const configMock = {
-		[ConfigId.YamlLineWidth]: lineWidth,
-	};
-
-	stub.returns({
-		get: (configKey: ConfigId.YamlLineWidth) => configMock[configKey],
-	} as vscode.WorkspaceConfiguration);
-
-	return stub
-}

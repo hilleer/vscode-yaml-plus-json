@@ -17,11 +17,11 @@ export function showError(error: unknown) {
 }
 
 export function getYamlFromJson(json: string): string {
-	const indent = getConfig<Configs['YamlIndent']>(ConfigId.YamlIndent);
-	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-	const lineWidth = getConfig<Configs['YamlLineWidth']>(ConfigId.YamlLineWidth);
-	const options = getConfig<Configs['YamlOptions']>(ConfigId.yamlOptions) || {};
-	const merge = getConfig<Configs['YamlMerge']>(ConfigId.YamlMerge) ?? true;
+	const indent = getConfig<Configs['yamlIndent']>(ConfigId.YamlIndent);
+	const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
+	const lineWidth = getConfig<Configs['yamlLineWidth']>(ConfigId.YamlLineWidth);
+	const options = getConfig<Configs['yamlOptions']>(ConfigId.YamlOptions) || {};
+	const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
 
 	try {
 		const jsonObject = JSON.parse(json);
@@ -40,8 +40,8 @@ export function getYamlFromJson(json: string): string {
 }
 
 export function getJsonFromYaml(yaml: string): string {
-	const schema = getConfig<Configs['YamlSchema']>(ConfigId.YamlSchema);
-	const options = getConfig<Configs['jsonOptions']>(ConfigId.jsonOptions) || {};
+	const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
+	const options = getConfig<Configs['jsonOptions']>(ConfigId.JsonOptions) || {};
 
 	try {
 		const json = YAML.parse(yaml, {

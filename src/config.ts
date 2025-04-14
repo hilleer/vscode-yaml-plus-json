@@ -10,19 +10,22 @@ export enum ConfigId {
 	YamlSchema = 'yamlSchema',
 	YamlLineWidth = 'yamlLineWidth',
 	YamlMerge = 'yamlMerge',
-	yamlOptions = 'yamlOptions',
-	jsonOptions = 'jsonOptions',
+	YamlOptions = 'yamlOptions',
+	JsonOptions = 'jsonOptions',
 }
 
 export type Configs = {
-	keepOriginalFiles: 'ask' | 'always';
-	overwriteExistentFiles: 'ask' | 'always';
-	YamlSchema: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
-	YamlIndent: number;
-	YamlLineWidth: number;
-	YamlMerge: boolean;
-	YamlOptions: object;
-	[ConfigId.jsonOptions]: object;
+	[ConfigId.ConvertOnRename]?: boolean;
+	[ConfigId.FileExtensionsJson]?: string;
+	[ConfigId.FileExtensionsYaml]?: string;
+	[ConfigId.KeepOriginalFiles]?: 'ask' | 'always';
+	[ConfigId.OverwriteExistentFiles]?: 'ask' | 'always';
+	[ConfigId.YamlIndent]?: number;
+	[ConfigId.YamlLineWidth]?: number;
+	[ConfigId.YamlMerge]?: boolean;
+	[ConfigId.YamlOptions]?: object;
+	[ConfigId.YamlSchema]?: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
+	[ConfigId.JsonOptions]?: object;
 };
 
 enum ConfigIdLegacy {
@@ -34,10 +37,10 @@ enum ConfigIdLegacy {
 const EXTENSION_CONFIG_ID = 'yaml-plus-json';
 
 // TODO set extended type of generic
-export function getConfig<T = unknown>(configId: ConfigId): T | undefined {
+export function getConfig<T = unknown>(configId: ConfigId | `${ConfigId}`): T | undefined {
 	const config = vscode.workspace.getConfiguration(EXTENSION_CONFIG_ID);
 
-	const legacyConfigKey = getLegacyConfigKey(configId);
+	const legacyConfigKey = getLegacyConfigKey(configId as ConfigId);
 
 	return config.get<T>(legacyConfigKey) || config.get<T>(configId);
 }
