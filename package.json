@@ -304,7 +304,7 @@
 		"glob": "^11.0.1",
 		"globals": "^16.0.0",
 		"mocha": "^11.0.1",
-		"sinon": "19.0.2",
+		"sinon": "20.0.0",
 		"ts-loader": "^9.5.2",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.29.1",
