@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.13.0] - UNRELEASED
+## [1.13.0] - 2025-04-14
 
 ### Added
 
@@ -10,7 +10,7 @@
 
 ### Changed
 
-* Dependency version of [YAML](https://www.npmjs.com/package/yaml) parser module to `2.7.1`
+* Bump version of [YAML](https://www.npmjs.com/package/yaml) parser module to `2.7.1`
 
 ## [1.12.1] - 2023-04-13
 
