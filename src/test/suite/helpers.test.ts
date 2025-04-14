@@ -2,17 +2,14 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 
 import { getJsonFromYaml, getYamlFromJson } from '../../helpers';
-import { loadFixture, stripNewLines } from '../testHelpers';
+import { loadFixtures, stripNewLines } from '../testHelpers';
 import { ConfigId } from '../../config';
 import { mockWorkspaceGetConfigurationMethod } from '../testUtil';
 
 suite('helpers', () => {
 	suite('getYamlFromJson()', () => {
 		test('should convert json to yaml', async () => {
-			const [inputJson, expectedYaml] = await Promise.all([
-				loadFixture('input.json'),
-				loadFixture('expected.yaml'),
-			]);
+			const [inputJson, expectedYaml] = await loadFixtures('input.json', 'expected.yaml');
 
 			const actualYaml = getYamlFromJson(inputJson);
 
@@ -28,10 +25,7 @@ suite('helpers', () => {
 			suiteTeardown(() => vscodeWorkspaceStub.restore());
 
 			test('should convert json to yaml without line breaks', async () => {
-				const [inputJson, expectedYaml] = await Promise.all([
-					loadFixture('longLinesInput.json'),
-					loadFixture('longLinesExpectedUnlimited.yaml'),
-				]);
+				const [inputJson, expectedYaml] = await loadFixtures('longLinesInput.json', 'longLinesExpectedUnlimited.yaml');
 
 				const actualYaml = getYamlFromJson(inputJson);
 
@@ -48,10 +42,7 @@ suite('helpers', () => {
 			suiteTeardown(() => vscodeWorkspaceStub.restore());
 
 			test('should convert json to yaml and apply line breaks', async () => {
-				const [inputJson, expectedYaml] = await Promise.all([
-					loadFixture('longLinesInput.json'),
-					loadFixture('longLinesExpectedLimited.yaml'),
-				]);
+				const [inputJson, expectedYaml] = await loadFixtures('longLinesInput.json', 'longLinesExpectedLimited.yaml');
 
 				const actualYaml = getYamlFromJson(inputJson);
 
@@ -62,10 +53,7 @@ suite('helpers', () => {
 
 	suite('getJsonFromYaml', async () => {
 		test('should convert yaml to json', async () => {
-			const [yamlInput, expectedJson] = await Promise.all([
-				loadFixture('input.yaml'),
-				loadFixture('expected.json'),
-			]);
+			const [yamlInput, expectedJson] = await loadFixtures('input.yaml', 'expected.json');
 
 			const actualJson = getJsonFromYaml(yamlInput);
 
@@ -73,10 +61,7 @@ suite('helpers', () => {
 		});
 
 		test('should convert json to yaml with merge tags', async () => {
-			const [yamlInput, expectedJson] = await Promise.all([
-				loadFixture('inputMergeTag.yaml'),
-				loadFixture('expectedMergeTag.json'),
-			]);
+			const [yamlInput, expectedJson] = await loadFixtures('inputMergeTag.yaml', 'expectedMergeTag.json');
 
 			const actualJson = getJsonFromYaml(yamlInput);
 
