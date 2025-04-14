@@ -4,6 +4,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    labels:
+      - "dependencies"
+      - "npm"
     groups:
       prod-updates:
         dependency-type: production
@@ -16,3 +19,17 @@ updates:
           - "major"
           - "minor"
           - "patch"
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows" # Location of workflow files
+    labels:
+      - "dependencies"
+      - "github actions"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "action (deps)"
+    groups:
+      patch-minor-updates:
+        update-types:
+          - "patch"
+          - "minor"
