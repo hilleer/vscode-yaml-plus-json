@@ -27,7 +27,7 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: "action (deps)"
+      prefix: "github-actions (deps)"
     groups:
       patch-minor-updates:
         update-types:
