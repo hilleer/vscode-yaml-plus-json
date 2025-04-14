@@ -2,7 +2,7 @@
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
 	"description": "Easily convert yaml to json and json to yaml",
-	"version": "1.12.2",
+	"version": "1.13.0",
 	"publisher": "hilleer",
 	"engines": {
 		"vscode": "^1.78.1",
@@ -205,6 +205,19 @@
 								"type": "number",
 								"description": "The number of spaces to use when indenting code (yaml)"
 							},
+							"yamlLineWidth": {
+								"type": "number",
+								"description": "The line width to use when converting to yaml. Set to 0 to disable line wrapping",
+								"examples": [
+									0,
+									100
+								]
+							},
+							"yamlMerge": {
+								"$comment": "Can be configured in \"yamlOptions\" too. This config takes precedence.",
+								"type": "boolean",
+								"default": true
+							},
 							"fileExtensions": {
 								"type": "object",
 								"description": "define what filename extension(s) to use when converting file(s)",
@@ -245,6 +258,18 @@
 									"ask",
 									"always"
 								]
+							},
+							"yamlOptions": {
+								"description": "Options used to convert from JSON to YAML. Note that specific extension configs set takes precedence over this config.",
+								"type": "object",
+								"examples": [
+									{
+										"schema": "core",
+										"indent": 2,
+										"lineWidth": 0,
+										"merge": true
+									}
+								]
 							}
 						}
 					}
@@ -269,6 +294,7 @@
 		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^22.14.1",
+		"@types/sinon": "17.0.3",
 		"@types/vscode": "^1.99.1",
 		"@types/yaml": "1.9.7",
 		"@typescript-eslint/eslint-plugin": "^8.29.1",
@@ -277,7 +303,8 @@
 		"eslint": "^9.24.0",
 		"glob": "^11.0.1",
 		"globals": "^16.0.0",
-		"mocha": "^11.1.0",
+		"mocha": "^11.0.1",
+		"sinon": "19.0.2",
 		"ts-loader": "^9.5.2",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.29.1",

@@ -26,36 +26,52 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
   * Convert YAML files in a directory to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
   * Convert JSON files in a directory to YAML by right clicking the directory and selecting `Convert JSON files to YAML`.
 
-* Reverting converted files: When a file has been reverted, a _"revert"_ prompt will be shown to revert it. Using this will return the entirety of the original file, including YAML comments.
-* Overwriting existent files: When trying to convert a file into a destination that already exist, you can use the `overwriteExistentFiles` configuration to overwrite such. **Notice** if you use the revert feature after overwriting a file, the extension cannot (currently) revert the overwritten file. Also, due to limitation in vscode of active user prompts, if you set it to `"ask"` you will only be prompted to overwrite N number of files, while others will be skipped.
+* **Reverting converted files:** When a file has been reverted, a _"revert"_ prompt will be shown to revert it. Using this will return the entirety of the original file, including YAML comments.
+* **Overwriting existent files:** When trying to convert a file into a destination that already exist, you can use the `overwriteExistentFiles` configuration to overwrite such. **Notice** if you use the revert feature after overwriting a file, the extension cannot (currently) revert the overwritten file. Also, due to limitation in vscode of active user prompts, if you set it to `"ask"` you will only be prompted to overwrite N number of files, while others will be skipped.
 
 ## Config
 
-All configurations should be defined in `yaml-plus-json` in vscode settings (e.g. `.vscode/settings.json`), like:
+All configurations should be defined in `yaml-plus-json` in vscode settings (e.g. workspace file `.vscode/settings.json`). Example:
 
-```json
+```jsonc
 {
   "yaml-plus-json": {
     "convertOnRename": true,
     "yamlIndent": 2,
+    "yamlLineWidth": 0,
+    "yamlMerge": false,
     "fileExtensions": {
       "yaml": ".yaml",
       "json": ".json"
+    },
+    // for more advanced parser configurations
+    // see the YAML module documentation for details:
+    // https://github.com/eemeli/yaml/blob/main/docs/03_options.md#options
+    // note specific extension configs set takes precedence ("yamlIndent" for example)
+    "yamlOptions": {
+      "indent": 2,
+      "lineWidth": 0
     }
   }
 }
 ```
 
-| id                       | description                                                                                                               | type    | default   | example    |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------|---------|-----------|------------|
-| `convertOnRename`        | Convert YAML/JSON files on rename                                                                                         | boolean | `true`    | `false`    |
-| `yamlIndent`             | The number of spaces to use when indenting code (yaml)                                                                    | number  | `2`       | `4`        |
-| `yamlSchema`             | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details | string  | `"core"`  | `"json"`   |
-| `fileExtensions`         | define what filename extension(s) to use when converting file(s)                                                          | object  |           |            |
-| `fileExtensions.yaml`    | yaml filename extension                                                                                                   | string  | `".yaml"` | `".yml"`   |
-| `fileExtensions.json`    | json filename extension                                                                                                   | string  | `".json"` | `".json"`  |
-| `keepOriginalFiles`      | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files       | string  |           | `"always"` |
-| `overwriteExistentFiles` | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite            | string  |           | `"always"` |
+<!-- use table generator to parse and update: https://www.tablesgenerator.com/markdown_tables --> 
+
+|  | description | type | default | example |
+|---|---|---|---|---|
+| `convertOnRename` | Convert YAML/JSON files on rename | boolean | `true` | `false` |
+| `yamlIndent` | The number of spaces to use when indenting code (yaml) | number | `2` | `4` |
+| `yamlSchema` | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details | string | `"core"` | `"json"` |
+| `yamlMerge` | Enable support for << merge keys. Default value depends on YAML version. | boolean | `true` | `false` |
+| `yamlLineWidth` | Set to 0 to disable line wrapping. See [line width options](https://github.com/eemeli/yaml/blob/main/docs/03_options.md#tostring-options) for details | number |  | `100` |
+| `fileExtensions` | define what filename extension(s) to use when converting file(s) | object |  |  |
+| `fileExtensions.yaml` | yaml filename extension | string | `".yaml"` | `".yml"` |
+| `fileExtensions.json` | json filename extension | string | `".json"` | `".json"` |
+| `keepOriginalFiles` | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files | string |  | `"always"` |
+| `overwriteExistentFiles` | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite | string |  | `"always"` |
+| `yamlOptions` | For more advanced configs using the YAML parser. See the module [docs](https://github.com/eemeli/yaml/blob/main/docs/03_options.md) for details. Note that specific extension configs set takes precedence. | object |  |  |
+<!-- |   `jsonOptions` | Options used to convert from YAML to JSON. See the module [docs](https://github.com/eemeli/yaml/blob/main/docs/03_options.md) for details. Note that specific extension configs set takes precedence. | object |  |  | -->
 
 ---
 
