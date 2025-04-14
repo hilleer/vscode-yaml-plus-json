@@ -6,7 +6,7 @@
 
 * Config: `yamlLineWidth` to control YAML line width (and option to disable line wrapping)
 * Config: Expose `yamlMerge` config currently defaulted to true always.
-* Config: Enable users to configure all available YAML module options that is available using `yamlOptions` object
+* Config: Enable (more advanced) users to configure all available YAML module options that is available using `yamlOptions` object
 
 ### Changed
 
