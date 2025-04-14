@@ -23,7 +23,7 @@ updates:
     directory: ".github/workflows" # Location of workflow files
     labels:
       - "dependencies"
-      - "github actions"
+      - "github-actions"
     schedule:
       interval: "weekly"
     commit-message:
