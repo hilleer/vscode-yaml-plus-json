@@ -10,7 +10,7 @@
 
 ### Changed
 
-* Dependency version of [YAML](https://www.npmjs.com/package/yaml) module to `2.7.1`
+* Dependency version of [YAML](https://www.npmjs.com/package/yaml) parser module to `2.7.1`
 
 ## [1.12.1] - 2023-04-13
 
