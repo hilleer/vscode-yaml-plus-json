@@ -28,6 +28,8 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build --if-present
+      - run: npm run format
+      - run: npm run lint
       - run: xvfb-run -a npm test
         if: runner.os == 'Linux'
       - run: npm test
