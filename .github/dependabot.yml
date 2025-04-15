@@ -1,35 +1,35 @@
 version: 2
 updates:
   - package-ecosystem: npm # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directory: '/' # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     labels:
-      - "dependencies"
-      - "npm"
+      - 'dependencies'
+      - 'npm'
     groups:
       prod-updates:
         dependency-type: production
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       dev-dependencies:
         dependency-type: development
         update-types:
-          - "major"
-          - "minor"
-          - "patch"
-  - package-ecosystem: "github-actions"
-    directory: ".github/workflows" # Location of workflow files
+          - 'major'
+          - 'minor'
+          - 'patch'
+  - package-ecosystem: 'github-actions'
+    directory: '.github/workflows' # Location of workflow files
     labels:
-      - "dependencies"
-      - "github-actions"
+      - 'dependencies'
+      - 'github-actions'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     commit-message:
-      prefix: "github-actions (deps)"
+      prefix: 'github-actions (deps)'
     groups:
       patch-minor-updates:
         update-types:
-          - "patch"
-          - "minor"
+          - 'patch'
+          - 'minor'

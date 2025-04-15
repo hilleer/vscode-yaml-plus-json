@@ -278,16 +278,18 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run webpack",
-		"webpack": "webpack --mode production",
-		"webpack-dev": "webpack --mode development --watch",
 		"compile": "tsc -p ./",
+		"format": "prettier --check .",
+		"format:fix": "prettier --write .",
 		"lint": "eslint src/",
-		"watch": "tsc -watch -p ./",
+		"postversion": "git push && git push --tags",
 		"pretest": "npm run compile && npm run webpack && npm run lint",
-		"test": "node ./out/test/runTest.js",
 		"preversion": "npm run pretest",
-		"postversion": "git push && git push --tags"
+		"test": "node ./out/test/runTest.js",
+		"vscode:prepublish": "npm run webpack",
+		"watch": "tsc -watch -p ./",
+		"webpack-dev": "webpack --mode development --watch",
+		"webpack": "webpack --mode production"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.24.0",
@@ -301,6 +303,8 @@
 		"@typescript-eslint/parser": "^8.29.1",
 		"@vscode/test-electron": "2.5.2",
 		"eslint": "^9.24.0",
+		"eslint-config-prettier": "10.1.2",
+		"eslint-plugin-prettier": "5.2.6",
 		"glob": "^11.0.1",
 		"globals": "^16.0.0",
 		"mocha": "^11.0.1",

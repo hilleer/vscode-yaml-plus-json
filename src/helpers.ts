@@ -3,56 +3,57 @@ import * as YAML from 'yaml';
 
 import { ConfigId, Configs, getConfig } from './config';
 
-const DEFAULT_ERROR_MESSAGE = 'Something went wrong, please validate your file and try again or create an issue if the problem persist';
+const DEFAULT_ERROR_MESSAGE =
+  'Something went wrong, please validate your file and try again or create an issue if the problem persist';
 
 /**
  * prints errors to console and shows its error message to the user.
  */
 export function showError(error: unknown) {
-	console.error(error);
+  console.error(error);
 
-	const message = error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE;
+  const message = error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE;
 
-	vscode.window.showErrorMessage(message);
+  vscode.window.showErrorMessage(message);
 }
 
 export function getYamlFromJson(json: string): string {
-	const indent = getConfig<Configs['yamlIndent']>(ConfigId.YamlIndent);
-	const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
-	const lineWidth = getConfig<Configs['yamlLineWidth']>(ConfigId.YamlLineWidth);
-	const options = getConfig<Configs['yamlOptions']>(ConfigId.YamlOptions) || {};
-	const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
+  const indent = getConfig<Configs['yamlIndent']>(ConfigId.YamlIndent);
+  const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
+  const lineWidth = getConfig<Configs['yamlLineWidth']>(ConfigId.YamlLineWidth);
+  const options = getConfig<Configs['yamlOptions']>(ConfigId.YamlOptions) || {};
+  const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
 
-	try {
-		const jsonObject = JSON.parse(json);
+  try {
+    const jsonObject = JSON.parse(json);
 
-		return YAML.stringify(jsonObject, {
-			...options, // do first so specific options take precedence
-			...(indent !== undefined && { indent }),
-			...(schema !== undefined && { schema }),
-			...(lineWidth !== undefined && { lineWidth }),
-			merge
-		});
-	} catch (error) {
-		console.error(error);
-		throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
-	}
+    return YAML.stringify(jsonObject, {
+      ...options, // do first so specific options take precedence
+      ...(indent !== undefined && { indent }),
+      ...(schema !== undefined && { schema }),
+      ...(lineWidth !== undefined && { lineWidth }),
+      merge,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
+  }
 }
 
 export function getJsonFromYaml(yaml: string): string {
-	const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
-	const options = getConfig<Configs['jsonOptions']>(ConfigId.JsonOptions) || {};
+  const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
+  const options = getConfig<Configs['jsonOptions']>(ConfigId.JsonOptions) || {};
 
-	try {
-		const json = YAML.parse(yaml, {
-			...options, // do first so specific options take precedence
-			merge: true,
-			...(schema && { schema })
-		});
+  try {
+    const json = YAML.parse(yaml, {
+      ...options, // do first so specific options take precedence
+      merge: true,
+      ...(schema && { schema }),
+    });
 
-		return JSON.stringify(json, undefined, 2);
-	} catch (error) {
-		console.error(error);
-		throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
-	}
+    return JSON.stringify(json, undefined, 2);
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
+  }
 }
