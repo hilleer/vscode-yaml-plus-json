@@ -6,6 +6,16 @@ import { loadFixtures, stripNewLines } from '../testHelpers';
 import { ConfigId } from '../../config';
 import { mockWorkspaceGetConfigurationMethod } from '../testUtil';
 
+type Test = {
+  inputFilePath: string;
+  expectedFilePath: string;
+  description: string;
+  /**
+   * console.log output
+   */
+  debug?: boolean;
+};
+
 suite('helpers', () => {
   suite('getYamlFromJson()', () => {
     test('should convert json to yaml', async () => {
@@ -58,20 +68,31 @@ suite('helpers', () => {
   });
 
   suite('getJsonFromYaml', async () => {
-    test('should convert yaml to json', async () => {
-      const [yamlInput, expectedJson] = await loadFixtures('input.yaml', 'expected.json');
+    const TESTS: Test[] = [
+      {
+        inputFilePath: 'input.yaml',
+        expectedFilePath: 'expected.json',
+        description: 'should convert basic yaml to json',
+      },
+      {
+        inputFilePath: 'mergeTagInput.yaml',
+        expectedFilePath: 'mergeTagExpected.json',
+        description: 'should convert yaml with merge tags to json',
+      },
+    ];
 
-      const actualJson = getJsonFromYaml(yamlInput);
+    TESTS.forEach(({ inputFilePath, expectedFilePath, description, debug }) => {
+      test(description, async () => {
+        const [yamlInput, expectedJson] = await loadFixtures(inputFilePath, expectedFilePath);
 
-      assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
-    });
+        const actualJson = getJsonFromYaml(yamlInput);
 
-    test('should convert json to yaml with merge tags', async () => {
-      const [yamlInput, expectedJson] = await loadFixtures('inputMergeTag.yaml', 'expectedMergeTag.json');
+        if (debug) {
+          console.log('actualJson', actualJson);
+        }
 
-      const actualJson = getJsonFromYaml(yamlInput);
-
-      assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
+        assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
+      });
     });
   });
 });
