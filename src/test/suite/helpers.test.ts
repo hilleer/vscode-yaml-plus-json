@@ -1,77 +1,84 @@
 import * as assert from 'assert';
-import * as sinon from 'sinon';
 
 import { getJsonFromYaml, getYamlFromJson } from '../../helpers';
 import { loadFixtures, stripNewLines } from '../testHelpers';
-import { ConfigId } from '../../config';
-import { mockWorkspaceGetConfigurationMethod } from '../testUtil';
+import { ConfigId, Configs } from '../../config';
+import { WorkspaceConfigurationMock } from '../testUtil';
+
+type Test = {
+  inputFilePath: string;
+  expectedFilePath: string;
+  description: string;
+  /**
+   * enable mocking of vscode.workspace.getConfiguration
+   */
+  configMock?: Partial<Configs>;
+};
 
 suite('helpers', () => {
   suite('getYamlFromJson()', () => {
-    test('should convert json to yaml', async () => {
-      const [inputJson, expectedYaml] = await loadFixtures('input.json', 'expected.yaml');
+    const tests: Test[] = [
+      {
+        description: 'should convert json to yaml',
+        inputFilePath: 'input.json',
+        expectedFilePath: 'expected.yaml',
+      },
+      {
+        description: 'when json lines are long and line width is not limited',
+        inputFilePath: 'longLinesInput.json',
+        expectedFilePath: 'longLinesExpectedUnlimited.yaml',
+        configMock: {
+          [ConfigId.YamlLineWidth]: 0, // 0 means unlimited
+        },
+      },
+      {
+        description: 'when json lines are long and line width is limited',
+        inputFilePath: 'longLinesInput.json',
+        expectedFilePath: 'longLinesExpectedLimited.yaml',
+        configMock: {
+          [ConfigId.YamlLineWidth]: 100,
+        },
+      },
+    ];
 
-      const actualYaml = getYamlFromJson(inputJson);
+    for (const t of tests) {
+      suite(t.description, () => {
+        let workspaceConfigMock: WorkspaceConfigurationMock;
+        suiteSetup(() => (workspaceConfigMock = new WorkspaceConfigurationMock(t.configMock)));
 
-      assert.deepStrictEqual(stripNewLines(actualYaml), stripNewLines(expectedYaml));
-    });
+        suiteTeardown(() => workspaceConfigMock.restore());
 
-    suite('when json lines are long and line width is not limited', () => {
-      let vscodeWorkspaceStub: sinon.SinonStub;
-      suiteSetup(
-        () =>
-          (vscodeWorkspaceStub = mockWorkspaceGetConfigurationMethod({
-            [ConfigId.YamlLineWidth]: 0,
-          })),
-      );
-
-      suiteTeardown(() => vscodeWorkspaceStub.restore());
-
-      test('should convert json to yaml without line breaks', async () => {
-        const [inputJson, expectedYaml] = await loadFixtures('longLinesInput.json', 'longLinesExpectedUnlimited.yaml');
-
-        const actualYaml = getYamlFromJson(inputJson);
-
-        assert.deepStrictEqual(stripNewLines(actualYaml), stripNewLines(expectedYaml));
+        test('should return expected yaml', async () => assertTest(t, getYamlFromJson));
       });
-    });
-
-    suite('when json lines are long and line width is limited', () => {
-      let vscodeWorkspaceStub: sinon.SinonStub;
-      suiteSetup(
-        () =>
-          (vscodeWorkspaceStub = mockWorkspaceGetConfigurationMethod({
-            [ConfigId.YamlLineWidth]: 100,
-          })),
-      );
-
-      suiteTeardown(() => vscodeWorkspaceStub.restore());
-
-      test('should convert json to yaml and apply line breaks', async () => {
-        const [inputJson, expectedYaml] = await loadFixtures('longLinesInput.json', 'longLinesExpectedLimited.yaml');
-
-        const actualYaml = getYamlFromJson(inputJson);
-
-        assert.deepStrictEqual(stripNewLines(actualYaml), stripNewLines(expectedYaml));
-      });
-    });
+    }
   });
 
   suite('getJsonFromYaml', async () => {
-    test('should convert yaml to json', async () => {
-      const [yamlInput, expectedJson] = await loadFixtures('input.yaml', 'expected.json');
+    const TESTS: Test[] = [
+      {
+        inputFilePath: 'input.yaml',
+        expectedFilePath: 'expected.json',
+        description: 'should convert basic yaml to json',
+      },
+      {
+        inputFilePath: 'mergeTagInput.yaml',
+        expectedFilePath: 'mergeTagExpected.json',
+        description: 'should convert yaml with merge tags to json',
+      },
+    ];
 
-      const actualJson = getJsonFromYaml(yamlInput);
-
-      assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
-    });
-
-    test('should convert json to yaml with merge tags', async () => {
-      const [yamlInput, expectedJson] = await loadFixtures('inputMergeTag.yaml', 'expectedMergeTag.json');
-
-      const actualJson = getJsonFromYaml(yamlInput);
-
-      assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
+    TESTS.forEach((t) => {
+      suite(t.description, () => {
+        test('should return expected json', () => assertTest(t, getJsonFromYaml));
+      });
     });
   });
 });
+
+async function assertTest(t: Test, converter: (input: string) => string) {
+  const [yaml, expected] = await loadFixtures(t.inputFilePath, t.expectedFilePath);
+
+  const actual = converter(yaml);
+
+  assert.deepStrictEqual(stripNewLines(actual), stripNewLines(expected));
+}

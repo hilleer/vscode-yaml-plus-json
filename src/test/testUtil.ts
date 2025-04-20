@@ -4,12 +4,18 @@ import { ConfigId, Configs } from '../config';
 
 type ConfigInput = Partial<Configs>;
 
-export function mockWorkspaceGetConfigurationMethod(configMock: ConfigInput) {
-  const stub = Sinon.stub(vscode.workspace, 'getConfiguration');
+export class WorkspaceConfigurationMock {
+  private stub: Sinon.SinonStub;
 
-  stub.returns({
-    get: (configKey: ConfigId) => configMock[configKey],
-  } as vscode.WorkspaceConfiguration);
+  constructor(configMock: ConfigInput = {}) {
+    this.stub = Sinon.stub(vscode.workspace, 'getConfiguration');
 
-  return stub;
+    this.stub.returns({
+      get: (configKey: ConfigId) => configMock[configKey],
+    } as vscode.WorkspaceConfiguration);
+  }
+
+  restore() {
+    this.stub.restore();
+  }
 }
