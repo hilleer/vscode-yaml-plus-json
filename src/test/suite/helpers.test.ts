@@ -75,9 +75,7 @@ suite('helpers', () => {
   });
 });
 
-type Converter = (input: string) => string;
-
-async function assertTest(t: Test, converter: Converter) {
+async function assertTest(t: Test, converter: (input: string) => string) {
   const [yaml, expected] = await loadFixtures(t.inputFilePath, t.expectedFilePath);
 
   const actual = converter(yaml);
