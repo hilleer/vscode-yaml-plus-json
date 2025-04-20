@@ -52,17 +52,7 @@ suite('helpers', () => {
 
         suiteTeardown(() => workspaceConfigMock.restore());
 
-        test('should return expected yaml', async () => {
-          const [input, expected] = await loadFixtures(t.inputFilePath, t.expectedFilePath);
-
-          const actual = getYamlFromJson(input);
-
-          if (t.debug) {
-            console.log('actual value:', actual);
-          }
-
-          assert.deepStrictEqual(stripNewLines(actual), stripNewLines(expected));
-        });
+        test('should return expected yaml', async () => assertTest(t, getYamlFromJson));
       });
     }
   });
@@ -81,18 +71,24 @@ suite('helpers', () => {
       },
     ];
 
-    TESTS.forEach(({ inputFilePath, expectedFilePath, description, debug }) => {
-      test(description, async () => {
-        const [yamlInput, expectedJson] = await loadFixtures(inputFilePath, expectedFilePath);
-
-        const actualJson = getJsonFromYaml(yamlInput);
-
-        if (debug) {
-          console.log('actualJson', actualJson);
-        }
-
-        assert.deepStrictEqual(stripNewLines(actualJson), stripNewLines(expectedJson));
+    TESTS.forEach((t) => {
+      suite(t.description, () => {
+        test('should return expected json', () => assertTest(t, getJsonFromYaml));
       });
     });
   });
 });
+
+type Converter = (input: string) => string;
+
+async function assertTest(t: Test, converter: Converter) {
+  const [yaml, expected] = await loadFixtures(t.inputFilePath, t.expectedFilePath);
+
+  const actual = converter(yaml);
+
+  if (t.debug) {
+    console.log('actual:', actual);
+  }
+
+  assert.deepStrictEqual(stripNewLines(actual), stripNewLines(expected));
+}
