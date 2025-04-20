@@ -10,10 +10,6 @@ type Test = {
   expectedFilePath: string;
   description: string;
   /**
-   * console.log output
-   */
-  debug?: boolean;
-  /**
    * enable mocking of vscode.workspace.getConfiguration
    */
   configMock?: Partial<Configs>;
@@ -85,10 +81,6 @@ async function assertTest(t: Test, converter: Converter) {
   const [yaml, expected] = await loadFixtures(t.inputFilePath, t.expectedFilePath);
 
   const actual = converter(yaml);
-
-  if (t.debug) {
-    console.log('actual:', actual);
-  }
 
   assert.deepStrictEqual(stripNewLines(actual), stripNewLines(expected));
 }
