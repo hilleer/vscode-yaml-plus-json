@@ -32,7 +32,7 @@ suite('helpers', () => {
         inputFilePath: 'longLinesInput.json',
         expectedFilePath: 'longLinesExpectedUnlimited.yaml',
         configMock: {
-          [ConfigId.YamlLineWidth]: 0,
+          [ConfigId.YamlLineWidth]: 0, // 0 means unlimited
         },
       },
       {
