@@ -316,7 +316,7 @@
 		"webpack-cli": "^6.0.1"
 	},
 	"dependencies": {
-		"yaml": "2.8.1"
+		"yaml": "2.8.2"
 	},
 	"bugs": {
 		"url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
