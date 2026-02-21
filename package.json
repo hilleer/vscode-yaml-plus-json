@@ -190,6 +190,11 @@
 								"description": "Convert YAML/JSON files on rename",
 								"default": true
 							},
+							"convertOnSave": {
+								"type": "boolean",
+								"description": "Automatically convert YAML/JSON files to their counterpart on save. The original file is always kept.",
+								"default": false
+							},
 							"yamlSchema": {
 								"type": "string",
 								"description": "See yaml module documentation for details https://github.com/eemeli/yaml/blob/master/docs/03_options.md#data-schemas",
