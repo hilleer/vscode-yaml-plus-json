@@ -53,9 +53,11 @@ suite('onSave', () => {
     assert.strictEqual(writeFileStub.callCount, 0);
   });
 
-  test('throws for unexpected file extension', async () => {
+  test('shows error for unexpected file extension', async () => {
     withConfig({ [ConfigId.ConvertOnSave]: true });
-    await assert.rejects(() => onSave(makeDocument('/fake/file.ts', 'const x = 1;')), /Unexpected file extension/);
+    await onSave(makeDocument('/fake/file.ts', 'const x = 1;'));
+    assert.strictEqual(showErrorMessageStub.callCount, 1);
+    assert.ok((showErrorMessageStub.firstCall.args[0] as string).includes('Unexpected file extension'));
   });
 
   suite('yaml to json', () => {

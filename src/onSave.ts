@@ -17,10 +17,6 @@ export async function onSave(document: vscode.TextDocument): Promise<void> {
   const isYaml = fileExtension === '.yaml' || fileExtension === '.yml';
   const isJson = fileExtension === '.json';
 
-  if (!isYaml && !isJson) {
-    throw new Error(`Unexpected file extension: ${fileExtension}`);
-  }
-
   const toJsonExtension = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
   const toYamlExtension = getConfig<string>(ConfigId.FileExtensionsYaml) || '.yaml';
 
@@ -34,9 +30,13 @@ export async function onSave(document: vscode.TextDocument): Promise<void> {
       return await convertAndWrite(newFilePath, newContent);
     }
 
-    newContent = getYamlFromJson(document.getText());
-    newFilePath = filePath.replace(fileExtension, toYamlExtension);
-    return await convertAndWrite(newFilePath, newContent);
+    if (isJson) {
+      newContent = getYamlFromJson(document.getText());
+      newFilePath = filePath.replace(fileExtension, toYamlExtension);
+      return await convertAndWrite(newFilePath, newContent);
+    }
+
+    throw new Error(`Unexpected file extension: ${fileExtension}`);
   } catch (error: unknown) {
     showError(error);
     return;
