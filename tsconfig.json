@@ -3,7 +3,7 @@
     "module": "commonjs",
     "target": "es6",
     "outDir": "out",
-    "lib": ["es6"],
+    "lib": ["es6", "es2022.error"],
     "noUnusedLocals": true,
     "sourceMap": true,
     "rootDir": "src",
