@@ -18,7 +18,7 @@ export async function onSave(document: vscode.TextDocument): Promise<void> {
   const isJson = fileExtension === '.json';
 
   if (!isYaml && !isJson) {
-    return;
+    throw new Error(`Unexpected file extension: ${fileExtension}`);
   }
 
   const toJsonExtension = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
@@ -31,30 +31,33 @@ export async function onSave(document: vscode.TextDocument): Promise<void> {
     if (isYaml) {
       newContent = getJsonFromYaml(document.getText());
       newFilePath = filePath.replace(fileExtension, toJsonExtension);
-    } else {
-      newContent = getYamlFromJson(document.getText());
-      newFilePath = filePath.replace(fileExtension, toYamlExtension);
+      return await convertAndWrite(newFilePath, newContent);
     }
+
+    newContent = getYamlFromJson(document.getText());
+    newFilePath = filePath.replace(fileExtension, toYamlExtension);
+    return await convertAndWrite(newFilePath, newContent);
   } catch (error: unknown) {
     showError(error);
     return;
   }
+}
 
+async function convertAndWrite(newFilePath: string, newContent: string): Promise<void> {
   const newFileUri = vscode.Uri.file(newFilePath);
 
   const fileExists = await doesFileExist(newFileUri);
-  if (fileExists) {
-    const shouldOverwrite = await isAllowOverwriteExistentFile(newFileUri);
-    if (!shouldOverwrite) {
-      return;
-    }
+  if (!fileExists) {
+    await vscode.workspace.fs.writeFile(newFileUri, Buffer.from(newContent));
+    return;
   }
 
-  try {
-    await vscode.workspace.fs.writeFile(newFileUri, Buffer.from(newContent));
-  } catch (error: unknown) {
-    showError(error);
+  const shouldOverwrite = await isAllowOverwriteExistentFile(newFileUri);
+  if (!shouldOverwrite) {
+    return;
   }
+
+  await vscode.workspace.fs.writeFile(newFileUri, Buffer.from(newContent));
 }
 
 async function doesFileExist(fileUri: vscode.Uri): Promise<boolean> {
