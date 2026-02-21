@@ -25,7 +25,7 @@ export function getYamlFromJson(json: string): string {
   const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
 
   try {
-    const jsonObject = YAML.parse(json);
+    const jsonObject = YAML.parse(json, { schema: 'json' });
 
     return YAML.stringify(jsonObject, {
       ...options, // do first so specific options take precedence
@@ -36,7 +36,7 @@ export function getYamlFromJson(json: string): string {
     });
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
+    throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
   }
 }
 
@@ -54,6 +54,6 @@ export function getJsonFromYaml(yaml: string): string {
     return JSON.stringify(json, undefined, 2);
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to parse JSON. Please make sure it has a valid format and try again.');
+    throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.');
   }
 }
