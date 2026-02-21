@@ -24,6 +24,11 @@ suite('helpers', () => {
         expectedFilePath: 'expected.yaml',
       },
       {
+        description: 'should convert json with trailing commas to yaml',
+        inputFilePath: 'trailingCommaInput.json',
+        expectedFilePath: 'trailingCommaExpected.yaml',
+      },
+      {
         description: 'when json lines are long and line width is not limited',
         inputFilePath: 'longLinesInput.json',
         expectedFilePath: 'longLinesExpectedUnlimited.yaml',

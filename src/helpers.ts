@@ -25,7 +25,7 @@ export function getYamlFromJson(json: string): string {
   const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
 
   try {
-    const jsonObject = JSON.parse(json);
+    const jsonObject = YAML.parse(json);
 
     return YAML.stringify(jsonObject, {
       ...options, // do first so specific options take precedence
