@@ -1,6 +1,6 @@
 # YAML :heart: JSON
 
-[![CodeQL](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/github-code-scanning/codeql)
+[![CodeQL](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql.yml/badge.svg)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql.yml)
 [![extension CI](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml)
 
 Easily convert YAML to JSON or vice versa. Conversion can be done by each individual file or by all files in a folder.
@@ -21,7 +21,6 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
   - Convert YAML selection by using command `Convert selection to JSON` - _does not_ change file extension.
   - Convert JSON selection by using command `Convert selection to YAML` - _does not_ change file extension.
 - **Converting multiple files:**
-
   - Convert a selection of JSON files to YAML by right clicking one of the selected files and selecting `Convert selected files to YAML`.
   - Convert a selection of YAML files to JSON by right clicking one of the selected files and selecting `Convert selected files to JSON`.
   - Convert YAML files in a directory to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
