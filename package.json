@@ -83,6 +83,14 @@
 			{
 				"command": "extension.previewAsJson",
 				"title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
+			},
+			{
+				"command": "extension.previewFileAsYaml",
+				"title": "YAML+JSON: Preview file as YAML (from JSON. Opens in new file)"
+			},
+			{
+				"command": "extension.previewFileAsJson",
+				"title": "YAML+JSON: Preview file as JSON (from YAML. Opens in new file)"
 			}
 		],
 		"menus": {
@@ -120,6 +128,14 @@
 				{
 					"command": "extension.convertYamlSelectionsToJson",
 					"when": "false"
+				},
+				{
+					"command": "extension.previewFileAsYaml",
+					"when": "resourceExtname == .json"
+				},
+				{
+					"command": "extension.previewFileAsJson",
+					"when": "resourceExtname == .yml || resourceExtname == .yaml"
 				}
 			],
 			"explorer/context": [
