@@ -1,13 +1,19 @@
-import * as vscode from 'vscode';
+import type { Uri } from 'vscode';
 
+import { contextProvider } from './contextProvider';
 import { isEmptyArray } from './array';
 import { ConvertFromType, FileConverter } from './converter';
 import { getFilesInDirectory } from './files';
 
-export async function onRightClickAndConvertJsonFilesToYaml(uri: vscode.Uri): Promise<void> {
+export async function onRightClickAndConvertJsonFilesToYaml(uri: Uri): Promise<void> {
+  const vscode = contextProvider.vscode;
   const files = await getFilesInDirectory(uri, 'json');
 
-  if (!files || isEmptyArray(files)) {
+  if (!files) {
+    return; // getFilesInDirectory already showed an error/info message
+  }
+
+  if (isEmptyArray(files)) {
     vscode.window.showInformationMessage('Did not find any json files in the selected directory');
     return;
   }
@@ -16,10 +22,15 @@ export async function onRightClickAndConvertJsonFilesToYaml(uri: vscode.Uri): Pr
   await jsonFileConverter.convertFiles(files);
 }
 
-export async function onRightClickConvertYamlFilesToJson(uri: vscode.Uri): Promise<void> {
+export async function onRightClickConvertYamlFilesToJson(uri: Uri): Promise<void> {
+  const vscode = contextProvider.vscode;
   const files = await getFilesInDirectory(uri, ['yaml', 'yml']);
 
-  if (!files || isEmptyArray(files)) {
+  if (!files) {
+    return; // getFilesInDirectory already showed an error/info message
+  }
+
+  if (isEmptyArray(files)) {
     vscode.window.showInformationMessage('Did not find any yaml files in the selected directory');
     return;
   }

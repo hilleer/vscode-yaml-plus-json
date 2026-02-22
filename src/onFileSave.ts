@@ -1,13 +1,16 @@
-import * as vscode from 'vscode';
 import * as path from 'path';
+import type { TextDocument, Uri, FileSystem as VSCodeFileSystem } from 'vscode';
 
+import { contextProvider } from './contextProvider';
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
 
-type FileSystem = Pick<vscode.FileSystem, 'readFile' | 'writeFile'>;
+type FileSystem = Pick<VSCodeFileSystem, 'readFile' | 'writeFile'>;
 
-export async function onSave(document: vscode.TextDocument, fs: FileSystem = vscode.workspace.fs): Promise<void> {
+export async function onFileSave(document: TextDocument): Promise<void> {
+  const vscode = contextProvider.vscode;
   const shouldConvertOnSave = getConfig<boolean>(ConfigId.ConvertOnSave);
+  const fs = vscode.workspace.fs;
 
   if (!shouldConvertOnSave) {
     return;
@@ -46,6 +49,7 @@ export async function onSave(document: vscode.TextDocument, fs: FileSystem = vsc
 }
 
 async function convertAndWrite(newFilePath: string, newContent: string, fs: FileSystem): Promise<void> {
+  const vscode = contextProvider.vscode;
   const newFileUri = vscode.Uri.file(newFilePath);
 
   const fileExists = await doesFileExist(newFileUri, fs);
@@ -62,7 +66,8 @@ async function convertAndWrite(newFilePath: string, newContent: string, fs: File
   await fs.writeFile(newFileUri, Buffer.from(newContent));
 }
 
-async function doesFileExist(fileUri: vscode.Uri, fs: FileSystem): Promise<boolean> {
+async function doesFileExist(fileUri: Uri, fs: FileSystem): Promise<boolean> {
+  const vscode = contextProvider.vscode;
   try {
     await fs.readFile(fileUri);
     return true;
@@ -74,7 +79,8 @@ async function doesFileExist(fileUri: vscode.Uri, fs: FileSystem): Promise<boole
   }
 }
 
-async function isAllowOverwriteExistentFile(fileUri: vscode.Uri): Promise<boolean> {
+async function isAllowOverwriteExistentFile(fileUri: Uri): Promise<boolean> {
+  const vscode = contextProvider.vscode;
   const config = getConfig<Configs['overwriteExistentFiles']>(ConfigId.OverwriteExistentFiles);
 
   if (!config) {

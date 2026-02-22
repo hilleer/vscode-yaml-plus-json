@@ -1,13 +1,14 @@
-import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
+import { contextProvider } from './contextProvider';
+import type { Uri } from 'vscode';
 
 type ConvertedFile = {
-  oldFileUri: vscode.Uri;
+  oldFileUri: Uri;
   oldFileContent: Uint8Array;
-  newFileUri: vscode.Uri;
+  newFileUri: Uri;
 };
 
 export enum ConvertFromType {
@@ -22,18 +23,19 @@ enum UserInputPrompt {
 
 type ConvertFileContext = {
   shouldKeepOriginalFile: boolean;
-  oldFileUri: vscode.Uri;
-  newFileUri: vscode.Uri;
+  oldFileUri: Uri;
+  newFileUri: Uri;
   fileContent: string;
 };
 
 export class FileConverter {
   private convertFromType: ConvertFromType;
+
   constructor(convertFromType: ConvertFromType) {
     this.convertFromType = convertFromType;
   }
 
-  public async convertFiles(files: vscode.Uri[]): Promise<void> {
+  public async convertFiles(files: Uri[]): Promise<void> {
     const shouldKeepOriginalFiles = await this.shouldKeepOriginalFiles(files.length);
     const convertFilePromises = files.map((file) => this.transformAndConvertFile(shouldKeepOriginalFiles, file));
     const convertedFiles = await Promise.all(convertFilePromises);
@@ -51,32 +53,44 @@ export class FileConverter {
    */
   private transformAndConvertFile = async (
     shouldKeepOriginalFile: boolean,
-    oldFileUri: vscode.Uri,
+    oldFileUri: Uri,
   ): Promise<ConvertedFile | null> => {
-    const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
-    const oldFileExtension = path.extname(oldFileUri.fsPath);
+    try {
+      const vscode = contextProvider.vscode;
+      const oldFileContent = await vscode.workspace.fs.readFile(oldFileUri);
+      const oldFileExtension = path.extname(oldFileUri.fsPath);
 
-    const newFileExtension = FileConverter.getNewFileExtension(this.convertFromType);
-    const newFilePath = oldFileUri.fsPath.replace(oldFileExtension, newFileExtension);
-    const newFileUri = vscode.Uri.file(newFilePath);
+      const newFileExtension = FileConverter.getNewFileExtension(this.convertFromType);
+      const newFilePath = oldFileUri.fsPath.replace(oldFileExtension, newFileExtension);
+      const newFileUri = vscode.Uri.file(newFilePath);
 
-    const fileExists = await this.doFileExist(newFileUri);
-    if (fileExists) {
-      const shouldOverwriteFile = await this.isAllowOverwriteExistentFile(newFileUri);
-      if (!shouldOverwriteFile) {
-        vscode.window.showInformationMessage(`File already exist.\n${newFileUri.fsPath}`);
-        return null;
+      const fileExists = await this.doFileExist(newFileUri);
+      if (fileExists) {
+        const shouldOverwriteFile = await this.isAllowOverwriteExistentFile(newFileUri);
+        if (!shouldOverwriteFile) {
+          const overwriteConfig = getConfig(ConfigId.OverwriteExistentFiles);
+          // Only show "file already exists" info when not in 'ask' mode
+          // (in 'ask' mode the user was already explicitly prompted and declined)
+          if (overwriteConfig !== 'ask') {
+            vscode.window.showInformationMessage(`File already exist.\n${newFileUri.fsPath}`);
+          }
+          return null;
+        }
       }
+
+      const fileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
+
+      await this.convertFile({ newFileUri, oldFileUri, shouldKeepOriginalFile, fileContent });
+
+      return { oldFileUri, oldFileContent, newFileUri };
+    } catch (error) {
+      showError(error);
+      return null;
     }
-
-    const fileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
-
-    await this.convertFile({ newFileUri, oldFileUri, shouldKeepOriginalFile, fileContent });
-
-    return { oldFileUri, oldFileContent, newFileUri };
   };
 
   private async showReverterTooltip(convertedFiles: ConvertedFile[]) {
+    const vscode = contextProvider.vscode;
     const filesLength = convertedFiles.length;
     const didConvertSingleFile = filesLength === 1;
 
@@ -106,6 +120,7 @@ export class FileConverter {
    * @returns a boolean signaling if file was converted or not.
    */
   private convertFile = async (context: ConvertFileContext): Promise<void> => {
+    const vscode = contextProvider.vscode;
     const { fileContent, newFileUri, oldFileUri, shouldKeepOriginalFile } = context;
     const newFile = Buffer.from(fileContent);
 
@@ -136,7 +151,8 @@ export class FileConverter {
     }
   };
 
-  private async doFileExist(fileUri: vscode.Uri): Promise<boolean> {
+  private async doFileExist(fileUri: Uri): Promise<boolean> {
+    const vscode = contextProvider.vscode;
     try {
       await vscode.workspace.fs.readFile(fileUri);
       return true;
@@ -151,6 +167,7 @@ export class FileConverter {
   }
 
   private async shouldKeepOriginalFiles(length: number): Promise<boolean> {
+    const vscode = contextProvider.vscode;
     const keepOriginalFiles = getConfig<Configs['keepOriginalFiles']>(ConfigId.KeepOriginalFiles);
 
     if (keepOriginalFiles === 'always') {
@@ -194,7 +211,8 @@ export class FileConverter {
     return fileExtension;
   }
 
-  private async isAllowOverwriteExistentFile(fileUri: vscode.Uri): Promise<boolean> {
+  private async isAllowOverwriteExistentFile(fileUri: Uri): Promise<boolean> {
+    const vscode = contextProvider.vscode;
     const config = getConfig<Configs['overwriteExistentFiles']>(ConfigId.OverwriteExistentFiles);
 
     if (!config) {

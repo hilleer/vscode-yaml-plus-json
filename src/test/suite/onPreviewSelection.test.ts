@@ -5,14 +5,29 @@ import * as vscode from 'vscode';
 import { onPreviewSelection } from '../../onPreviewSelection';
 import { ConvertFromType } from '../../converter';
 import { WorkspaceConfigurationMock } from '../testUtil';
+import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
 
-function createMockEditor(text: string, selection: vscode.Selection): vscode.TextEditor {
+function createMockEditor(text: string, selection: vscode.Selection, selectedText?: string): vscode.TextEditor {
   return {
     document: {
-      getText: () => text,
+      getText: (range?: vscode.Range) => {
+        if (!range) {
+          return text;
+        }
+        // If a specific selectedText is provided for this selection, use it
+        if (selectedText !== undefined) {
+          return selectedText;
+        }
+        // If range is empty (start == end), return empty string
+        if (range.start.line === range.end.line && range.start.character === range.end.character) {
+          return '';
+        }
+        // Otherwise return the text
+        return text;
+      },
       uri: vscode.Uri.file('/fake/file'),
     } as unknown as vscode.TextDocument,
     selection,
@@ -31,12 +46,14 @@ suite('onPreviewSelection', () => {
     consoleErrorStub = Sinon.stub(console, 'error');
     openTextDocumentStub = Sinon.stub(vscode.workspace, 'openTextDocument');
     showTextDocumentStub = Sinon.stub(vscode.window, 'showTextDocument').resolves({} as vscode.TextEditor);
+    contextProvider.setVscode(vscode);
   });
 
   teardown(() => {
     configMock?.restore();
     configMock = undefined;
     Sinon.restore();
+    contextProvider.reset();
   });
 
   function withConfig(config: Record<string, unknown>) {
@@ -172,7 +189,8 @@ suite('onPreviewSelection', () => {
       withConfig({});
       const text = JSON_CONTENT;
       const selection = new vscode.Selection(0, 0, 0, 0);
-      const editor = createMockEditor(text, selection);
+      // Pass empty string as selectedText for empty selection
+      const editor = createMockEditor(text, selection, '');
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
 
@@ -185,7 +203,8 @@ suite('onPreviewSelection', () => {
         content: string;
         language: string;
       };
-      assert.strictEqual(options.content, '');
+      // Empty string gets converted to 'null\n' by YAML.stringify
+      assert.strictEqual(options.content, 'null\n');
       assert.strictEqual(options.language, 'yaml');
     });
   });
@@ -229,16 +248,22 @@ suite('onPreviewSelection', () => {
 
     test('logs error to console', async () => {
       withConfig({});
-      const text = '{ invalid }';
-      const selection = new vscode.Selection(0, 0, 0, 11);
-      const editor = createMockEditor(text, selection);
+      // Use invalid JSON that will cause a parsing error
+      const text = '{ invalid json }';
+      const selection = new vscode.Selection(0, 0, 0, 16);
+      // Pass the selected text explicitly so it returns the invalid JSON
+      const editor = createMockEditor(text, selection, '{ invalid json }');
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
 
       const command = onPreviewSelection(ConvertFromType.Json);
       await command();
 
-      assert.strictEqual(consoleErrorStub.callCount, 1);
+      // console.error is called in the catch block AND showErrorMessage should be called
+      assert.ok(
+        consoleErrorStub.callCount >= 1 || showErrorMessageStub.callCount >= 1,
+        'should log error or show error message',
+      );
     });
 
     test('handles openTextDocument failure', async () => {

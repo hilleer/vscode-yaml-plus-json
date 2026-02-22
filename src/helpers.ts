@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
 import * as YAML from 'yaml';
 
+import { contextProvider } from './contextProvider';
 import { ConfigId, Configs, getConfig } from './config';
 
 const DEFAULT_ERROR_MESSAGE =
@@ -14,7 +14,7 @@ export function showError(error: unknown) {
 
   const message = error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE;
 
-  vscode.window.showErrorMessage(message);
+  contextProvider.vscode.window.showErrorMessage(message);
 }
 
 export function getYamlFromJson(json: string): string {

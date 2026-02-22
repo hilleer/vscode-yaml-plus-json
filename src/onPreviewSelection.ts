@@ -1,5 +1,4 @@
-import * as vscode from 'vscode';
-
+import { contextProvider } from './contextProvider';
 import { ConvertFromType } from './converter';
 import { getSelectionConverter } from './onConvertSelection';
 
@@ -8,6 +7,7 @@ export function onPreviewSelection(fromType: ConvertFromType) {
 
   return async () => {
     try {
+      const vscode = contextProvider.vscode;
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         throw new Error('editor not found');
@@ -24,6 +24,7 @@ export function onPreviewSelection(fromType: ConvertFromType) {
 
       await vscode.window.showTextDocument(previewDocument);
     } catch (error) {
+      const vscode = contextProvider.vscode;
       console.error(error);
       vscode.window.showErrorMessage(`an error occurred converting content from ${fromType.toLowerCase()}`);
     }

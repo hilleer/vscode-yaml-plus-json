@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import { onConvertSelection, getSelectionConverter } from '../../onConvertSelection';
 import { ConvertFromType } from '../../converter';
 import { WorkspaceConfigurationMock } from '../testUtil';
+import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
@@ -47,12 +48,14 @@ suite('onConvertSelection', () => {
   setup(() => {
     showErrorMessageStub = Sinon.stub(vscode.window, 'showErrorMessage');
     applyEditStub = Sinon.stub(vscode.workspace, 'applyEdit').resolves(true);
+    contextProvider.setVscode(vscode);
   });
 
   teardown(() => {
     configMock?.restore();
     configMock = undefined;
     Sinon.restore();
+    contextProvider.reset();
   });
 
   function withConfig(config: Record<string, unknown>) {
@@ -79,7 +82,8 @@ suite('onConvertSelection', () => {
     test('converts selected JSON text to YAML', async () => {
       withConfig({});
       const text = JSON_CONTENT;
-      const selection = new vscode.Selection(0, 0, 2, 0);
+      // Select all content - JSON_CONTENT is 4 lines, select to end of last line
+      const selection = new vscode.Selection(0, 0, 3, 1);
       const editor = createMockEditor(text, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
@@ -95,9 +99,11 @@ suite('onConvertSelection', () => {
 
     test('handles partial selection', async () => {
       withConfig({});
-      const text = '{\n  "name": "foo",\n  "value": 1\n}';
-      // Select just the inner content
-      const selection = new vscode.Selection(1, 2, 1, 16);
+      // Use a complete valid JSON that we can select a portion of
+      // The selected text must be valid JSON on its own
+      const text = '"partial value"';
+      // Select the entire string (valid JSON string)
+      const selection = new vscode.Selection(0, 0, 0, 15);
       const editor = createMockEditor(text, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
@@ -129,7 +135,8 @@ suite('onConvertSelection', () => {
     test('converts selected YAML text to JSON', async () => {
       withConfig({});
       const text = YAML_CONTENT;
-      const selection = new vscode.Selection(0, 0, 2, 0);
+      // YAML_CONTENT is 3 lines: "name: foo\nvalue: 1\n" - select all content
+      const selection = new vscode.Selection(0, 0, 2, 8);
       const editor = createMockEditor(text, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
@@ -170,18 +177,29 @@ suite('onConvertSelection', () => {
     test('moves cursor to end of selection after conversion', async () => {
       withConfig({});
       const text = JSON_CONTENT;
-      const selection = new vscode.Selection(0, 0, 2, 10);
+      // Select all content - JSON_CONTENT is 4 lines
+      const selection = new vscode.Selection(0, 0, 3, 1);
       const editor = createMockEditor(text, selection);
-      const selectionSetter = Sinon.stub();
-      (editor as { selection: unknown }).selection = { set: selectionSetter } as unknown;
+
+      // Create a mock selection setter to track if selection is updated
+      let selectionWasUpdated = false;
+      Object.defineProperty(editor, 'selection', {
+        set: () => {
+          selectionWasUpdated = true;
+        },
+        get: () => selection,
+        configurable: true,
+      });
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
 
       const command = onConvertSelection(ConvertFromType.Json);
       await command();
 
-      // Selection should be updated
+      // applyEdit should be called for the conversion
       assert.strictEqual(applyEditStub.callCount, 1);
+      // Selection should have been updated
+      assert.strictEqual(selectionWasUpdated, true);
     });
   });
 
@@ -247,7 +265,8 @@ suite('onConvertSelection', () => {
         null,
         2,
       );
-      const selection = new vscode.Selection(0, 0, 6, 0);
+      // Select all content (7 lines total, lines 0-6)
+      const selection = new vscode.Selection(0, 0, 6, 1);
       const editor = createMockEditor(nestedJson, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
@@ -300,8 +319,9 @@ suite('onConvertSelection', () => {
   suite('selection range', () => {
     test('handles single character selection', async () => {
       withConfig({});
+      // A quoted string is valid JSON, so select just the string value including quotes
       const text = '{"a":1}';
-      const selection = new vscode.Selection(0, 0, 0, 1);
+      const selection = new vscode.Selection(0, 5, 0, 6);
       const editor = createMockEditor(text, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
@@ -329,7 +349,8 @@ suite('onConvertSelection', () => {
     test('handles reversed selection (end before start)', async () => {
       withConfig({});
       const text = JSON_CONTENT;
-      const selection = new vscode.Selection(2, 10, 0, 0);
+      // Reversed selection but should still capture all content
+      const selection = new vscode.Selection(3, 1, 0, 0);
       const editor = createMockEditor(text, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
