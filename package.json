@@ -32,8 +32,8 @@
 		"workspaceContains:**/**.yaml",
 		"onLanguage:json",
 		"onLanguage:yaml",
-		"onCommand:yaml-plus-json.previewAsYaml",
-		"onCommand:yaml-plus-json.previewAsJson"
+		"onCommand:extension.previewAsYaml",
+		"onCommand:extension.previewAsJson"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
