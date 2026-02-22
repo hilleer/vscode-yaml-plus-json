@@ -31,7 +31,9 @@
 		"workspaceContains:**/**.yml",
 		"workspaceContains:**/**.yaml",
 		"onLanguage:json",
-		"onLanguage:yaml"
+		"onLanguage:yaml",
+		"onCommand:yaml-plus-json.previewAsYaml",
+		"onCommand:yaml-plus-json.previewAsJson"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -78,10 +80,12 @@
 			},
 			{
 				"command": "extension.previewAsYaml",
+				"category": "YAML+JSON",
 				"title": "YAML+JSON: Preview as YAML (from JSON. Opens in new file)"
 			},
 			{
 				"command": "extension.previewAsJson",
+				"category": "YAML+JSON",
 				"title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
 			}
 		],
