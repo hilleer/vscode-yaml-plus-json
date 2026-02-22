@@ -1,9 +1,12 @@
-import * as vscode from 'vscode';
 import * as path from 'path';
+import type { FileType, Uri } from 'vscode';
+
+import { contextProvider } from './contextProvider';
 
 type FileExtension = 'json' | 'yaml' | 'yml';
 
-export async function getFilesInDirectory(uri: vscode.Uri, fileExtensions: FileExtension | FileExtension[]) {
+export async function getFilesInDirectory(uri: Uri, fileExtensions: FileExtension | FileExtension[]) {
+  const vscode = contextProvider.vscode;
   const { fsPath, scheme } = uri;
 
   if (scheme !== 'file') {
@@ -19,7 +22,7 @@ export async function getFilesInDirectory(uri: vscode.Uri, fileExtensions: FileE
     return;
   }
 
-  const getFileUri = ([filePath]: [string, vscode.FileType]) => vscode.Uri.file(path.join(fsPath, filePath));
+  const getFileUri = ([filePath]: [string, FileType]) => vscode.Uri.file(path.join(fsPath, filePath));
 
   const directoryFiles = await vscode.workspace.fs.readDirectory(uri);
 
@@ -31,7 +34,8 @@ export async function getFilesInDirectory(uri: vscode.Uri, fileExtensions: FileE
 }
 
 function filterMatchingFilesInDirectory(fileExtensions: FileExtension[]) {
-  return ([filePath, fileType]: [string, vscode.FileType]) =>
+  const vscode = contextProvider.vscode;
+  return ([filePath, fileType]: [string, FileType]) =>
     fileType === vscode.FileType.File &&
     fileExtensions.some((extension) => isMatchingFileExtension(filePath, extension));
 }

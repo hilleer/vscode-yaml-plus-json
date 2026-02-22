@@ -1,13 +1,15 @@
-import * as vscode from 'vscode';
-import { ConvertFromType } from './converter';
+import type { Range, Selection, TextDocument } from 'vscode';
 
+import { ConvertFromType } from './converter';
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import { contextProvider } from './contextProvider';
 
 export function onConvertSelection(fromType: ConvertFromType) {
   const converter = getSelectionConverter(fromType);
 
   return async () => {
     try {
+      const vscode = contextProvider.vscode;
       const editor = vscode.window.activeTextEditor;
 
       if (!editor) {
@@ -36,14 +38,16 @@ export function getSelectionConverter(fromType: ConvertFromType) {
   }[fromType];
 }
 
-function getSelectionRange(selection: vscode.Selection) {
+function getSelectionRange(selection: Selection) {
   const { start, end } = selection;
+  const vscode = contextProvider.vscode;
   const range = new vscode.Range(start, end);
 
   return range;
 }
 
-async function replaceSelection(document: vscode.TextDocument, range: vscode.Range, replacement: string) {
+async function replaceSelection(document: TextDocument, range: Range, replacement: string) {
+  const vscode = contextProvider.vscode;
   const { uri } = document;
 
   const edit = new vscode.WorkspaceEdit();

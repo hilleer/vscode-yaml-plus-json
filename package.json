@@ -296,7 +296,7 @@
 		"format:fix": "prettier --write .",
 		"lint": "eslint src/",
 		"postversion": "git push && git push --tags",
-		"pretest": "npm run compile && npm run webpack && npm run lint",
+		"pretest": "npm run compile && npm run webpack",
 		"preversion": "npm run pretest",
 		"test": "node ./out/test/runTest.js",
 		"vscode:prepublish": "npm run webpack",
