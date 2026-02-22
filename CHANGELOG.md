@@ -1,5 +1,19 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- Config: `convertOnSave` to automatically convert a YAML/JSON file to its counterpart format on every save
+
+### Changed
+
+- Preview commands (`Preview as YAML` / `Preview as JSON`) now convert the full file when no text is selected, in addition to the existing selection-only behaviour
+
+### Fixed
+
+- JSON files containing trailing commas now convert to YAML correctly instead of throwing a parse error
+
 ## [1.13.0] - 2025-04-14
 
 ### Added
