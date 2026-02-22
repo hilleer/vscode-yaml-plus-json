@@ -44,7 +44,11 @@ export function getConfig<T = unknown>(configId: ConfigId | `${ConfigId}`): T | 
 
   const legacyConfigKey = getLegacyConfigKey(configId as ConfigId);
 
-  return config.get<T>(legacyConfigKey) || config.get<T>(configId);
+  if (legacyConfigKey) {
+    return config.get<T>(legacyConfigKey);
+  }
+
+  return config.get<T>(configId);
 }
 
 /**
@@ -55,8 +59,9 @@ const LEGACY_CONFIGS = Object.freeze({
   [ConfigId.YamlIndent]: ConfigIdLegacy.Indent,
 });
 
-function getLegacyConfigKey(configId: ConfigId) {
+function getLegacyConfigKey(configId: ConfigId): string | undefined {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  return LEGACY_CONFIGS[configId];
+  const value: unknown = LEGACY_CONFIGS[configId];
+  return typeof value === 'string' ? value : undefined;
 }

@@ -78,7 +78,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
-        showInformationMessageStub.firstCall.args[0].includes('Did not find any json files'),
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Did not find any json files'),
         'should show no json files message',
       );
     });
@@ -154,7 +154,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.ok(
-        showErrorMessageStub.firstCall.args[0].includes('Unexpected file scheme'),
+        (showErrorMessageStub.firstCall.args[0] as string).includes('Unexpected file scheme'),
         'should show unexpected scheme error',
       );
     });
@@ -169,7 +169,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
-        showInformationMessageStub.firstCall.args[0].includes('not recognised as a directory'),
+        (showInformationMessageStub.firstCall.args[0] as string).includes('not recognised as a directory'),
         'should show not a directory message',
       );
     });
@@ -202,7 +202,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
-        showInformationMessageStub.firstCall.args[0].includes('Did not find any yaml files'),
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Did not find any yaml files'),
         'should show no yaml files message',
       );
     });
@@ -276,7 +276,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.ok(
-        showErrorMessageStub.firstCall.args[0].includes('Unexpected file scheme'),
+        (showErrorMessageStub.firstCall.args[0] as string).includes('Unexpected file scheme'),
         'should show unexpected scheme error',
       );
     });
@@ -291,7 +291,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
-        showInformationMessageStub.firstCall.args[0].includes('not recognised as a directory'),
+        (showInformationMessageStub.firstCall.args[0] as string).includes('not recognised as a directory'),
         'should show not a directory message',
       );
     });
@@ -362,7 +362,10 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       await onRightClickAndConvertJsonFilesToYaml(uri);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('Revert'), 'should show revert message');
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Revert'),
+        'should show revert message',
+      );
     });
 
     test('shows reverter tooltip for multiple files conversion', async () => {
@@ -378,8 +381,14 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       await onRightClickAndConvertJsonFilesToYaml(uri);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('Revert'), 'should show revert message');
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('2'), 'should mention number of files');
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Revert'),
+        'should show revert message',
+      );
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('2'),
+        'should mention number of files',
+      );
     });
   });
 });

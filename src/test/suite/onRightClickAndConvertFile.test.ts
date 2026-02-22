@@ -104,8 +104,10 @@ suite('onRightClickAndConvertFile', () => {
         await onRightClickAndConvertJsonFile(undefined as unknown as vscode.Uri);
         assert.fail('should have thrown an error');
       } catch (error) {
-        assert.ok(error instanceof Error);
-        assert.strictEqual((error as Error).message, 'Failed to get active text editor');
+        if (!(error instanceof Error)) {
+          assert.fail('expected error to be an Error');
+        }
+        assert.strictEqual(error.message, 'Failed to get active text editor');
       }
     });
 
@@ -220,8 +222,10 @@ suite('onRightClickAndConvertFile', () => {
         await onRightClickAndConvertYamlFile(undefined as unknown as vscode.Uri);
         assert.fail('should have thrown an error');
       } catch (error) {
-        assert.ok(error instanceof Error);
-        assert.strictEqual((error as Error).message, 'Failed to get active text editor');
+        if (!(error instanceof Error)) {
+          assert.fail('expected error to be an Error');
+        }
+        assert.strictEqual(error.message, 'Failed to get active text editor');
       }
     });
   });
@@ -297,7 +301,10 @@ suite('onRightClickAndConvertFile', () => {
       await onRightClickAndConvertJsonFile(uri);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('Revert'), 'should show revert message');
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Revert'),
+        'should show revert message',
+      );
     });
 
     test('does not show reverter tooltip when keepOriginalFiles is true', async () => {

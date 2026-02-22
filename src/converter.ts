@@ -64,7 +64,7 @@ export class FileConverter {
     if (fileExists) {
       const shouldOverwriteFile = await this.isAllowOverwriteExistentFile(newFileUri);
       if (!shouldOverwriteFile) {
-        vscode.window.showInformationMessage(`File already exist.\n${newFileUri}`);
+        vscode.window.showInformationMessage(`File already exist.\n${newFileUri.fsPath}`);
         return null;
       }
     }
@@ -206,7 +206,7 @@ export class FileConverter {
     }
 
     if (config === 'ask') {
-      const question = `file already exist${fileUri}\nDo you want to overwrite it?`;
+      const question = `file already exist${fileUri.fsPath}\nDo you want to overwrite it?`;
       const answerOptions = Object.values(UserInputPrompt);
       const userResponse = await vscode.window.showInformationMessage(question, ...answerOptions);
 

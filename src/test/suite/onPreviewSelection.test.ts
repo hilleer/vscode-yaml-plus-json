@@ -163,7 +163,7 @@ suite('onPreviewSelection', () => {
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.ok(
-        showErrorMessageStub.firstCall.args[0].includes('an error occurred converting'),
+        (showErrorMessageStub.firstCall.args[0] as string).includes('an error occurred converting'),
         'should show conversion error',
       );
     });
@@ -204,7 +204,7 @@ suite('onPreviewSelection', () => {
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.ok(
-        showErrorMessageStub.firstCall.args[0].includes('an error occurred converting'),
+        (showErrorMessageStub.firstCall.args[0] as string).includes('an error occurred converting'),
         'should show conversion error',
       );
     });
@@ -222,7 +222,7 @@ suite('onPreviewSelection', () => {
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.ok(
-        showErrorMessageStub.firstCall.args[0].includes('an error occurred converting'),
+        (showErrorMessageStub.firstCall.args[0] as string).includes('an error occurred converting'),
         'should show conversion error',
       );
     });
@@ -363,7 +363,7 @@ suite('onPreviewSelection', () => {
       const command = onPreviewSelection(ConvertFromType.Json);
       await command();
 
-      const options = openTextDocumentStub.firstCall.args[0];
+      const options = openTextDocumentStub.firstCall.args[0] as { content: string; language: string };
       assert.ok(options.content !== undefined, 'should have content property');
       assert.ok(options.language !== undefined, 'should have language property');
     });

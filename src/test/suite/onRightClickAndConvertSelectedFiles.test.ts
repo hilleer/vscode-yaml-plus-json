@@ -309,7 +309,10 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       await onConvertSelectedJsonFilesToYaml(clickedFile, selections);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('Revert'), 'should show revert message');
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Revert'),
+        'should show revert message',
+      );
     });
 
     test('shows reverter tooltip for multiple files conversion', async () => {
@@ -322,8 +325,14 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       await onConvertSelectedJsonFilesToYaml(clickedFile, selections);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('Revert'), 'should show revert message');
-      assert.ok(showInformationMessageStub.firstCall.args[0].includes('2'), 'should mention number of files');
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Revert'),
+        'should show revert message',
+      );
+      assert.ok(
+        (showInformationMessageStub.firstCall.args[0] as string).includes('2'),
+        'should mention number of files',
+      );
     });
   });
 
