@@ -123,11 +123,11 @@
 				},
 				{
 					"command": "extension.previewAsYaml",
-					"when": "resourceExtname == .json"
+					"when": "editorLangId == 'json'"
 				},
 				{
 					"command": "extension.previewAsJson",
-					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+					"when": "editorLangId == 'yaml'"
 				}
 			],
 			"explorer/context": [
