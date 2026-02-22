@@ -120,6 +120,14 @@
 				{
 					"command": "extension.convertYamlSelectionsToJson",
 					"when": "false"
+				},
+				{
+					"command": "extension.previewAsYaml",
+					"when": "editorLangId == 'json'"
+				},
+				{
+					"command": "extension.previewAsJson",
+					"when": "editorLangId == 'yaml'"
 				}
 			],
 			"explorer/context": [
