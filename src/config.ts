@@ -45,7 +45,10 @@ export function getConfig<T = unknown>(configId: ConfigId | `${ConfigId}`): T | 
   const legacyConfigKey = getLegacyConfigKey(configId as ConfigId);
 
   if (legacyConfigKey) {
-    return config.get<T>(legacyConfigKey);
+    const legacyValue = config.get<T | undefined>(legacyConfigKey);
+    if (legacyValue !== undefined) {
+      return legacyValue;
+    }
   }
 
   return config.get<T>(configId);

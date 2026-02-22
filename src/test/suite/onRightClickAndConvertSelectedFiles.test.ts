@@ -63,7 +63,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -81,7 +81,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 3);
     });
@@ -102,7 +102,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
     });
@@ -122,7 +122,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
     });
@@ -131,7 +131,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       withConfig({});
       const selections: Uri[] = [];
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
@@ -140,7 +140,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       withConfig({});
       const selections = [Uri.file('/fake/readme.md'), Uri.file('/fake/config.yaml'), Uri.file('/fake/script.ts')];
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
@@ -158,7 +158,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -176,7 +176,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -194,7 +194,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 3);
     });
@@ -215,7 +215,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
     });
@@ -236,7 +236,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 2);
     });
@@ -245,7 +245,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       withConfig({});
       const selections: Uri[] = [];
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
@@ -254,7 +254,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       withConfig({});
       const selections = [Uri.file('/fake/readme.md'), Uri.file('/fake/config.json'), Uri.file('/fake/script.ts')];
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
@@ -272,7 +272,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.delete.callCount, 0);
       assert.strictEqual(mockFs.writeFile.callCount, 1);
@@ -289,7 +289,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.delete.callCount, 1);
       assert.strictEqual(mockFs.writeFile.callCount, 1);
@@ -306,7 +306,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(mockFs.delete.callCount, 0);
       assert.strictEqual(mockFs.writeFile.callCount, 1);
@@ -325,7 +325,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
@@ -345,7 +345,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
@@ -371,7 +371,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from('{ invalid json }'));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
     });
@@ -387,7 +387,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from('--- {unclosed'));
       });
 
-      await onConvertSelectedYamlFilesToJson(selections);
+      await onConvertSelectedYamlFilesToJson(Uri.file('/fake/clicked'), selections);
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
     });
@@ -408,7 +408,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
 
-      await onConvertSelectedJsonFilesToYaml(selections);
+      await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
       assert.ok(mockFs.writeFile.callCount >= 0);
     });

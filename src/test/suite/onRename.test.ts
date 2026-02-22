@@ -244,10 +244,10 @@ suite('onFileRename', () => {
 
       await onFileRename(event);
 
-      // Should only process 2 files (json->yaml and yml->json)
-      // The implementation only calls openTextDocument for convertible files
+      // Only the 2 convertible renames (json->yaml, yml->json) open a document; txt->md is skipped
       assert.strictEqual(mockOpenTextDocument.callCount, 2);
-      // But only 1 should have edit applied (only json->yaml and yml->json pairs work)
+      // The mock returns 'plaintext' for the 2nd openTextDocument call (file3.yml->file3.json),
+      // so only 1 edit is applied (the switch only handles 'json' and 'yaml' languageIds)
       assert.strictEqual(mockApplyEdit.callCount, 1);
     });
   });
