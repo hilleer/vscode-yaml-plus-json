@@ -14,7 +14,7 @@ export function onPreviewSelection(fromType: ConvertFromType) {
       }
 
       const { selection, document } = editor;
-      const text = document.getText(selection);
+      const text = selection.isEmpty ? document.getText() : document.getText(selection);
 
       const previewText = converter(text);
       const previewDocument = await vscode.workspace.openTextDocument({

@@ -13,7 +13,6 @@ import {
 import { onConvertSelection } from './onConvertSelection';
 import { ConvertFromType } from './converter';
 import { onPreviewSelection } from './onPreviewSelection';
-import { onPreviewFile } from './onPreviewFile';
 
 const { registerCommand } = vscode.commands;
 
@@ -29,8 +28,6 @@ export function activate(context: vscode.ExtensionContext) {
     registerCommand('extension.convertYamlSelectionsToJson', onConvertSelectedYamlFilesToJson),
     registerCommand('extension.previewAsYaml', onPreviewSelection(ConvertFromType.Json)),
     registerCommand('extension.previewAsJson', onPreviewSelection(ConvertFromType.Yaml)),
-    registerCommand('extension.previewFileAsYaml', onPreviewFile(ConvertFromType.Json)),
-    registerCommand('extension.previewFileAsJson', onPreviewFile(ConvertFromType.Yaml)),
   );
 
   vscode.workspace.onDidRenameFiles(onRename);
