@@ -1,11 +1,9 @@
 import * as path from 'path';
-import type { TextDocument, Uri, FileSystem as VSCodeFileSystem } from 'vscode';
+import type { TextDocument, Uri, FileSystem } from 'vscode';
 
 import { contextProvider } from './contextProvider';
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
-
-type FileSystem = Pick<VSCodeFileSystem, 'readFile' | 'writeFile'>;
 
 export async function onFileSave(document: TextDocument): Promise<void> {
   const vscode = contextProvider.vscode;
