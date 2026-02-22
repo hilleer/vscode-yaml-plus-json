@@ -46,11 +46,7 @@ function getSelectionRange(selection: Selection) {
   return range;
 }
 
-async function replaceSelection(
-  document: TextDocument,
-  range: Range,
-  replacement: string,
-) {
+async function replaceSelection(document: TextDocument, range: Range, replacement: string) {
   const vscode = contextProvider.vscode;
   const { uri } = document;
 
