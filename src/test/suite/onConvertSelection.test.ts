@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
 import * as vscode from 'vscode';
+import type { TextEditor, TextDocument, Range, WorkspaceEdit, Selection } from 'vscode';
 
 import { onConvertSelection, getSelectionConverter } from '../../onConvertSelection';
 import { ConvertFromType } from '../../converter';
@@ -10,9 +11,9 @@ import { contextProvider } from '../../contextProvider';
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
 
-function createMockEditor(text: string, selection: vscode.Selection): vscode.TextEditor {
+function createMockEditor(text: string, selection: Selection): TextEditor {
   const document = {
-    getText: (range?: vscode.Range) => {
+    getText: (range?: Range) => {
       if (!range) return text;
       const lines = text.split('\n');
       const result: string[] = [];
@@ -31,13 +32,13 @@ function createMockEditor(text: string, selection: vscode.Selection): vscode.Tex
       return result.join('\n');
     },
     uri: vscode.Uri.file('/fake/file'),
-  } as unknown as vscode.TextDocument;
+  } as unknown as TextDocument;
 
   return {
     document,
     selection,
     edit: Sinon.stub().resolves(true),
-  } as unknown as vscode.TextEditor;
+  } as unknown as TextEditor;
 }
 
 suite('onConvertSelection', () => {
@@ -92,7 +93,7 @@ suite('onConvertSelection', () => {
       await command();
 
       assert.strictEqual(applyEditStub.callCount, 1);
-      const edit = applyEditStub.firstCall.args[0] as vscode.WorkspaceEdit;
+      const edit = applyEditStub.firstCall.args[0] as WorkspaceEdit;
       const entries = edit.entries();
       assert.strictEqual(entries.length, 1);
     });
@@ -292,7 +293,7 @@ suite('onConvertSelection', () => {
       await command();
 
       assert.strictEqual(applyEditStub.callCount, 1);
-      const edit = applyEditStub.firstCall.args[0] as vscode.WorkspaceEdit;
+      const edit = applyEditStub.firstCall.args[0] as WorkspaceEdit;
       const entries = edit.entries();
       const replacement = entries[0][1][0].newText;
       assert.ok(replacement.includes('[') || replacement.includes('items'));

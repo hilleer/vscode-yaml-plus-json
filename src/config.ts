@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import { workspace } from 'vscode';
 
 export enum ConfigId {
   ConvertOnRename = 'convertOnRename',
@@ -40,7 +40,7 @@ const EXTENSION_CONFIG_ID = 'yaml-plus-json';
 
 // TODO set extended type of generic
 export function getConfig<T = unknown>(configId: ConfigId | `${ConfigId}`): T | undefined {
-  const config = vscode.workspace.getConfiguration(EXTENSION_CONFIG_ID);
+  const config = workspace.getConfiguration(EXTENSION_CONFIG_ID);
 
   const legacyConfigKey = getLegacyConfigKey(configId as ConfigId);
 

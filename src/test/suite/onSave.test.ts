@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
-import * as vscode from 'vscode';
+import { Uri, FileSystemError, FileType } from 'vscode';
+import type { TextDocument } from 'vscode';
 
 import { onFileSave } from '../../onFileSave';
 import { ConfigId, Configs } from '../../config';
@@ -10,13 +11,13 @@ import { contextProvider } from '../../contextProvider';
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
 
-function makeDocument(fsPath: string, text: string, isDirty = false): vscode.TextDocument {
+function makeDocument(fsPath: string, text: string, isDirty = false): TextDocument {
   return {
-    uri: vscode.Uri.file(fsPath),
+    uri: Uri.file(fsPath),
     getText: () => text,
     save: Sinon.stub().resolves(true),
     isDirty,
-  } as unknown as vscode.TextDocument;
+  } as unknown as TextDocument;
 }
 
 suite('onFileSave', () => {
@@ -27,11 +28,11 @@ suite('onFileSave', () => {
 
   setup(() => {
     mockFs = {
-      readFile: Sinon.stub().rejects(vscode.FileSystemError.FileNotFound()),
+      readFile: Sinon.stub().rejects(FileSystemError.FileNotFound()),
       writeFile: Sinon.stub().resolves(),
       delete: Sinon.stub().resolves(),
       stat: Sinon.stub().resolves({
-        type: vscode.FileType.File,
+        type: FileType.File,
         ctime: Date.now(),
         mtime: Date.now(),
         size: 100,
@@ -89,7 +90,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri, writtenContent] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri, writtenContent] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should have .json extension');
       assert.deepStrictEqual(JSON.parse(Buffer.from(writtenContent).toString()), {
         name: 'foo',
@@ -103,7 +104,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.yml', YAML_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should have .json extension');
     });
 
@@ -113,7 +114,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(!writtenUri.fsPath.endsWith('.yaml'), 'original .yaml file should not be written/deleted');
     });
   });
@@ -125,7 +126,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.json', JSON_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.yaml'), 'written file should have .yaml extension');
     });
 
@@ -135,7 +136,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.json', JSON_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(!writtenUri.fsPath.endsWith('.json'), 'original .json file should not be written/deleted');
     });
   });
@@ -202,7 +203,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.json', JSON_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.yml'), 'written file should use configured .yml extension');
     });
 
@@ -215,7 +216,7 @@ suite('onFileSave', () => {
       await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should use configured .json extension');
     });
   });

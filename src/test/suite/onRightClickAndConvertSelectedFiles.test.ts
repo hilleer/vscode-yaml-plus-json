@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
-import * as vscode from 'vscode';
+import { Uri, FileSystemError, FileType } from 'vscode';
 
 import { ConfigId, Configs } from '../../config';
 import { WorkspaceConfigurationMock, createMockVscode, MockFs } from '../testUtil';
@@ -21,11 +21,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
   setup(() => {
     mockFs = {
-      readFile: Sinon.stub().rejects(vscode.FileSystemError.FileNotFound()),
+      readFile: Sinon.stub().rejects(FileSystemError.FileNotFound()),
       writeFile: Sinon.stub().resolves(),
       delete: Sinon.stub().resolves(),
       stat: Sinon.stub().resolves({
-        type: vscode.FileType.File,
+        type: FileType.File,
         ctime: Date.now(),
         mtime: Date.now(),
         size: 100,
@@ -64,11 +64,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
   suite('onConvertSelectedJsonFilesToYaml', () => {
     test('converts single selected JSON file to YAML', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.json')];
+      const selections = [Uri.file('/fake/file.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -76,21 +76,17 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       await onConvertSelectedJsonFilesToYaml(selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.yaml'), 'written file should have .yaml extension');
     });
 
     test('converts multiple selected JSON files to YAML', async () => {
       withConfig({});
-      const selections = [
-        vscode.Uri.file('/fake/file1.json'),
-        vscode.Uri.file('/fake/file2.json'),
-        vscode.Uri.file('/fake/config.json'),
-      ];
+      const selections = [Uri.file('/fake/file1.json'), Uri.file('/fake/file2.json'), Uri.file('/fake/config.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -103,15 +99,15 @@ suite('onRightClickAndConvertSelectedFiles', () => {
     test('filters out non-JSON files from selections', async () => {
       withConfig({});
       const selections = [
-        vscode.Uri.file('/fake/file.json'),
-        vscode.Uri.file('/fake/readme.md'),
-        vscode.Uri.file('/fake/config.yaml'),
-        vscode.Uri.file('/fake/script.ts'),
+        Uri.file('/fake/file.json'),
+        Uri.file('/fake/readme.md'),
+        Uri.file('/fake/config.yaml'),
+        Uri.file('/fake/script.ts'),
       ];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -124,14 +120,14 @@ suite('onRightClickAndConvertSelectedFiles', () => {
     test('converts only files with .json extension', async () => {
       withConfig({});
       const selections = [
-        vscode.Uri.file('/fake/file.json'),
-        vscode.Uri.file('/fake/file.JSON'), // uppercase - should not match
-        vscode.Uri.file('/fake/file.json5'), // different extension
+        Uri.file('/fake/file.json'),
+        Uri.file('/fake/file.JSON'), // uppercase - should not match
+        Uri.file('/fake/file.json5'), // different extension
       ];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -143,7 +139,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('handles empty selections array', async () => {
       withConfig({});
-      const selections: vscode.Uri[] = [];
+      const selections: Uri[] = [];
 
       await onConvertSelectedJsonFilesToYaml(selections);
 
@@ -152,11 +148,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('handles selections with no JSON files', async () => {
       withConfig({});
-      const selections = [
-        vscode.Uri.file('/fake/readme.md'),
-        vscode.Uri.file('/fake/config.yaml'),
-        vscode.Uri.file('/fake/script.ts'),
-      ];
+      const selections = [Uri.file('/fake/readme.md'), Uri.file('/fake/config.yaml'), Uri.file('/fake/script.ts')];
 
       await onConvertSelectedJsonFilesToYaml(selections);
 
@@ -167,11 +159,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
   suite('onConvertSelectedYamlFilesToJson', () => {
     test('converts single selected .yaml file to JSON', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.yaml')];
+      const selections = [Uri.file('/fake/file.yaml')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
@@ -179,17 +171,17 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       await onConvertSelectedYamlFilesToJson(selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should have .json extension');
     });
 
     test('converts single selected .yml file to JSON', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.yml')];
+      const selections = [Uri.file('/fake/file.yml')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
@@ -197,21 +189,17 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       await onConvertSelectedYamlFilesToJson(selections);
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
-      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should have .json extension');
     });
 
     test('converts mixed .yaml and .yml files to JSON', async () => {
       withConfig({});
-      const selections = [
-        vscode.Uri.file('/fake/file1.yaml'),
-        vscode.Uri.file('/fake/file2.yml'),
-        vscode.Uri.file('/fake/config.yaml'),
-      ];
+      const selections = [Uri.file('/fake/file1.yaml'), Uri.file('/fake/file2.yml'), Uri.file('/fake/config.yaml')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
@@ -224,15 +212,15 @@ suite('onRightClickAndConvertSelectedFiles', () => {
     test('filters out non-YAML files from selections', async () => {
       withConfig({});
       const selections = [
-        vscode.Uri.file('/fake/file.yaml'),
-        vscode.Uri.file('/fake/readme.md'),
-        vscode.Uri.file('/fake/config.json'),
-        vscode.Uri.file('/fake/script.ts'),
+        Uri.file('/fake/file.yaml'),
+        Uri.file('/fake/readme.md'),
+        Uri.file('/fake/config.json'),
+        Uri.file('/fake/script.ts'),
       ];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
@@ -245,15 +233,15 @@ suite('onRightClickAndConvertSelectedFiles', () => {
     test('converts only files with .yaml or .yml extension', async () => {
       withConfig({});
       const selections = [
-        vscode.Uri.file('/fake/file.yaml'),
-        vscode.Uri.file('/fake/file.YAML'), // uppercase - should not match
-        vscode.Uri.file('/fake/file.yml'),
-        vscode.Uri.file('/fake/file.YML'), // uppercase - should not match
+        Uri.file('/fake/file.yaml'),
+        Uri.file('/fake/file.YAML'), // uppercase - should not match
+        Uri.file('/fake/file.yml'),
+        Uri.file('/fake/file.YML'), // uppercase - should not match
       ];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
@@ -265,7 +253,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('handles empty selections array', async () => {
       withConfig({});
-      const selections: vscode.Uri[] = [];
+      const selections: Uri[] = [];
 
       await onConvertSelectedYamlFilesToJson(selections);
 
@@ -274,11 +262,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('handles selections with no YAML files', async () => {
       withConfig({});
-      const selections = [
-        vscode.Uri.file('/fake/readme.md'),
-        vscode.Uri.file('/fake/config.json'),
-        vscode.Uri.file('/fake/script.ts'),
-      ];
+      const selections = [Uri.file('/fake/readme.md'), Uri.file('/fake/config.json'), Uri.file('/fake/script.ts')];
 
       await onConvertSelectedYamlFilesToJson(selections);
 
@@ -289,11 +273,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
   suite('keepOriginalFiles config', () => {
     test('keeps original JSON files when keepOriginalFiles is always', async () => {
       withConfig({ [ConfigId.KeepOriginalFiles]: 'always' });
-      const selections = [vscode.Uri.file('/fake/file.json')];
+      const selections = [Uri.file('/fake/file.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -306,11 +290,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('deletes original JSON files when keepOriginalFiles is not set', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.json')];
+      const selections = [Uri.file('/fake/file.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -323,11 +307,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('keeps original YAML files when keepOriginalFiles is always', async () => {
       withConfig({ [ConfigId.KeepOriginalFiles]: 'always' });
-      const selections = [vscode.Uri.file('/fake/file.yaml')];
+      const selections = [Uri.file('/fake/file.yaml')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(YAML_CONTENT));
       });
@@ -342,11 +326,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
   suite('reverter tooltip', () => {
     test('shows reverter tooltip for single file conversion', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.json')];
+      const selections = [Uri.file('/fake/file.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -362,11 +346,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('shows reverter tooltip for multiple files conversion', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file1.json'), vscode.Uri.file('/fake/file2.json')];
+      const selections = [Uri.file('/fake/file1.json'), Uri.file('/fake/file2.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from(JSON_CONTENT));
       });
@@ -388,11 +372,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
   suite('error handling', () => {
     test('handles errors during JSON to YAML conversion gracefully', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.json')];
+      const selections = [Uri.file('/fake/file.json')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from('{ invalid json }'));
       });
@@ -404,11 +388,11 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('handles errors during YAML to JSON conversion gracefully', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file.yaml')];
+      const selections = [Uri.file('/fake/file.yaml')];
 
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         return Promise.resolve(Buffer.from('--- {unclosed'));
       });
@@ -420,13 +404,13 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
     test('continues converting remaining files when one fails', async () => {
       withConfig({});
-      const selections = [vscode.Uri.file('/fake/file1.json'), vscode.Uri.file('/fake/file2.json')];
+      const selections = [Uri.file('/fake/file1.json'), Uri.file('/fake/file2.json')];
 
       let callCount = 0;
-      mockFs.readFile.callsFake((uri: vscode.Uri) => {
+      mockFs.readFile.callsFake((uri: Uri) => {
         callCount++;
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
-          return Promise.reject(vscode.FileSystemError.FileNotFound());
+          return Promise.reject(FileSystemError.FileNotFound());
         }
         if (callCount === 2) {
           return Promise.reject(new Error('Read error'));

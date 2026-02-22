@@ -1,5 +1,5 @@
 import * as path from 'path';
-import type { Uri } from 'vscode';
+import type { FileType, Uri } from 'vscode';
 
 import { contextProvider } from './contextProvider';
 
@@ -22,7 +22,7 @@ export async function getFilesInDirectory(uri: Uri, fileExtensions: FileExtensio
     return;
   }
 
-  const getFileUri = ([filePath]: [string, number]) => vscode.Uri.file(path.join(fsPath, filePath));
+  const getFileUri = ([filePath]: [string, FileType]) => vscode.Uri.file(path.join(fsPath, filePath));
 
   const directoryFiles = await vscode.workspace.fs.readDirectory(uri);
 
@@ -34,7 +34,7 @@ export async function getFilesInDirectory(uri: Uri, fileExtensions: FileExtensio
 }
 
 function filterMatchingFilesInDirectory(vscode: typeof import('vscode'), fileExtensions: FileExtension[]) {
-  return ([filePath, fileType]: [string, number]) =>
+  return ([filePath, fileType]: [string, FileType]) =>
     fileType === vscode.FileType.File &&
     fileExtensions.some((extension) => isMatchingFileExtension(filePath, extension));
 }

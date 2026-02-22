@@ -1,5 +1,6 @@
 import * as Sinon from 'sinon';
-import * as vscode from 'vscode';
+import { Uri, FileSystemError, FileType, Position, Range, WorkspaceEdit, Selection, workspace } from 'vscode';
+import type { TextEditor, WorkspaceConfiguration } from 'vscode';
 import { ConfigId, Configs } from '../config';
 
 type ConfigInput = Partial<Configs>;
@@ -8,11 +9,11 @@ export class WorkspaceConfigurationMock {
   private stub: Sinon.SinonStub;
 
   constructor(configMock: ConfigInput = {}) {
-    this.stub = Sinon.stub(vscode.workspace, 'getConfiguration');
+    this.stub = Sinon.stub(workspace, 'getConfiguration');
 
     this.stub.returns({
       get: (configKey: ConfigId) => configMock[configKey],
-    } as vscode.WorkspaceConfiguration);
+    } as WorkspaceConfiguration);
   }
 
   restore() {
@@ -33,7 +34,7 @@ export type MockVscodeOptions = {
   window?: {
     showInformationMessage?: Sinon.SinonStub;
     showErrorMessage?: Sinon.SinonStub;
-    activeTextEditor?: vscode.TextEditor | undefined;
+    activeTextEditor?: TextEditor | undefined;
   };
   workspace?: {
     openTextDocument?: Sinon.SinonStub;
@@ -46,7 +47,7 @@ export type MockVscodeOptions = {
  * Pass in stubs you want to track for assertions.
  * Constants like Uri, FileSystemError, FileType etc. are taken from the real vscode.
  */
-export function createMockVscode(options: MockVscodeOptions = {}): any {
+export function createMockVscode(options: MockVscodeOptions = {}): typeof import('vscode') {
   return {
     workspace: {
       fs: options.fs ?? {},
@@ -58,12 +59,12 @@ export function createMockVscode(options: MockVscodeOptions = {}): any {
       showErrorMessage: options.window?.showErrorMessage,
       activeTextEditor: options.window?.activeTextEditor,
     },
-    Uri: vscode.Uri,
-    FileSystemError: vscode.FileSystemError,
-    FileType: vscode.FileType,
-    Position: vscode.Position,
-    Range: vscode.Range,
-    WorkspaceEdit: vscode.WorkspaceEdit,
-    Selection: vscode.Selection,
-  };
+    Uri,
+    FileSystemError,
+    FileType,
+    Position,
+    Range,
+    WorkspaceEdit,
+    Selection,
+  } as unknown as typeof import('vscode');
 }

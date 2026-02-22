@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
-import * as vscode from 'vscode';
+import { Uri } from 'vscode';
+import type { TextDocument, FileRenameEvent } from 'vscode';
 
 import { onFileRename } from '../../onFileRename';
 import { ConfigId, Configs } from '../../config';
@@ -10,15 +11,15 @@ import { contextProvider } from '../../contextProvider';
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
 
-function makeDocument(text: string, languageId: string): vscode.TextDocument {
+function makeDocument(text: string, languageId: string): TextDocument {
   return {
     getText: () => text,
     languageId,
     lineCount: text.split('\n').length,
     isDirty: false,
-    uri: vscode.Uri.file('/fake/path'),
+    uri: Uri.file('/fake/path'),
     save: Sinon.stub().resolves(),
-  } as unknown as vscode.TextDocument;
+  } as unknown as TextDocument;
 }
 
 suite('onFileRename', () => {
@@ -56,15 +57,15 @@ suite('onFileRename', () => {
     configMock = new WorkspaceConfigurationMock(config);
   }
 
-  function createRenameEvent(oldPath: string, newPath: string): vscode.FileRenameEvent {
+  function createRenameEvent(oldPath: string, newPath: string): FileRenameEvent {
     return {
       files: [
         {
-          oldUri: vscode.Uri.file(oldPath),
-          newUri: vscode.Uri.file(newPath),
+          oldUri: Uri.file(oldPath),
+          newUri: Uri.file(newPath),
         },
       ],
-    } as vscode.FileRenameEvent;
+    } as FileRenameEvent;
   }
 
   suite('convertOnRename disabled', () => {
@@ -204,15 +205,15 @@ suite('onFileRename', () => {
       const event = {
         files: [
           {
-            oldUri: vscode.Uri.file('/fake/file1.json'),
-            newUri: vscode.Uri.file('/fake/file1.yaml'),
+            oldUri: Uri.file('/fake/file1.json'),
+            newUri: Uri.file('/fake/file1.yaml'),
           },
           {
-            oldUri: vscode.Uri.file('/fake/file2.yml'),
-            newUri: vscode.Uri.file('/fake/file2.json'),
+            oldUri: Uri.file('/fake/file2.yml'),
+            newUri: Uri.file('/fake/file2.json'),
           },
         ],
-      } as vscode.FileRenameEvent;
+      } as FileRenameEvent;
 
       mockOpenTextDocument
         .onFirstCall()
@@ -230,19 +231,19 @@ suite('onFileRename', () => {
       const event = {
         files: [
           {
-            oldUri: vscode.Uri.file('/fake/file1.json'),
-            newUri: vscode.Uri.file('/fake/file1.yaml'),
+            oldUri: Uri.file('/fake/file1.json'),
+            newUri: Uri.file('/fake/file1.yaml'),
           },
           {
-            oldUri: vscode.Uri.file('/fake/file2.txt'),
-            newUri: vscode.Uri.file('/fake/file2.md'),
+            oldUri: Uri.file('/fake/file2.txt'),
+            newUri: Uri.file('/fake/file2.md'),
           },
           {
-            oldUri: vscode.Uri.file('/fake/file3.yml'),
-            newUri: vscode.Uri.file('/fake/file3.json'),
+            oldUri: Uri.file('/fake/file3.yml'),
+            newUri: Uri.file('/fake/file3.json'),
           },
         ],
-      } as vscode.FileRenameEvent;
+      } as FileRenameEvent;
 
       mockOpenTextDocument
         .onFirstCall()
@@ -343,9 +344,9 @@ suite('onFileRename', () => {
         languageId: 'yaml',
         lineCount: JSON_CONTENT.split('\n').length,
         isDirty: true,
-        uri: vscode.Uri.file('/fake/file.yaml'),
+        uri: Uri.file('/fake/file.yaml'),
         save: saveStub,
-      } as unknown as vscode.TextDocument;
+      } as unknown as TextDocument;
 
       mockOpenTextDocument.resolves(document);
 
@@ -366,7 +367,7 @@ suite('onFileRename', () => {
     test('handles empty rename event', async () => {
       const event = {
         files: [],
-      } as vscode.FileRenameEvent;
+      } as FileRenameEvent;
 
       // Reset the stub to ensure clean state
       mockOpenTextDocument.resolves(makeDocument('', 'plaintext'));

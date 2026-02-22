@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
 import * as vscode from 'vscode';
+import type { TextEditor, TextDocument, Range } from 'vscode';
 
 import { onPreviewSelection } from '../../onPreviewSelection';
 import { ConvertFromType } from '../../converter';
@@ -10,10 +11,10 @@ import { contextProvider } from '../../contextProvider';
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
 
-function createMockEditor(text: string, selection: vscode.Selection, selectedText?: string): vscode.TextEditor {
+function createMockEditor(text: string, selection: vscode.Selection, selectedText?: string): TextEditor {
   return {
     document: {
-      getText: (range?: vscode.Range) => {
+      getText: (range?: Range) => {
         if (!range) {
           return text;
         }
@@ -29,9 +30,9 @@ function createMockEditor(text: string, selection: vscode.Selection, selectedTex
         return text;
       },
       uri: vscode.Uri.file('/fake/file'),
-    } as unknown as vscode.TextDocument,
+    } as unknown as TextDocument,
     selection,
-  } as unknown as vscode.TextEditor;
+  } as unknown as TextEditor;
 }
 
 suite('onPreviewSelection', () => {
@@ -45,7 +46,7 @@ suite('onPreviewSelection', () => {
     showErrorMessageStub = Sinon.stub(vscode.window, 'showErrorMessage');
     consoleErrorStub = Sinon.stub(console, 'error');
     openTextDocumentStub = Sinon.stub(vscode.workspace, 'openTextDocument');
-    showTextDocumentStub = Sinon.stub(vscode.window, 'showTextDocument').resolves({} as vscode.TextEditor);
+    showTextDocumentStub = Sinon.stub(vscode.window, 'showTextDocument').resolves({} as TextEditor);
     contextProvider.setVscode(vscode);
   });
 
@@ -185,26 +186,24 @@ suite('onPreviewSelection', () => {
       );
     });
 
-    test('handles empty selection', async () => {
+    test('handles empty selection by converting entire document', async () => {
       withConfig({});
       const text = JSON_CONTENT;
       const selection = new vscode.Selection(0, 0, 0, 0);
-      // Pass empty string as selectedText for empty selection
-      const editor = createMockEditor(text, selection, '');
+      const editor = createMockEditor(text, selection);
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
 
       const command = onPreviewSelection(ConvertFromType.Json);
       await command();
 
-      // Should still open document with empty content
+      // When selection is empty, the entire document is converted
       assert.strictEqual(openTextDocumentStub.callCount, 1);
       const options = openTextDocumentStub.firstCall.args[0] as {
         content: string;
         language: string;
       };
-      // Empty string gets converted to 'null\n' by YAML.stringify
-      assert.strictEqual(options.content, 'null\n');
+      assert.ok(options.content.includes('name:'), 'should convert entire document to YAML');
       assert.strictEqual(options.language, 'yaml');
     });
   });
