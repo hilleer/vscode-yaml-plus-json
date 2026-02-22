@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 export enum ConfigId {
   ConvertOnRename = 'convertOnRename',
+  ConvertOnSave = 'convertOnSave',
   FileExtensionsJson = 'fileExtensions.json',
   FileExtensionsYaml = 'fileExtensions.yaml',
   KeepOriginalFiles = 'keepOriginalFiles',
@@ -16,6 +17,7 @@ export enum ConfigId {
 
 export type Configs = {
   [ConfigId.ConvertOnRename]?: boolean;
+  [ConfigId.ConvertOnSave]?: boolean;
   [ConfigId.FileExtensionsJson]?: string;
   [ConfigId.FileExtensionsYaml]?: string;
   [ConfigId.KeepOriginalFiles]?: 'ask' | 'always';

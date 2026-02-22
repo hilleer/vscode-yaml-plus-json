@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 
 import { onRename } from './onRename';
+import { onSave } from './onSave';
 import { onRightClickAndConvertJsonFile, onRightClickAndConvertYamlFile } from './onRightClickAndConvertFile';
 import {
   onRightClickAndConvertJsonFilesToYaml,
@@ -31,4 +32,5 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.workspace.onDidRenameFiles(onRename);
+  context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(onSave));
 }
