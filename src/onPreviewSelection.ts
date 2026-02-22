@@ -14,7 +14,13 @@ export function onPreviewSelection(fromType: ConvertFromType) {
       }
 
       const { selection, document } = editor;
-      const text = document.getText(selection);
+      // If no text is selected, convert the entire file; otherwise convert only the selection
+      const text = selection.isEmpty ? document.getText() : document.getText(selection);
+
+      if (!text.trim()) {
+        vscode.window.showErrorMessage('No content to convert.');
+        return;
+      }
 
       const previewText = converter(text);
       const previewDocument = await vscode.workspace.openTextDocument({
