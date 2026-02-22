@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import { getJsonFromYaml, getYamlFromJson } from '../../helpers';
-import { loadFixtures, stripNewLines } from '../testHelpers';
+import { loadFixture, loadFixtures, stripNewLines } from '../testHelpers';
 import { ConfigId, Configs } from '../../config';
 import { WorkspaceConfigurationMock } from '../testUtil';
 
@@ -22,6 +22,16 @@ suite('helpers', () => {
         description: 'should convert json to yaml',
         inputFilePath: 'input.json',
         expectedFilePath: 'expected.yaml',
+      },
+      {
+        description: 'should convert json with trailing commas to yaml',
+        inputFilePath: 'trailingCommaInput.json',
+        expectedFilePath: 'trailingCommaExpected.yaml',
+      },
+      {
+        description: 'should convert complex json with trailing commas at multiple levels to yaml',
+        inputFilePath: 'trailingCommaComplexInput.json',
+        expectedFilePath: 'trailingCommaComplexExpected.yaml',
       },
       {
         description: 'when json lines are long and line width is not limited',
@@ -51,6 +61,28 @@ suite('helpers', () => {
         test('should return expected yaml', async () => assertTest(t, getYamlFromJson));
       });
     }
+
+    suite('error handling', () => {
+      let workspaceConfigMock: WorkspaceConfigurationMock;
+      suiteSetup(() => (workspaceConfigMock = new WorkspaceConfigurationMock()));
+      suiteTeardown(() => workspaceConfigMock.restore());
+
+      test('should throw an error with correct message when given invalid json', async () => {
+        const invalidJson = await loadFixture('input.yaml'); // YAML is not valid JSON flow syntax
+        assert.throws(
+          () => getYamlFromJson(invalidJson),
+          (err: Error) => {
+            assert.ok(err instanceof Error);
+            assert.strictEqual(
+              err.message,
+              'Failed to parse JSON. Please make sure it has a valid format and try again.',
+            );
+            assert.ok(err.cause instanceof Error, 'error should have a cause');
+            return true;
+          },
+        );
+      });
+    });
   });
 
   suite('getJsonFromYaml', async () => {
@@ -70,6 +102,24 @@ suite('helpers', () => {
     TESTS.forEach((t) => {
       suite(t.description, () => {
         test('should return expected json', () => assertTest(t, getJsonFromYaml));
+      });
+    });
+
+    suite('error handling', () => {
+      test('should throw an error with correct message when given invalid yaml', () => {
+        const invalidYaml = 'key: [unclosed bracket';
+        assert.throws(
+          () => getJsonFromYaml(invalidYaml),
+          (err: Error) => {
+            assert.ok(err instanceof Error);
+            assert.strictEqual(
+              err.message,
+              'Failed to parse YAML. Please make sure it has a valid format and try again.',
+            );
+            assert.ok(err.cause instanceof Error, 'error should have a cause');
+            return true;
+          },
+        );
       });
     });
   });

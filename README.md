@@ -21,12 +21,12 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
   - Convert YAML selection by using command `Convert selection to JSON` - _does not_ change file extension.
   - Convert JSON selection by using command `Convert selection to YAML` - _does not_ change file extension.
 - **Converting multiple files:**
-
   - Convert a selection of JSON files to YAML by right clicking one of the selected files and selecting `Convert selected files to YAML`.
   - Convert a selection of YAML files to JSON by right clicking one of the selected files and selecting `Convert selected files to JSON`.
   - Convert YAML files in a directory to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
   - Convert JSON files in a directory to YAML by right clicking the directory and selecting `Convert JSON files to YAML`.
 
+- **Convert on save:** When `convertOnSave` is enabled, saving a YAML or JSON file will automatically create (or update) its counterpart file. The original file is always kept. The `overwriteExistentFiles` setting controls what happens when the counterpart already exists.
 - **Reverting converted files:** When a file has been reverted, a _"revert"_ prompt will be shown to revert it. Using this will return the entirety of the original file, including YAML comments.
 - **Overwriting existent files:** When trying to convert a file into a destination that already exist, you can use the `overwriteExistentFiles` configuration to overwrite such. **Notice** if you use the revert feature after overwriting a file, the extension cannot (currently) revert the overwritten file. Also, due to limitation in vscode of active user prompts, if you set it to `"ask"` you will only be prompted to overwrite N number of files, while others will be skipped.
 
@@ -38,6 +38,7 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
 {
   "yaml-plus-json": {
     "convertOnRename": true,
+    "convertOnSave": false,
     "yamlIndent": 2,
     "yamlLineWidth": 0,
     "yamlMerge": false,
@@ -62,6 +63,7 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
 |                          | description                                                                                                                                                                                                 | type    | default   | example    |
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------- | ---------- |
 | `convertOnRename`        | Convert YAML/JSON files on rename                                                                                                                                                                           | boolean | `true`    | `false`    |
+| `convertOnSave`          | Automatically convert YAML/JSON files to their counterpart on save. The original file is always kept.                                                                                                       | boolean | `false`   | `true`     |
 | `yamlIndent`             | The number of spaces to use when indenting code (yaml)                                                                                                                                                      | number  | `2`       | `4`        |
 | `yamlSchema`             | See [yaml module documentation](https://github.com/eemeli/yaml/blob/master/docs/03_options.md#schema-options) for details                                                                                   | string  | `"core"`  | `"json"`   |
 | `yamlMerge`              | Enable support for << merge keys. Default value depends on YAML version.                                                                                                                                    | boolean | `true`    | `false`    |
