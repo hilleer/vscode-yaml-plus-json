@@ -30,10 +30,11 @@ export async function getFilesInDirectory(uri: Uri, fileExtensions: FileExtensio
     fileExtensions = [fileExtensions];
   }
 
-  return directoryFiles.filter(filterMatchingFilesInDirectory(vscode, fileExtensions)).map(getFileUri);
+  return directoryFiles.filter(filterMatchingFilesInDirectory(fileExtensions)).map(getFileUri);
 }
 
-function filterMatchingFilesInDirectory(vscode: typeof import('vscode'), fileExtensions: FileExtension[]) {
+function filterMatchingFilesInDirectory(fileExtensions: FileExtension[]) {
+  const vscode = contextProvider.vscode;
   return ([filePath, fileType]: [string, FileType]) =>
     fileType === vscode.FileType.File &&
     fileExtensions.some((extension) => isMatchingFileExtension(filePath, extension));

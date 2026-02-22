@@ -20,9 +20,9 @@ export function onConvertSelection(fromType: ConvertFromType) {
       const text = document.getText(selection);
       const newText = converter(text);
 
-      const range = getSelectionRange(selection, vscode);
+      const range = getSelectionRange(selection);
 
-      await replaceSelection(document, range, newText, vscode);
+      await replaceSelection(document, range, newText);
       const { end } = selection;
       editor.selection = new vscode.Selection(end, end);
     } catch (error) {
@@ -38,8 +38,9 @@ export function getSelectionConverter(fromType: ConvertFromType) {
   }[fromType];
 }
 
-function getSelectionRange(selection: Selection, vscode: typeof import('vscode')) {
+function getSelectionRange(selection: Selection) {
   const { start, end } = selection;
+  const vscode = contextProvider.vscode;
   const range = new vscode.Range(start, end);
 
   return range;
@@ -49,8 +50,8 @@ async function replaceSelection(
   document: TextDocument,
   range: Range,
   replacement: string,
-  vscode: typeof import('vscode'),
 ) {
+  const vscode = contextProvider.vscode;
   const { uri } = document;
 
   const edit = new vscode.WorkspaceEdit();
