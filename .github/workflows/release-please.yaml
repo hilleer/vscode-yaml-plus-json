@@ -16,8 +16,9 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         with:
-          # this assumes that you have created a personal access token
-          # (PAT) and configured it as a GitHub action secret named
-          # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).
+          # this workflow uses the default GITHUB_TOKEN provided by GitHub Actions.
+          # If you need a personal access token (PAT) instead (for example, to trigger
+          # downstream workflows), create a secret such as `MY_RELEASE_PLEASE_TOKEN`
+          # and update the `token` input to use that secret.
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
