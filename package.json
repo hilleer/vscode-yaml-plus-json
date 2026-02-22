@@ -59,12 +59,12 @@
 			{
 				"command": "extension.convertYamlFilesToJson",
 				"title": "Convert YAML files to JSON",
-				"enablement": "explorerResourceIsFolder && config.yaml-plus-json.directoryConversion"
+				"enablement": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 			},
 			{
 				"command": "extension.convertJsonFilesToYaml",
 				"title": "Convert JSON files to YAML",
-				"enablement": "explorerResourceIsFolder && config.yaml-plus-json.directoryConversion"
+				"enablement": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 			},
 			{
 				"command": "extension.convertJsonSelectionsToYaml",
@@ -134,12 +134,12 @@
 				{
 					"group": "1_modification",
 					"command": "extension.convertYamlFilesToJson",
-					"when": "explorerResourceIsFolder && config.yaml-plus-json.directoryConversion"
+					"when": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 				},
 				{
 					"group": "1_modification",
 					"command": "extension.convertJsonFilesToYaml",
-					"when": "explorerResourceIsFolder && config.yaml-plus-json.directoryConversion"
+					"when": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 				},
 				{
 					"group": "1_modification",
@@ -283,13 +283,13 @@
 										"merge": true
 									}
 								]
+							},
+							"directoryConversion": {
+								"type": "boolean",
+								"default": true,
+								"description": "Enable the right-click commands that convert all JSON/YAML files in a directory."
 							}
 						}
-					},
-					"yaml-plus-json.directoryConversion": {
-						"type": "boolean",
-						"default": true,
-						"description": "Enable the right-click commands that convert all JSON/YAML files in a directory."
 					}
 				}
 			}
