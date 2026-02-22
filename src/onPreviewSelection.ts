@@ -14,6 +14,7 @@ export function onPreviewSelection(fromType: ConvertFromType) {
       }
 
       const { selection, document } = editor;
+      // If no text is selected, convert the entire file; otherwise convert only the selection
       const text = selection.isEmpty ? document.getText() : document.getText(selection);
 
       const previewText = converter(text);
