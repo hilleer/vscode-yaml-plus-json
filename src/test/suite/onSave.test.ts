@@ -64,11 +64,11 @@ suite('onSave', () => {
     assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
 
-  test('shows error for unexpected file extension', async () => {
+  test('does nothing for non yaml/json files', async () => {
     withConfig({ [ConfigId.ConvertOnSave]: true });
     await onSave(makeDocument('/fake/file.ts', 'const x = 1;'), mockFs);
-    assert.strictEqual(showErrorMessageStub.callCount, 1);
-    assert.ok((showErrorMessageStub.firstCall.args[0] as string).includes('Unexpected file extension'));
+    assert.strictEqual(showErrorMessageStub.callCount, 0);
+    assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
 
   suite('yaml to json', () => {

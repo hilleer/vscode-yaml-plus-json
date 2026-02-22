@@ -19,26 +19,26 @@ export async function onSave(document: vscode.TextDocument, fs: FileSystem = vsc
   const isYaml = fileExtension === '.yaml' || fileExtension === '.yml';
   const isJson = fileExtension === '.json';
 
-  const toJsonExtension = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
-  const toYamlExtension = getConfig<string>(ConfigId.FileExtensionsYaml) || '.yaml';
-
-  let newFilePath: string;
-  let newContent: string;
+  if (!isYaml && !isJson) {
+    return; // saved non yaml/json file - do nothing
+  }
 
   try {
     if (isYaml) {
-      newContent = getJsonFromYaml(document.getText());
-      newFilePath = filePath.replace(fileExtension, toJsonExtension);
+      const newContent = getJsonFromYaml(document.getText());
+      const toJsonExtension = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
+      const newFilePath = filePath.replace(fileExtension, toJsonExtension);
+
       return await convertAndWrite(newFilePath, newContent, fs);
     }
 
     if (isJson) {
-      newContent = getYamlFromJson(document.getText());
-      newFilePath = filePath.replace(fileExtension, toYamlExtension);
+      const toYamlExtension = getConfig<string>(ConfigId.FileExtensionsYaml) || '.yaml';
+      const newContent = getYamlFromJson(document.getText());
+      const newFilePath = filePath.replace(fileExtension, toYamlExtension);
+
       return await convertAndWrite(newFilePath, newContent, fs);
     }
-
-    throw new Error(`Unexpected file extension: ${fileExtension}`);
   } catch (error: unknown) {
     showError(error);
     return;
