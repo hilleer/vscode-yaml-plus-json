@@ -1,16 +1,18 @@
-import * as vscode from 'vscode';
-import { ConfigId, getConfig } from './config';
+import type { FileRenameEvent, TextDocument } from 'vscode';
 
+import { contextProvider } from './contextProvider';
+import { ConfigId, getConfig } from './config';
 import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
 
-export function onRename(e: vscode.FileRenameEvent) {
+export async function onFileRename(event: FileRenameEvent): Promise<void> {
+  const vscode = contextProvider.vscode;
   const shouldConvertOnRename = getConfig<boolean>(ConfigId.ConvertOnRename);
 
   if (!shouldConvertOnRename) {
     return;
   }
 
-  e.files.forEach(async (change) => {
+  for (const change of event.files) {
     const { oldUri, newUri } = change;
 
     const oldPath = oldUri.path;
@@ -20,24 +22,28 @@ export function onRename(e: vscode.FileRenameEvent) {
     const shouldConvertYaml = (oldPath.endsWith('.yaml') || oldPath.endsWith('.yml')) && newPath.endsWith('.json');
 
     if (!shouldConvertJson && !shouldConvertYaml) {
-      return;
+      continue;
     }
 
-    const document = await vscode.workspace.openTextDocument(newUri);
+    try {
+      const document = await vscode.workspace.openTextDocument(newUri);
 
-    // language id of NEW file
-    switch (document.languageId) {
-      case 'json':
-        convertYamlToJson(document);
-        break;
-      case 'yaml':
-        convertJsonToYaml(document);
-        break;
+      // language id of the NEW file
+      switch (document.languageId) {
+        case 'json':
+          await convertYamlToJson(document);
+          break;
+        case 'yaml':
+          await convertJsonToYaml(document);
+          break;
+      }
+    } catch (error: unknown) {
+      showError(error);
     }
-  });
+  }
 }
 
-async function convertJsonToYaml(document: vscode.TextDocument) {
+async function convertJsonToYaml(document: TextDocument) {
   try {
     const json = document.getText();
     const yaml = getYamlFromJson(json);
@@ -48,7 +54,7 @@ async function convertJsonToYaml(document: vscode.TextDocument) {
   }
 }
 
-async function convertYamlToJson(document: vscode.TextDocument) {
+async function convertYamlToJson(document: TextDocument) {
   try {
     const yaml = document.getText();
     const json = getJsonFromYaml(yaml);
@@ -59,7 +65,8 @@ async function convertYamlToJson(document: vscode.TextDocument) {
   }
 }
 
-async function replaceFileContent(document: vscode.TextDocument, newText: string) {
+async function replaceFileContent(document: TextDocument, newText: string) {
+  const vscode = contextProvider.vscode;
   const { lineCount, isDirty, uri } = document;
 
   const edit = new vscode.WorkspaceEdit();

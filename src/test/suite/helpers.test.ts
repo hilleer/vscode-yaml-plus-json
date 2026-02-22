@@ -85,7 +85,7 @@ suite('helpers', () => {
     });
   });
 
-  suite('getJsonFromYaml', async () => {
+  suite('getJsonFromYaml', () => {
     const TESTS: Test[] = [
       {
         inputFilePath: 'input.yaml',
