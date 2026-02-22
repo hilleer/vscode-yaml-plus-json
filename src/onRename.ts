@@ -3,14 +3,14 @@ import { ConfigId, getConfig } from './config';
 
 import { showError, getJsonFromYaml, getYamlFromJson } from './helpers';
 
-export function onRename(e: vscode.FileRenameEvent) {
+export async function onRename(e: vscode.FileRenameEvent): Promise<void> {
   const shouldConvertOnRename = getConfig<boolean>(ConfigId.ConvertOnRename);
 
   if (!shouldConvertOnRename) {
     return;
   }
 
-  e.files.forEach(async (change) => {
+  for (const change of e.files) {
     const { oldUri, newUri } = change;
 
     const oldPath = oldUri.path;
@@ -20,21 +20,25 @@ export function onRename(e: vscode.FileRenameEvent) {
     const shouldConvertYaml = (oldPath.endsWith('.yaml') || oldPath.endsWith('.yml')) && newPath.endsWith('.json');
 
     if (!shouldConvertJson && !shouldConvertYaml) {
-      return;
+      continue;
     }
 
-    const document = await vscode.workspace.openTextDocument(newUri);
+    try {
+      const document = await vscode.workspace.openTextDocument(newUri);
 
-    // language id of NEW file
-    switch (document.languageId) {
-      case 'json':
-        convertYamlToJson(document);
-        break;
-      case 'yaml':
-        convertJsonToYaml(document);
-        break;
+      // language id of the NEW file
+      switch (document.languageId) {
+        case 'json':
+          await convertYamlToJson(document);
+          break;
+        case 'yaml':
+          await convertJsonToYaml(document);
+          break;
+      }
+    } catch (error: unknown) {
+      showError(error);
     }
-  });
+  }
 }
 
 async function convertJsonToYaml(document: vscode.TextDocument) {
