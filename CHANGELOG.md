@@ -1,5 +1,25 @@
 # Change Log
 
+## [1.16.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/yaml-plus-json-v1.15.0...yaml-plus-json-v1.16.0) (2026-02-22)
+
+
+### Features
+
+* 🎸 make yaml line lengths configurable ([#310](https://github.com/hilleer/vscode-yaml-plus-json/issues/310)) ([84a0e2a](https://github.com/hilleer/vscode-yaml-plus-json/commit/84a0e2a58dc100a82793318a9cb677f77fe67337))
+* add command to preview conversion ([#48](https://github.com/hilleer/vscode-yaml-plus-json/issues/48)) ([3f7f64b](https://github.com/hilleer/vscode-yaml-plus-json/commit/3f7f64b1077b78535c850bcdad0a2ab4fb0c1fec))
+* Add convertOnSave configuration ([#417](https://github.com/hilleer/vscode-yaml-plus-json/issues/417)) ([3e158de](https://github.com/hilleer/vscode-yaml-plus-json/commit/3e158deaba11c011c9996ff069c9596c18fc0b40))
+* add directoryConversion config to toggle folder context menu co… ([#424](https://github.com/hilleer/vscode-yaml-plus-json/issues/424)) ([d880a50](https://github.com/hilleer/vscode-yaml-plus-json/commit/d880a50a34bae0caaf3cb9702fa81de9c2481703))
+* allow to overwrite existent files ([#68](https://github.com/hilleer/vscode-yaml-plus-json/issues/68)) ([dd16b0c](https://github.com/hilleer/vscode-yaml-plus-json/commit/dd16b0c92b44439ae3d088d3c65bda93c83b8110))
+* support trailing commas in JSON → YAML conversion ([#418](https://github.com/hilleer/vscode-yaml-plus-json/issues/418)) ([28e7eca](https://github.com/hilleer/vscode-yaml-plus-json/commit/28e7eca3e549782d2a23641f4de08e2205d2ba00))
+* yamlMerge as specific config ([84a0e2a](https://github.com/hilleer/vscode-yaml-plus-json/commit/84a0e2a58dc100a82793318a9cb677f77fe67337))
+
+
+### Bug Fixes
+
+* 🐛 publish require vscode v1.109.0 ([#423](https://github.com/hilleer/vscode-yaml-plus-json/issues/423)) ([bc73e78](https://github.com/hilleer/vscode-yaml-plus-json/commit/bc73e7832c3fd5fb0a77f388cc3e2714462102a9))
+* enable merge tags ([#140](https://github.com/hilleer/vscode-yaml-plus-json/issues/140)) ([a3884c4](https://github.com/hilleer/vscode-yaml-plus-json/commit/a3884c41a81209856265aa1a68a8a724633ab650))
+* vscode types match vscode version in engines ([a43ae0a](https://github.com/hilleer/vscode-yaml-plus-json/commit/a43ae0a280f050d92dbc3d37cbbdbebf9f02039f))
+
 ## [1.15.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/yaml-plus-json-v1.14.0...yaml-plus-json-v1.15.0) (2026-02-22)
 
 
