@@ -5,22 +5,11 @@ import type { TextDocument, FileRenameEvent } from 'vscode';
 
 import { onFileRename } from '../../onFileRename';
 import { ConfigId, Configs } from '../../config';
-import { WorkspaceConfigurationMock, createMockVscode } from '../testUtil';
+import { WorkspaceConfigurationMock, createMockVscode, createMockDocument } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
-
-function makeDocument(text: string, languageId: string): TextDocument {
-  return {
-    getText: () => text,
-    languageId,
-    lineCount: text.split('\n').length,
-    isDirty: false,
-    uri: Uri.file('/fake/path'),
-    save: Sinon.stub().resolves(),
-  } as unknown as TextDocument;
-}
 
 suite('onFileRename', () => {
   let showErrorMessageStub: Sinon.SinonStub;
@@ -73,7 +62,7 @@ suite('onFileRename', () => {
       withConfig({ [ConfigId.ConvertOnRename]: false });
       const event = createRenameEvent('/fake/file.json', '/fake/file.yaml');
 
-      mockOpenTextDocument.resolves(makeDocument(JSON_CONTENT, 'yaml'));
+      mockOpenTextDocument.resolves(createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' }));
 
       await onFileRename(event);
 
@@ -84,7 +73,7 @@ suite('onFileRename', () => {
       withConfig({});
       const event = createRenameEvent('/fake/file.json', '/fake/file.yaml');
 
-      mockOpenTextDocument.resolves(makeDocument(JSON_CONTENT, 'yaml'));
+      mockOpenTextDocument.resolves(createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' }));
 
       await onFileRename(event);
 
@@ -99,7 +88,7 @@ suite('onFileRename', () => {
 
     test('converts content when renaming .json to .yaml', async () => {
       const event = createRenameEvent('/fake/file.json', '/fake/file.yaml');
-      const document = makeDocument(JSON_CONTENT, 'yaml');
+      const document = createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -111,7 +100,7 @@ suite('onFileRename', () => {
 
     test('converts content when renaming .json to .yml', async () => {
       const event = createRenameEvent('/fake/file.json', '/fake/file.yml');
-      const document = makeDocument(JSON_CONTENT, 'yaml');
+      const document = createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -123,7 +112,7 @@ suite('onFileRename', () => {
 
     test('does not convert when old file is not .json', async () => {
       const event = createRenameEvent('/fake/file.txt', '/fake/file.yaml');
-      const document = makeDocument('some text', 'yaml');
+      const document = createMockDocument({ text: 'some text', languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -134,7 +123,7 @@ suite('onFileRename', () => {
 
     test('does not convert when new file is not .yaml or .yml', async () => {
       const event = createRenameEvent('/fake/file.json', '/fake/file.txt');
-      const document = makeDocument(JSON_CONTENT, 'plaintext');
+      const document = createMockDocument({ text: JSON_CONTENT, languageId: 'plaintext' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -151,7 +140,7 @@ suite('onFileRename', () => {
 
     test('converts content when renaming .yaml to .json', async () => {
       const event = createRenameEvent('/fake/file.yaml', '/fake/file.json');
-      const document = makeDocument(YAML_CONTENT, 'json');
+      const document = createMockDocument({ text: YAML_CONTENT, languageId: 'json' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -163,7 +152,7 @@ suite('onFileRename', () => {
 
     test('converts content when renaming .yml to .json', async () => {
       const event = createRenameEvent('/fake/file.yml', '/fake/file.json');
-      const document = makeDocument(YAML_CONTENT, 'json');
+      const document = createMockDocument({ text: YAML_CONTENT, languageId: 'json' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -175,7 +164,7 @@ suite('onFileRename', () => {
 
     test('does not convert when old file is not .yaml or .yml', async () => {
       const event = createRenameEvent('/fake/file.txt', '/fake/file.json');
-      const document = makeDocument('some text', 'json');
+      const document = createMockDocument({ text: 'some text', languageId: 'json' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -186,7 +175,7 @@ suite('onFileRename', () => {
 
     test('does not convert when new file is not .json', async () => {
       const event = createRenameEvent('/fake/file.yaml', '/fake/file.txt');
-      const document = makeDocument(YAML_CONTENT, 'plaintext');
+      const document = createMockDocument({ text: YAML_CONTENT, languageId: 'plaintext' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -217,9 +206,9 @@ suite('onFileRename', () => {
 
       mockOpenTextDocument
         .onFirstCall()
-        .resolves(makeDocument(JSON_CONTENT, 'yaml'))
+        .resolves(createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' }))
         .onSecondCall()
-        .resolves(makeDocument(YAML_CONTENT, 'json'));
+        .resolves(createMockDocument({ text: YAML_CONTENT, languageId: 'json' }));
 
       await onFileRename(event);
 
@@ -247,11 +236,11 @@ suite('onFileRename', () => {
 
       mockOpenTextDocument
         .onFirstCall()
-        .resolves(makeDocument(JSON_CONTENT, 'yaml'))
+        .resolves(createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' }))
         .onSecondCall()
-        .resolves(makeDocument('text', 'plaintext'))
+        .resolves(createMockDocument({ text: 'text', languageId: 'plaintext' }))
         .onThirdCall()
-        .resolves(makeDocument(YAML_CONTENT, 'json'));
+        .resolves(createMockDocument({ text: YAML_CONTENT, languageId: 'json' }));
 
       await onFileRename(event);
 
@@ -271,7 +260,7 @@ suite('onFileRename', () => {
     test('uses languageId to determine conversion type', async () => {
       const event = createRenameEvent('/fake/file.json', '/fake/file.yaml');
       // Document has JSON content but yaml language ID
-      const document = makeDocument(JSON_CONTENT, 'yaml');
+      const document = createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -284,7 +273,7 @@ suite('onFileRename', () => {
     test('handles different content based on languageId', async () => {
       const event = createRenameEvent('/fake/file.yaml', '/fake/file.json');
       // Document has YAML content but json language ID
-      const document = makeDocument(YAML_CONTENT, 'json');
+      const document = createMockDocument({ text: YAML_CONTENT, languageId: 'json' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -302,7 +291,7 @@ suite('onFileRename', () => {
 
     test('shows error message for invalid JSON content', async () => {
       const event = createRenameEvent('/fake/file.json', '/fake/file.yaml');
-      const document = makeDocument('{ invalid json }', 'yaml');
+      const document = createMockDocument({ text: '{ invalid json }', languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -314,7 +303,7 @@ suite('onFileRename', () => {
 
     test('shows error message for invalid YAML content', async () => {
       const event = createRenameEvent('/fake/file.yaml', '/fake/file.json');
-      const document = makeDocument('--- {unclosed', 'json');
+      const document = createMockDocument({ text: '--- {unclosed', languageId: 'json' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -370,7 +359,7 @@ suite('onFileRename', () => {
       } as FileRenameEvent;
 
       // Reset the stub to ensure clean state
-      mockOpenTextDocument.resolves(makeDocument('', 'plaintext'));
+      mockOpenTextDocument.resolves(createMockDocument({ languageId: 'plaintext' }));
 
       await onFileRename(event);
 
@@ -380,7 +369,7 @@ suite('onFileRename', () => {
 
     test('handles paths with dots in directory names', async () => {
       const event = createRenameEvent('/some.dir/file.json', '/some.dir/file.yaml');
-      const document = makeDocument(JSON_CONTENT, 'yaml');
+      const document = createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 
@@ -391,7 +380,7 @@ suite('onFileRename', () => {
 
     test('handles paths with multiple extensions', async () => {
       const event = createRenameEvent('/fake/file.test.json', '/fake/file.test.yaml');
-      const document = makeDocument(JSON_CONTENT, 'yaml');
+      const document = createMockDocument({ text: JSON_CONTENT, languageId: 'yaml' });
 
       mockOpenTextDocument.resolves(document);
 

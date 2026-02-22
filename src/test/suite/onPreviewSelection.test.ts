@@ -1,39 +1,15 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
 import * as vscode from 'vscode';
-import type { TextEditor, TextDocument, Range } from 'vscode';
+import type { TextEditor } from 'vscode';
 
 import { onPreviewSelection } from '../../onPreviewSelection';
 import { ConvertFromType } from '../../converter';
-import { WorkspaceConfigurationMock } from '../testUtil';
+import { WorkspaceConfigurationMock, createMockEditor } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
-
-function createMockEditor(text: string, selection: vscode.Selection, selectedText?: string): TextEditor {
-  return {
-    document: {
-      getText: (range?: Range) => {
-        if (!range) {
-          return text;
-        }
-        // If a specific selectedText is provided for this selection, use it
-        if (selectedText !== undefined) {
-          return selectedText;
-        }
-        // If range is empty (start == end), return empty string
-        if (range.start.line === range.end.line && range.start.character === range.end.character) {
-          return '';
-        }
-        // Otherwise return the text
-        return text;
-      },
-      uri: vscode.Uri.file('/fake/file'),
-    } as unknown as TextDocument,
-    selection,
-  } as unknown as TextEditor;
-}
 
 suite('onPreviewSelection', () => {
   let showErrorMessageStub: Sinon.SinonStub;
@@ -251,7 +227,7 @@ suite('onPreviewSelection', () => {
       const text = '{ invalid json }';
       const selection = new vscode.Selection(0, 0, 0, 16);
       // Pass the selected text explicitly so it returns the invalid JSON
-      const editor = createMockEditor(text, selection, '{ invalid json }');
+      const editor = createMockEditor(text, selection, { selectedText: '{ invalid json }' });
 
       Sinon.stub(vscode.window, 'activeTextEditor').value(editor);
 

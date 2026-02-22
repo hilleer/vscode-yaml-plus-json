@@ -7,7 +7,7 @@ import {
   onRightClickConvertYamlFilesToJson,
 } from '../../onRightClickAndConvertDirectoryFiles';
 import { ConfigId, Configs } from '../../config';
-import { WorkspaceConfigurationMock, createMockVscode, MockFs } from '../testUtil';
+import { WorkspaceConfigurationMock, createMockVscode, MockFs, createMockFs } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
@@ -20,18 +20,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
   let mockFs: MockFs;
 
   setup(() => {
-    mockFs = {
-      readFile: Sinon.stub().rejects(FileSystemError.FileNotFound()),
-      writeFile: Sinon.stub().resolves(),
-      delete: Sinon.stub().resolves(),
-      stat: Sinon.stub().resolves({
-        type: FileType.Directory,
-        ctime: Date.now(),
-        mtime: Date.now(),
-        size: 100,
-      }),
-      readDirectory: Sinon.stub().resolves([]),
-    };
+    mockFs = createMockFs(FileType.Directory);
 
     showInformationMessageStub = Sinon.stub();
     showErrorMessageStub = Sinon.stub();
@@ -67,7 +56,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file.txt', FileType.File],
         ['subdir', FileType.Directory],
       ]);
@@ -85,7 +74,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.json', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.json', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -104,7 +93,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file1.json', FileType.File],
         ['file2.json', FileType.File],
         ['config.json', FileType.File],
@@ -125,7 +114,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file1.json', FileType.File],
         ['readme.md', FileType.File],
         ['file.yaml', FileType.File],
@@ -147,7 +136,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file.json', FileType.File],
         ['subdir', FileType.Directory],
         ['nested', FileType.Directory],
@@ -202,7 +191,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.json', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.json', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -222,7 +211,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file.txt', FileType.File],
         ['file.json', FileType.File],
       ]);
@@ -240,7 +229,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.yaml', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.yaml', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -259,7 +248,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.yml', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.yml', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -278,7 +267,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file1.yaml', FileType.File],
         ['file2.yml', FileType.File],
         ['config.yaml', FileType.File],
@@ -299,7 +288,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file1.yaml', FileType.File],
         ['readme.md', FileType.File],
         ['file.json', FileType.File],
@@ -355,7 +344,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.yaml', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.yaml', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -375,7 +364,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({ [ConfigId.KeepOriginalFiles]: 'always' });
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.json', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.json', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -393,7 +382,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.json', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.json', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -411,7 +400,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({ [ConfigId.KeepOriginalFiles]: 'always' });
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.yaml', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.yaml', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.json')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -431,7 +420,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([['file.json', FileType.File]]);
+      mockFs.readDirectory.resolves([['file.json', FileType.File]]);
       mockFs.readFile.callsFake((uri: Uri) => {
         if (uri.fsPath.endsWith('.yaml') || uri.fsPath.endsWith('.yml')) {
           return Promise.reject(FileSystemError.FileNotFound());
@@ -452,7 +441,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
       withConfig({});
       const uri = Uri.file('/fake/dir');
 
-      mockFs.readDirectory!.resolves([
+      mockFs.readDirectory.resolves([
         ['file1.json', FileType.File],
         ['file2.json', FileType.File],
       ]);

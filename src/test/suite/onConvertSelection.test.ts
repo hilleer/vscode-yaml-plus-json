@@ -1,45 +1,15 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
 import * as vscode from 'vscode';
-import type { TextEditor, TextDocument, Range, WorkspaceEdit, Selection } from 'vscode';
+import type { WorkspaceEdit } from 'vscode';
 
 import { onConvertSelection, getSelectionConverter } from '../../onConvertSelection';
 import { ConvertFromType } from '../../converter';
-import { WorkspaceConfigurationMock } from '../testUtil';
+import { WorkspaceConfigurationMock, createMockEditor } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
-
-function createMockEditor(text: string, selection: Selection): TextEditor {
-  const document = {
-    getText: (range?: Range) => {
-      if (!range) return text;
-      const lines = text.split('\n');
-      const result: string[] = [];
-      for (let i = range.start.line; i <= range.end.line; i++) {
-        const line = lines[i] || '';
-        if (i === range.start.line && i === range.end.line) {
-          result.push(line.substring(range.start.character, range.end.character));
-        } else if (i === range.start.line) {
-          result.push(line.substring(range.start.character));
-        } else if (i === range.end.line) {
-          result.push(line.substring(0, range.end.character));
-        } else {
-          result.push(line);
-        }
-      }
-      return result.join('\n');
-    },
-    uri: vscode.Uri.file('/fake/file'),
-  } as unknown as TextDocument;
-
-  return {
-    document,
-    selection,
-    edit: Sinon.stub().resolves(true),
-  } as unknown as TextEditor;
-}
 
 suite('onConvertSelection', () => {
   let showErrorMessageStub: Sinon.SinonStub;

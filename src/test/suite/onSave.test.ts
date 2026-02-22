@@ -1,24 +1,14 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
-import { Uri, FileSystemError, FileType } from 'vscode';
-import type { TextDocument } from 'vscode';
+import { Uri } from 'vscode';
 
 import { onFileSave } from '../../onFileSave';
 import { ConfigId, Configs } from '../../config';
-import { WorkspaceConfigurationMock, createMockVscode, MockFs } from '../testUtil';
+import { WorkspaceConfigurationMock, createMockVscode, MockFs, createMockFs, createMockDocument } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
 const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
-
-function makeDocument(fsPath: string, text: string, isDirty = false): TextDocument {
-  return {
-    uri: Uri.file(fsPath),
-    getText: () => text,
-    save: Sinon.stub().resolves(true),
-    isDirty,
-  } as unknown as TextDocument;
-}
 
 suite('onFileSave', () => {
   let showInformationMessageStub: Sinon.SinonStub;
@@ -27,17 +17,7 @@ suite('onFileSave', () => {
   let mockFs: MockFs;
 
   setup(() => {
-    mockFs = {
-      readFile: Sinon.stub().rejects(FileSystemError.FileNotFound()),
-      writeFile: Sinon.stub().resolves(),
-      delete: Sinon.stub().resolves(),
-      stat: Sinon.stub().resolves({
-        type: FileType.File,
-        ctime: Date.now(),
-        mtime: Date.now(),
-        size: 100,
-      }),
-    };
+    mockFs = createMockFs();
 
     showInformationMessageStub = Sinon.stub();
     showErrorMessageStub = Sinon.stub();
@@ -66,19 +46,19 @@ suite('onFileSave', () => {
 
   test('does nothing when convertOnSave is not enabled', async () => {
     withConfig({ [ConfigId.ConvertOnSave]: false });
-    await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+    await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
     assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
 
   test('does nothing when convertOnSave is not set', async () => {
     withConfig({});
-    await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+    await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
     assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
 
   test('does nothing for non yaml/json files', async () => {
     withConfig({ [ConfigId.ConvertOnSave]: true });
-    await onFileSave(makeDocument('/fake/file.ts', 'const x = 1;'));
+    await onFileSave(createMockDocument({ fsPath: '/fake/file.ts', text: 'const x = 1;' }));
     assert.strictEqual(showErrorMessageStub.callCount, 0);
     assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
@@ -87,7 +67,7 @@ suite('onFileSave', () => {
     test('converts .yaml file content to JSON and writes counterpart', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri, writtenContent] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -101,7 +81,7 @@ suite('onFileSave', () => {
     test('converts .yml file and writes counterpart with .json extension', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.yml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yml', text: YAML_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -111,7 +91,7 @@ suite('onFileSave', () => {
     test('never deletes the original file', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -123,7 +103,7 @@ suite('onFileSave', () => {
     test('converts JSON file content to YAML and writes counterpart', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.json', JSON_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json', text: JSON_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -133,7 +113,7 @@ suite('onFileSave', () => {
     test('never deletes the original file', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.json', JSON_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json', text: JSON_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -149,7 +129,7 @@ suite('onFileSave', () => {
     test('does not write when overwriteExistentFiles config is not set', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
@@ -160,7 +140,7 @@ suite('onFileSave', () => {
         [ConfigId.OverwriteExistentFiles]: 'always',
       });
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       assert.strictEqual(showInformationMessageStub.callCount, 0);
@@ -173,7 +153,7 @@ suite('onFileSave', () => {
       });
       showInformationMessageStub.resolves('Yes' as unknown);
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.strictEqual(mockFs.writeFile.callCount, 1);
@@ -186,7 +166,7 @@ suite('onFileSave', () => {
       });
       showInformationMessageStub.resolves('No' as unknown);
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.strictEqual(mockFs.writeFile.callCount, 0);
@@ -200,7 +180,7 @@ suite('onFileSave', () => {
         [ConfigId.FileExtensionsYaml]: '.yml',
       });
 
-      await onFileSave(makeDocument('/fake/file.json', JSON_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json', text: JSON_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -213,7 +193,7 @@ suite('onFileSave', () => {
         [ConfigId.FileExtensionsJson]: '.json',
       });
 
-      await onFileSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
@@ -225,7 +205,7 @@ suite('onFileSave', () => {
     test('shows error message on invalid YAML content', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.yaml', '--- {unclosed'));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: '--- {unclosed' }));
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.strictEqual(mockFs.writeFile.callCount, 0);
@@ -234,7 +214,7 @@ suite('onFileSave', () => {
     test('shows error message on invalid JSON content', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onFileSave(makeDocument('/fake/file.json', '{ bad json }'));
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json', text: '{ bad json }' }));
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
       assert.strictEqual(mockFs.writeFile.callCount, 0);

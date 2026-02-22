@@ -1,6 +1,6 @@
 import * as Sinon from 'sinon';
 import { Uri, FileSystemError, FileType, Position, Range, WorkspaceEdit, Selection, workspace } from 'vscode';
-import type { TextEditor, WorkspaceConfiguration } from 'vscode';
+import type { TextDocument, TextEditor, WorkspaceConfiguration } from 'vscode';
 import { ConfigId, Configs } from '../config';
 
 type ConfigInput = Partial<Configs>;
@@ -26,8 +26,64 @@ export type MockFs = {
   writeFile: Sinon.SinonStub;
   delete: Sinon.SinonStub;
   stat: Sinon.SinonStub;
-  readDirectory?: Sinon.SinonStub;
+  readDirectory: Sinon.SinonStub;
 };
+
+export function createMockFs(fileType = FileType.File): MockFs {
+  return {
+    readFile: Sinon.stub().rejects(FileSystemError.FileNotFound()),
+    writeFile: Sinon.stub().resolves(),
+    delete: Sinon.stub().resolves(),
+    stat: Sinon.stub().resolves({
+      type: fileType,
+      ctime: Date.now(),
+      mtime: Date.now(),
+      size: 100,
+    }),
+    readDirectory: Sinon.stub().resolves([]),
+  };
+}
+
+export function createMockEditor(
+  text: string,
+  selection: Selection,
+  options: { selectedText?: string } = {},
+): TextEditor {
+  const document = {
+    getText: (range?: Range) => {
+      if (!range) return text;
+      if (options.selectedText !== undefined) return options.selectedText;
+      if (range.start.line === range.end.line && range.start.character === range.end.character) return '';
+      return text;
+    },
+    uri: Uri.file('/fake/file'),
+  } as unknown as TextDocument;
+
+  return {
+    document,
+    selection,
+    edit: Sinon.stub().resolves(true),
+  } as unknown as TextEditor;
+}
+
+export function createMockDocument(
+  options: {
+    text?: string;
+    fsPath?: string;
+    languageId?: string;
+    isDirty?: boolean;
+  } = {},
+): TextDocument {
+  const { text = '', fsPath = '/fake/file', languageId = 'plaintext', isDirty = false } = options;
+  return {
+    getText: () => text,
+    uri: Uri.file(fsPath),
+    languageId,
+    lineCount: text.split('\n').length,
+    isDirty,
+    save: Sinon.stub().resolves(true),
+  } as unknown as TextDocument;
+}
 
 export type MockVscodeOptions = {
   fs?: MockFs;

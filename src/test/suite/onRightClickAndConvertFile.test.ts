@@ -1,11 +1,11 @@
 import * as assert from 'assert';
 import * as Sinon from 'sinon';
-import { Uri, FileSystemError, FileType } from 'vscode';
+import { Uri, FileSystemError } from 'vscode';
 import type { TextDocument, TextEditor } from 'vscode';
 
 import { onRightClickAndConvertJsonFile, onRightClickAndConvertYamlFile } from '../../onRightClickAndConvertFile';
 import { ConfigId, Configs } from '../../config';
-import { WorkspaceConfigurationMock, createMockVscode, MockFs } from '../testUtil';
+import { WorkspaceConfigurationMock, createMockVscode, MockFs, createMockFs } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
 
 const YAML_CONTENT = 'name: foo\nvalue: 1\n';
@@ -18,17 +18,7 @@ suite('onRightClickAndConvertFile', () => {
   let mockFs: MockFs;
 
   setup(() => {
-    mockFs = {
-      readFile: Sinon.stub().rejects(FileSystemError.FileNotFound()),
-      writeFile: Sinon.stub().resolves(),
-      delete: Sinon.stub().resolves(),
-      stat: Sinon.stub().resolves({
-        type: FileType.File,
-        ctime: Date.now(),
-        mtime: Date.now(),
-        size: 100,
-      }),
-    };
+    mockFs = createMockFs();
 
     showInformationMessageStub = Sinon.stub();
     showErrorMessageStub = Sinon.stub();
