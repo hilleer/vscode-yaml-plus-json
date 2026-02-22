@@ -21,11 +21,10 @@ suite('config', () => {
 
     test('returns false when directoryConversion is set to false', () => {
       configMock = new WorkspaceConfigurationMock({ [ConfigId.DirectoryConversion]: false });
-      // getConfig: legacyKey is undefined → undefined || config.get('directoryConversion') → false
       assert.strictEqual(getConfig<boolean>(ConfigId.DirectoryConversion), false);
     });
 
-    test('returns undefined when directoryConversion is not configured', () => {
+    test('returns undefined when not present in config mock (real VS Code returns default true)', () => {
       configMock = new WorkspaceConfigurationMock({});
       assert.strictEqual(getConfig<boolean>(ConfigId.DirectoryConversion), undefined);
     });
