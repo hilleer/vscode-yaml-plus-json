@@ -16,17 +16,28 @@ function makeDocument(fsPath: string, text: string): vscode.TextDocument {
   } as unknown as vscode.TextDocument;
 }
 
+type MockFs = {
+  readFile: Sinon.SinonStub;
+  writeFile: Sinon.SinonStub;
+};
+
+function makeMockFs(fileExists = false): MockFs {
+  return {
+    readFile: fileExists
+      ? Sinon.stub().resolves(new Uint8Array())
+      : Sinon.stub().rejects(vscode.FileSystemError.FileNotFound()),
+    writeFile: Sinon.stub().resolves(),
+  };
+}
+
 suite('onSave', () => {
-  let readFileStub: Sinon.SinonStub;
-  let writeFileStub: Sinon.SinonStub;
   let showInformationMessageStub: Sinon.SinonStub;
   let showErrorMessageStub: Sinon.SinonStub;
   let configMock: WorkspaceConfigurationMock | undefined;
+  let mockFs: MockFs;
 
   setup(() => {
-    // Default: counterpart file does not exist
-    readFileStub = Sinon.stub(vscode.workspace.fs, 'readFile').rejects(vscode.FileSystemError.FileNotFound());
-    writeFileStub = Sinon.stub(vscode.workspace.fs, 'writeFile').resolves();
+    mockFs = makeMockFs();
     showInformationMessageStub = Sinon.stub(vscode.window, 'showInformationMessage');
     showErrorMessageStub = Sinon.stub(vscode.window, 'showErrorMessage');
   });
@@ -43,19 +54,19 @@ suite('onSave', () => {
 
   test('does nothing when convertOnSave is not enabled', async () => {
     withConfig({ [ConfigId.ConvertOnSave]: false });
-    await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
-    assert.strictEqual(writeFileStub.callCount, 0);
+    await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
+    assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
 
   test('does nothing when convertOnSave is not set', async () => {
     withConfig({});
-    await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
-    assert.strictEqual(writeFileStub.callCount, 0);
+    await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
+    assert.strictEqual(mockFs.writeFile.callCount, 0);
   });
 
   test('shows error for unexpected file extension', async () => {
     withConfig({ [ConfigId.ConvertOnSave]: true });
-    await onSave(makeDocument('/fake/file.ts', 'const x = 1;'));
+    await onSave(makeDocument('/fake/file.ts', 'const x = 1;'), mockFs);
     assert.strictEqual(showErrorMessageStub.callCount, 1);
     assert.ok((showErrorMessageStub.firstCall.args[0] as string).includes('Unexpected file extension'));
   });
@@ -64,10 +75,10 @@ suite('onSave', () => {
     test('converts .yaml file content to JSON and writes counterpart', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 1);
-      const [writtenUri, writtenContent] = writeFileStub.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri, writtenContent] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should have .json extension');
       assert.deepStrictEqual(JSON.parse(Buffer.from(writtenContent).toString()), {
         name: 'foo',
@@ -78,20 +89,22 @@ suite('onSave', () => {
     test('converts .yml file and writes counterpart with .json extension', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onSave(makeDocument('/fake/file.yml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yml', YAML_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 1);
-      const [writtenUri] = writeFileStub.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should have .json extension');
     });
 
     test('never deletes the original file', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
-      const deleteStub = Sinon.stub(vscode.workspace.fs, 'delete').resolves();
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
-      assert.strictEqual(deleteStub.callCount, 0);
+      // writeFile is called only for the new counterpart, never for the original path
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.ok(!writtenUri.fsPath.endsWith('.yaml'), 'original .yaml file should not be written/deleted');
     });
   });
 
@@ -99,35 +112,37 @@ suite('onSave', () => {
     test('converts .json file content to YAML and writes counterpart', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onSave(makeDocument('/fake/file.json', JSON_CONTENT));
+      await onSave(makeDocument('/fake/file.json', JSON_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 1);
-      const [writtenUri] = writeFileStub.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.yaml'), 'written file should have .yaml extension');
     });
 
     test('never deletes the original file', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
-      const deleteStub = Sinon.stub(vscode.workspace.fs, 'delete').resolves();
 
-      await onSave(makeDocument('/fake/file.json', JSON_CONTENT));
+      await onSave(makeDocument('/fake/file.json', JSON_CONTENT), mockFs);
 
-      assert.strictEqual(deleteStub.callCount, 0);
+      // writeFile is called only for the new counterpart, never for the original path
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.ok(!writtenUri.fsPath.endsWith('.json'), 'original .json file should not be written/deleted');
     });
   });
 
   suite('overwriteExistentFiles', () => {
     setup(() => {
-      // Override default: counterpart already exists
-      readFileStub.resolves(new Uint8Array());
+      // counterpart file already exists
+      mockFs = makeMockFs(true);
     });
 
     test('does not write when overwriteExistentFiles config is not set', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 0);
+      assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
 
     test('overwrites without prompt when set to always', async () => {
@@ -136,9 +151,9 @@ suite('onSave', () => {
         [ConfigId.OverwriteExistentFiles]: 'always',
       });
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 1);
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
       assert.strictEqual(showInformationMessageStub.callCount, 0);
     });
 
@@ -149,10 +164,10 @@ suite('onSave', () => {
       });
       showInformationMessageStub.resolves('Yes' as unknown);
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.strictEqual(writeFileStub.callCount, 1);
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
     });
 
     test('prompts and skips when set to ask and user declines', async () => {
@@ -162,10 +177,10 @@ suite('onSave', () => {
       });
       showInformationMessageStub.resolves('No' as unknown);
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
-      assert.strictEqual(writeFileStub.callCount, 0);
+      assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
   });
 
@@ -176,10 +191,10 @@ suite('onSave', () => {
         [ConfigId.FileExtensionsYaml]: '.yml',
       });
 
-      await onSave(makeDocument('/fake/file.json', JSON_CONTENT));
+      await onSave(makeDocument('/fake/file.json', JSON_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 1);
-      const [writtenUri] = writeFileStub.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.yml'), 'written file should use configured .yml extension');
     });
 
@@ -189,10 +204,10 @@ suite('onSave', () => {
         [ConfigId.FileExtensionsJson]: '.json',
       });
 
-      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT));
+      await onSave(makeDocument('/fake/file.yaml', YAML_CONTENT), mockFs);
 
-      assert.strictEqual(writeFileStub.callCount, 1);
-      const [writtenUri] = writeFileStub.firstCall.args as [vscode.Uri, Uint8Array];
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri] = mockFs.writeFile.firstCall.args as [vscode.Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should use configured .json extension');
     });
   });
@@ -201,19 +216,19 @@ suite('onSave', () => {
     test('shows error message on invalid YAML content', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onSave(makeDocument('/fake/file.yaml', '--- {unclosed'));
+      await onSave(makeDocument('/fake/file.yaml', '--- {unclosed'), mockFs);
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
-      assert.strictEqual(writeFileStub.callCount, 0);
+      assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
 
     test('shows error message on invalid JSON content', async () => {
       withConfig({ [ConfigId.ConvertOnSave]: true });
 
-      await onSave(makeDocument('/fake/file.json', '{ bad json }'));
+      await onSave(makeDocument('/fake/file.json', '{ bad json }'), mockFs);
 
       assert.strictEqual(showErrorMessageStub.callCount, 1);
-      assert.strictEqual(writeFileStub.callCount, 0);
+      assert.strictEqual(mockFs.writeFile.callCount, 0);
     });
   });
 });

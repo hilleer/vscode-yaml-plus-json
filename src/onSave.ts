@@ -4,7 +4,9 @@ import * as path from 'path';
 import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
 
-export async function onSave(document: vscode.TextDocument): Promise<void> {
+type FileSystem = Pick<vscode.FileSystem, 'readFile' | 'writeFile'>;
+
+export async function onSave(document: vscode.TextDocument, fs: FileSystem = vscode.workspace.fs): Promise<void> {
   const shouldConvertOnSave = getConfig<boolean>(ConfigId.ConvertOnSave);
 
   if (!shouldConvertOnSave) {
@@ -27,13 +29,13 @@ export async function onSave(document: vscode.TextDocument): Promise<void> {
     if (isYaml) {
       newContent = getJsonFromYaml(document.getText());
       newFilePath = filePath.replace(fileExtension, toJsonExtension);
-      return await convertAndWrite(newFilePath, newContent);
+      return await convertAndWrite(newFilePath, newContent, fs);
     }
 
     if (isJson) {
       newContent = getYamlFromJson(document.getText());
       newFilePath = filePath.replace(fileExtension, toYamlExtension);
-      return await convertAndWrite(newFilePath, newContent);
+      return await convertAndWrite(newFilePath, newContent, fs);
     }
 
     throw new Error(`Unexpected file extension: ${fileExtension}`);
@@ -43,12 +45,12 @@ export async function onSave(document: vscode.TextDocument): Promise<void> {
   }
 }
 
-async function convertAndWrite(newFilePath: string, newContent: string): Promise<void> {
+async function convertAndWrite(newFilePath: string, newContent: string, fs: FileSystem): Promise<void> {
   const newFileUri = vscode.Uri.file(newFilePath);
 
-  const fileExists = await doesFileExist(newFileUri);
+  const fileExists = await doesFileExist(newFileUri, fs);
   if (!fileExists) {
-    await vscode.workspace.fs.writeFile(newFileUri, Buffer.from(newContent));
+    await fs.writeFile(newFileUri, Buffer.from(newContent));
     return;
   }
 
@@ -57,12 +59,12 @@ async function convertAndWrite(newFilePath: string, newContent: string): Promise
     return;
   }
 
-  await vscode.workspace.fs.writeFile(newFileUri, Buffer.from(newContent));
+  await fs.writeFile(newFileUri, Buffer.from(newContent));
 }
 
-async function doesFileExist(fileUri: vscode.Uri): Promise<boolean> {
+async function doesFileExist(fileUri: vscode.Uri, fs: FileSystem): Promise<boolean> {
   try {
-    await vscode.workspace.fs.readFile(fileUri);
+    await fs.readFile(fileUri);
     return true;
   } catch (error) {
     if (error instanceof vscode.FileSystemError) {
