@@ -13,6 +13,7 @@ export enum ConfigId {
   YamlMerge = 'yamlMerge',
   YamlOptions = 'yamlOptions',
   JsonOptions = 'jsonOptions',
+  DirectoryConversion = 'directoryConversion',
 }
 
 export type Configs = {
@@ -28,6 +29,7 @@ export type Configs = {
   [ConfigId.YamlOptions]?: object;
   [ConfigId.YamlSchema]?: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
   [ConfigId.JsonOptions]?: object;
+  [ConfigId.DirectoryConversion]?: boolean;
 };
 
 enum ConfigIdLegacy {
