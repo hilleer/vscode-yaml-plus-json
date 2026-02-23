@@ -74,6 +74,7 @@ All configurations should be defined in `yaml-plus-json` in vscode settings (e.g
 | `keepOriginalFiles`      | Keep original files when converting. Use `"ask"` to be asked every time or `"always"` to always keep original files                                                                                         | string  |           | `"always"` |
 | `overwriteExistentFiles` | Overwrite existent files when converting. Use `"ask"` to be asked every time or `"always"` to always overwrite                                                                                              | string  |           | `"always"` |
 | `yamlOptions`            | For more advanced configs using the YAML parser. See the module [docs](https://github.com/eemeli/yaml/blob/main/docs/03_options.md) for details. Note that specific extension configs set takes precedence. | object  |           |            |
+| `directoryConversion`    | Enable the right-click commands that convert all JSON/YAML files in a directory (applies to folders only). Set to `false` to hide these commands from the explorer context menu.                            | boolean | `true`    | `false`    |
 
 ---
 

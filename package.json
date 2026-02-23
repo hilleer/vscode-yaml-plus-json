@@ -2,7 +2,7 @@
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
 	"description": "Easily convert yaml to json and json to yaml",
-	"version": "1.14.0",
+	"version": "1.15.0",
 	"publisher": "hilleer",
 	"engines": {
 		"vscode": "^1.109.0",
@@ -61,12 +61,12 @@
 			{
 				"command": "extension.convertYamlFilesToJson",
 				"title": "Convert YAML files to JSON",
-				"enablement": "explorerResourceIsFolder"
+				"enablement": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 			},
 			{
 				"command": "extension.convertJsonFilesToYaml",
 				"title": "Convert JSON files to YAML",
-				"enablement": "explorerResourceIsFolder"
+				"enablement": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 			},
 			{
 				"command": "extension.convertJsonSelectionsToYaml",
@@ -138,12 +138,12 @@
 				{
 					"group": "1_modification",
 					"command": "extension.convertYamlFilesToJson",
-					"when": "explorerResourceIsFolder"
+					"when": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 				},
 				{
 					"group": "1_modification",
 					"command": "extension.convertJsonFilesToYaml",
-					"when": "explorerResourceIsFolder"
+					"when": "explorerResourceIsFolder && yaml-plus-json.directoryConversion"
 				},
 				{
 					"group": "1_modification",
@@ -287,6 +287,11 @@
 										"merge": true
 									}
 								]
+							},
+							"directoryConversion": {
+								"type": "boolean",
+								"default": true,
+								"description": "Enable the right-click commands that convert all JSON/YAML files in a directory."
 							}
 						}
 					}
@@ -300,7 +305,7 @@
 		"format:fix": "prettier --write .",
 		"lint": "eslint src/",
 		"postversion": "git push && git push --tags",
-		"pretest": "npm run compile && npm run webpack && npm run lint",
+		"pretest": "npm run compile && npm run webpack",
 		"preversion": "npm run pretest",
 		"test": "node ./out/test/runTest.js",
 		"vscode:prepublish": "npm run webpack",

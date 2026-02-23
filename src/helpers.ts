@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
 import * as YAML from 'yaml';
 
+import { contextProvider } from './contextProvider';
 import { ConfigId, Configs, getConfig } from './config';
 
 const DEFAULT_ERROR_MESSAGE =
@@ -14,7 +14,7 @@ export function showError(error: unknown) {
 
   const message = error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE;
 
-  vscode.window.showErrorMessage(message);
+  contextProvider.vscode.window.showErrorMessage(message);
 }
 
 export function getYamlFromJson(json: string): string {
@@ -25,7 +25,7 @@ export function getYamlFromJson(json: string): string {
   const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
 
   try {
-    const jsonObject = YAML.parse(json, { schema: 'json' });
+    const jsonObject: unknown = YAML.parse(json, { schema: 'json' });
 
     return YAML.stringify(jsonObject, {
       ...options, // do first so specific options take precedence
@@ -45,7 +45,7 @@ export function getJsonFromYaml(yaml: string): string {
   const options = getConfig<Configs['jsonOptions']>(ConfigId.JsonOptions) || {};
 
   try {
-    const json = YAML.parse(yaml, {
+    const json: unknown = YAML.parse(yaml, {
       ...options, // do first so specific options take precedence
       merge: true,
       ...(schema && { schema }),

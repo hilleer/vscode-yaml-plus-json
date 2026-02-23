@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import { workspace } from 'vscode';
 
 export enum ConfigId {
   ConvertOnRename = 'convertOnRename',
@@ -13,6 +13,7 @@ export enum ConfigId {
   YamlMerge = 'yamlMerge',
   YamlOptions = 'yamlOptions',
   JsonOptions = 'jsonOptions',
+  DirectoryConversion = 'directoryConversion',
 }
 
 export type Configs = {
@@ -28,6 +29,7 @@ export type Configs = {
   [ConfigId.YamlOptions]?: object;
   [ConfigId.YamlSchema]?: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
   [ConfigId.JsonOptions]?: object;
+  [ConfigId.DirectoryConversion]?: boolean;
 };
 
 enum ConfigIdLegacy {
@@ -40,11 +42,18 @@ const EXTENSION_CONFIG_ID = 'yaml-plus-json';
 
 // TODO set extended type of generic
 export function getConfig<T = unknown>(configId: ConfigId | `${ConfigId}`): T | undefined {
-  const config = vscode.workspace.getConfiguration(EXTENSION_CONFIG_ID);
+  const config = workspace.getConfiguration(EXTENSION_CONFIG_ID);
 
   const legacyConfigKey = getLegacyConfigKey(configId as ConfigId);
 
-  return config.get<T>(legacyConfigKey) || config.get<T>(configId);
+  if (legacyConfigKey) {
+    const legacyValue = config.get<T | undefined>(legacyConfigKey);
+    if (legacyValue !== undefined) {
+      return legacyValue;
+    }
+  }
+
+  return config.get<T>(configId);
 }
 
 /**
@@ -55,8 +64,9 @@ const LEGACY_CONFIGS = Object.freeze({
   [ConfigId.YamlIndent]: ConfigIdLegacy.Indent,
 });
 
-function getLegacyConfigKey(configId: ConfigId) {
+function getLegacyConfigKey(configId: ConfigId): string | undefined {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  return LEGACY_CONFIGS[configId];
+  const value: unknown = LEGACY_CONFIGS[configId];
+  return typeof value === 'string' ? value : undefined;
 }
