@@ -59,7 +59,7 @@ export function getJsonFromYaml(yaml: string): string {
 
     // One document: return as is
     // multiple documents: return as JSON-array
-    const values = docs.map((doc) => doc.toJS());
+    const values: unknown[] = docs.map((doc) => doc.toJS() as unknown);
     const json = values.length === 1 ? values[0] : values;
 
     return JSON.stringify(json, undefined, 2);
