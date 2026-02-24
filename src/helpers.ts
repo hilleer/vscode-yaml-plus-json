@@ -45,11 +45,22 @@ export function getJsonFromYaml(yaml: string): string {
   const options = getConfig<Configs['jsonOptions']>(ConfigId.JsonOptions) || {};
 
   try {
-    const json: unknown = YAML.parse(yaml, {
+    // parseAllDocuments supports multi-document YAML files using "---" separators.
+    // YAML.parse() does not support multiple documents and throws an error if they are encountered.
+    const docs = YAML.parseAllDocuments(yaml, {
       ...options, // do first so specific options take precedence
       merge: true,
       ...(schema && { schema }),
     });
+
+    // parseAllDocuments never throws — errors are stored on each doc and must be re-thrown manually
+    const errors = docs.flatMap((doc) => doc.errors);
+    if (errors.length > 0) throw errors[0];
+
+    // One document: return as is
+    // multiple documents: return as JSON-array
+    const values = docs.map((doc) => doc.toJS());
+    const json = values.length === 1 ? values[0] : values;
 
     return JSON.stringify(json, undefined, 2);
   } catch (error) {
