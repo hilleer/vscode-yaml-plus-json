@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    timeout-minutes: 3
     strategy:
       matrix:
         node-version: [20, 22, 24, latest]
