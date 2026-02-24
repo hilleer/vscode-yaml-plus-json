@@ -49,6 +49,11 @@ suite('helpers', () => {
           [ConfigId.YamlLineWidth]: 100,
         },
       },
+      {
+        description: 'should convert a json array to a yaml sequence',
+        inputFilePath: 'jsonArrayInput.json',
+        expectedFilePath: 'jsonArrayExpected.yaml',
+      },
     ];
 
     for (const t of tests) {
@@ -96,6 +101,11 @@ suite('helpers', () => {
         inputFilePath: 'mergeTagInput.yaml',
         expectedFilePath: 'mergeTagExpected.json',
         description: 'should convert yaml with merge tags to json',
+      },
+      {
+        inputFilePath: 'multiDocumentInput.yaml',
+        expectedFilePath: 'multiDocumentExpected.json',
+        description: 'should convert multi-document yaml (--- separator) to a json array',
       },
     ];
 

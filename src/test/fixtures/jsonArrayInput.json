@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Dimension",
+    "type": "Size"
+  },
+  {
+    "name": "Color",
+    "type": "String"
+  }
+]
