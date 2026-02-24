@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.15.1](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.15.0...v1.15.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* support multi-document YAML conversion to JSON array ([#433](https://github.com/hilleer/vscode-yaml-plus-json/issues/433)) ([69d6845](https://github.com/hilleer/vscode-yaml-plus-json/commit/69d68457d45838225cbaca71abe45894a318715c))
+
 ## [1.15.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/yaml-plus-json-v1.14.0...yaml-plus-json-v1.15.0) (2026-02-22)
 
 
