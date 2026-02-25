@@ -1,0 +1,12 @@
+# Database configuration
+database:
+  host: localhost # default host
+  port: 5432
+  # max connections allowed
+  maxConnections: 100
+# Feature flags
+features:
+  # primary feature
+  - auth
+  - logging # essential
+debug: false

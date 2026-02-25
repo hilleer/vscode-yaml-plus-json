@@ -2,7 +2,14 @@ import * as path from 'path';
 import type { TextDocument, Uri, FileSystem } from 'vscode';
 
 import { contextProvider } from './contextProvider';
-import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import {
+  getJsonFromYaml,
+  getJsoncFromYaml,
+  getYamlFromJson,
+  getYamlFromJsonc,
+  showError,
+  stripJsoncComments,
+} from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
 
 export async function onFileSave(document: TextDocument): Promise<void> {
@@ -18,16 +25,21 @@ export async function onFileSave(document: TextDocument): Promise<void> {
   const fileExtension = path.extname(filePath);
 
   const isYaml = fileExtension === '.yaml' || fileExtension === '.yml';
-  const isJson = fileExtension === '.json';
+  const isJson = fileExtension === '.json' || fileExtension === '.jsonc';
 
   if (!isYaml && !isJson) {
-    return; // saved non yaml/json file - do nothing
+    return; // saved non yaml/json/jsonc file - do nothing
   }
+
+  const preserveComments = getConfig<boolean>(ConfigId.PreserveComments) ?? true;
 
   try {
     if (isYaml) {
-      const newContent = getJsonFromYaml(document.getText());
       const toJsonExtension = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
+      const newContent =
+        toJsonExtension === '.jsonc' && preserveComments
+          ? getJsoncFromYaml(document.getText())
+          : getJsonFromYaml(document.getText());
       const newFilePath = filePath.replace(fileExtension, toJsonExtension);
 
       return await convertAndWrite(newFilePath, newContent, fs);
@@ -35,7 +47,13 @@ export async function onFileSave(document: TextDocument): Promise<void> {
 
     if (isJson) {
       const toYamlExtension = getConfig<string>(ConfigId.FileExtensionsYaml) || '.yaml';
-      const newContent = getYamlFromJson(document.getText());
+      const text = document.getText();
+      let newContent: string;
+      if (fileExtension === '.jsonc') {
+        newContent = preserveComments ? getYamlFromJsonc(text) : getYamlFromJson(stripJsoncComments(text));
+      } else {
+        newContent = getYamlFromJson(text);
+      }
       const newFilePath = filePath.replace(fileExtension, toYamlExtension);
 
       return await convertAndWrite(newFilePath, newContent, fs);

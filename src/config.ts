@@ -14,6 +14,7 @@ export enum ConfigId {
   YamlOptions = 'yamlOptions',
   JsonOptions = 'jsonOptions',
   DirectoryConversion = 'directoryConversion',
+  PreserveComments = 'preserveComments',
 }
 
 export type Configs = {
@@ -30,6 +31,7 @@ export type Configs = {
   [ConfigId.YamlSchema]?: 'core' | 'failsafe' | 'json' | 'yaml-1.1';
   [ConfigId.JsonOptions]?: object;
   [ConfigId.DirectoryConversion]?: boolean;
+  [ConfigId.PreserveComments]?: boolean;
 };
 
 enum ConfigIdLegacy {

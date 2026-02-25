@@ -1,6 +1,13 @@
 import * as path from 'path';
 
-import { getJsonFromYaml, getYamlFromJson, showError } from './helpers';
+import {
+  getJsonFromYaml,
+  getJsoncFromYaml,
+  getYamlFromJson,
+  getYamlFromJsonc,
+  showError,
+  stripJsoncComments,
+} from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
 import { contextProvider } from './contextProvider';
 import type { Uri } from 'vscode';
@@ -26,6 +33,12 @@ type ConvertFileContext = {
   oldFileUri: Uri;
   newFileUri: Uri;
   fileContent: string;
+};
+
+type GetNewFileContent = {
+  fromType: ConvertFromType;
+  oldContent: string;
+  oldFileExtension: string;
 };
 
 export class FileConverter {
@@ -78,7 +91,11 @@ export class FileConverter {
         }
       }
 
-      const fileContent = FileConverter.getNewFileContent(this.convertFromType, oldFileContent.toString());
+      const fileContent = FileConverter.getNewFileContent({
+        fromType: this.convertFromType,
+        oldContent: oldFileContent.toString(),
+        oldFileExtension,
+      });
 
       await this.convertFile({ newFileUri, oldFileUri, shouldKeepOriginalFile, fileContent });
 
@@ -185,13 +202,28 @@ export class FileConverter {
     return false;
   }
 
-  private static getNewFileContent(convertFromType: ConvertFromType, oldContent: string) {
-    const converter = {
-      [ConvertFromType.Json]: getYamlFromJson,
-      [ConvertFromType.Yaml]: getJsonFromYaml,
-    }[convertFromType];
+  private static getNewFileContent({ fromType, oldContent, oldFileExtension }: GetNewFileContent) {
+    const preserveComments = getConfig<boolean>(ConfigId.PreserveComments) ?? true;
+    const targetJsonExt = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
 
-    return converter(oldContent);
+    const convertToYaml = fromType === ConvertFromType.Json;
+    if (convertToYaml) {
+      // Source is JSON/JSONC - target is YAML
+      if (preserveComments && oldFileExtension === '.jsonc') {
+        return getYamlFromJsonc(oldContent);
+      }
+      // Strip comments from JSONC before plain conversion
+      const content = oldFileExtension === '.jsonc' ? stripJsoncComments(oldContent) : oldContent;
+      return getYamlFromJson(content);
+    }
+
+    // Source is YAML - target is JSONC
+    if (targetJsonExt === '.jsonc' && preserveComments) {
+      return getJsoncFromYaml(oldContent);
+    }
+
+    // Source is YAML - target is JSON (or JSONC but user doesn't want to preserve comments)
+    return getJsonFromYaml(oldContent);
   }
 
   private static getNewFileExtension(convertFromType: ConvertFromType) {
