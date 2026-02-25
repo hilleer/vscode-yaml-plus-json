@@ -279,7 +279,7 @@ suite('helpers', () => {
       const input = '---\nname: first\n---\nname: second\n';
       const result = getJsoncFromYaml(input);
       // Should produce a JSON array, not JSONC with comments
-      const parsed = JSON.parse(result);
+      const parsed: unknown[] = JSON.parse(result) as unknown[];
       assert.ok(Array.isArray(parsed), 'should be an array');
       assert.strictEqual(parsed.length, 2);
     });
