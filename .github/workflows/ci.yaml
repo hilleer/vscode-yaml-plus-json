@@ -10,6 +10,9 @@ on:
     branches: ['main']
   workflow_call: # allow to be called from other workflows
 
+permissions:
+  contents: read
+
 jobs:
   build:
     timeout-minutes: 3
