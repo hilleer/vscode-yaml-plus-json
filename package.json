@@ -28,9 +28,11 @@
 	],
 	"activationEvents": [
 		"workspaceContains:**/**.json",
+		"workspaceContains:**/**.jsonc",
 		"workspaceContains:**/**.yml",
 		"workspaceContains:**/**.yaml",
 		"onLanguage:json",
+		"onLanguage:jsonc",
 		"onLanguage:yaml"
 	],
 	"main": "./dist/extension.js",
@@ -39,7 +41,7 @@
 			{
 				"command": "extension.rightClickJson",
 				"title": "Convert to YAML",
-				"enablement": "resourceExtname == .json"
+				"enablement": "resourceExtname == .json || resourceExtname == .jsonc"
 			},
 			{
 				"command": "extension.rightClickYaml",
@@ -89,7 +91,7 @@
 			"commandPalette": [
 				{
 					"command": "extension.rightClickJson",
-					"when": "resourceExtname == .json"
+					"when": "resourceExtname == .json || resourceExtname == .jsonc"
 				},
 				{
 					"command": "extension.rightClickYaml",
@@ -123,7 +125,7 @@
 				},
 				{
 					"command": "extension.previewAsYaml",
-					"when": "editorLangId == 'json'"
+					"when": "editorLangId == 'json' || editorLangId == 'jsonc'"
 				},
 				{
 					"command": "extension.previewAsJson",
@@ -144,7 +146,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.rightClickJson",
-					"when": "resourceExtname == .json"
+					"when": "resourceExtname == .json || resourceExtname == .jsonc"
 				},
 				{
 					"group": "1_modification",
@@ -154,7 +156,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.convertJsonSelectionsToYaml",
-					"when": "listMultiSelection && resourceExtname == .json"
+					"when": "listMultiSelection && (resourceExtname == .json || resourceExtname == .jsonc)"
 				},
 				{
 					"group": "1_modification",
@@ -247,7 +249,8 @@
 										"type": "string",
 										"description": "json filename extension",
 										"enum": [
-											".json"
+											".json",
+											".jsonc"
 										]
 									}
 								}
@@ -288,6 +291,11 @@
 								"type": "boolean",
 								"default": true,
 								"description": "Enable the right-click commands that convert all JSON/YAML files in a directory."
+							},
+							"preserveComments": {
+								"type": "boolean",
+								"default": true,
+								"description": "Preserve comments when converting between YAML and JSONC. When true, YAML # comments map to JSONC // comments and vice versa. Requires fileExtensions.json to be set to .jsonc for YAML to JSONC conversion."
 							}
 						}
 					}
@@ -334,6 +342,7 @@
 		"webpack-cli": "^6.0.1"
 	},
 	"dependencies": {
+		"jsonc-parser": "3.3.1",
 		"yaml": "2.8.2"
 	},
 	"bugs": {

@@ -65,7 +65,7 @@ suite('onRightClickAndConvertDirectoryFiles', () => {
 
       assert.strictEqual(showInformationMessageStub.callCount, 1);
       assert.ok(
-        (showInformationMessageStub.firstCall.args[0] as string).includes('Did not find any json files'),
+        (showInformationMessageStub.firstCall.args[0] as string).includes('Did not find any json or jsonc files'),
         'should show no json files message',
       );
     });

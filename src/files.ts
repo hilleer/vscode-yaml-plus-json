@@ -3,7 +3,7 @@ import type { FileType, Uri } from 'vscode';
 
 import { contextProvider } from './contextProvider';
 
-type FileExtension = 'json' | 'yaml' | 'yml';
+type FileExtension = 'json' | 'jsonc' | 'yaml' | 'yml';
 
 export async function getFilesInDirectory(uri: Uri, fileExtensions: FileExtension | FileExtension[]) {
   const vscode = contextProvider.vscode;
