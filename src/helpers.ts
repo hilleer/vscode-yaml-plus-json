@@ -1,5 +1,5 @@
 import * as YAML from 'yaml';
-import { visit as jsoncVisit, stripComments, parseTree, findNodeAtLocation } from 'jsonc-parser';
+import { visit as jsoncVisit, parseTree, findNodeAtLocation, parse as jsoncParse, ParseError } from 'jsonc-parser';
 
 import { contextProvider } from './contextProvider';
 import { ConfigId, Configs, getConfig } from './config';
@@ -54,9 +54,19 @@ export function getYamlFromJsonc(jsoncText: string): string {
     // Step 1: Collect comments and their positions from the JSONC text
     const comments = collectJsoncComments(jsoncText);
 
-    // Step 2: Strip comments and parse clean JSON
-    const cleanJson = stripComments(jsoncText);
-    const jsonObject: unknown = JSON.parse(cleanJson);
+    // Step 2: Parse JSONC directly (supports trailing commas and comments)
+    const parseErrors: ParseError[] = [];
+    const jsonObject: unknown = jsoncParse(jsoncText, parseErrors);
+    if (parseErrors.length > 0) {
+      throw new Error(`JSONC parse error (code ${parseErrors[0].error}) at offset ${parseErrors[0].offset}`);
+    const parseErrors: ParseError[] = [];
+    const jsonObject: unknown = jsoncParse(jsoncText, parseErrors);
+    if (parseErrors.length > 0) {
+      const { error, offset } = parseErrors[0];
+      const line = jsoncText.substring(0, offset).split('\n').length;
+      const col = offset - jsoncText.lastIndexOf('\n', offset - 1);
+      throw new Error(`Invalid JSONC: ${printParseErrorCode(error)} at line ${line}, column ${col}`);
+    }
 
     // Step 3: Build a YAML Document and attach comments
     const doc = new YAML.Document(jsonObject, {

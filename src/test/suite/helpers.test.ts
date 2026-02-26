@@ -242,6 +242,21 @@ suite('helpers', () => {
       assert.ok(!result.includes('#'), 'should not contain any comments');
     });
 
+    test('should handle jsonc with trailing commas', () => {
+      const input = '{\n  "name": "test",\n  "values": [1, 2, 3,],\n  "nested": {\n    "key": "value",\n  },\n}';
+      const result = getYamlFromJsonc(input);
+      assert.ok(result.includes('name: test'), 'should contain name');
+      assert.ok(result.includes('key: value'), 'should contain nested key');
+    });
+
+    test('should handle jsonc with trailing commas and comments', () => {
+      const input = '{\n  // header comment\n  "name": "test", // inline\n  "values": [1, 2,],\n}';
+      const result = getYamlFromJsonc(input);
+      assert.ok(result.includes('name: test'), 'should contain name');
+      assert.ok(result.includes('# header comment'), 'should contain header comment');
+      assert.ok(result.includes('# inline'), 'should contain inline comment');
+    });
+
     test('should handle inline comment after value', () => {
       const input = '{\n  "a": 1, // comment on a\n  "b": 2\n}';
       const result = getYamlFromJsonc(input);
