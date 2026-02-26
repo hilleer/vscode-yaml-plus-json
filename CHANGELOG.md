@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.16.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.15.1...v1.16.0) (2026-02-26)
+
+
+### Features
+
+* bi-directional comment preservation between YAML and JSONC ([#439](https://github.com/hilleer/vscode-yaml-plus-json/issues/439)) ([d049285](https://github.com/hilleer/vscode-yaml-plus-json/commit/d049285ef01f939f464dade90d65801eb32a978f))
+
 ## [1.15.1](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.15.0...v1.15.1) (2026-02-24)
 
 
