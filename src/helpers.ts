@@ -1,5 +1,12 @@
 import * as YAML from 'yaml';
-import { visit as jsoncVisit, parseTree, findNodeAtLocation, parse as jsoncParse, ParseError } from 'jsonc-parser';
+import {
+  visit as jsoncVisit,
+  parseTree,
+  findNodeAtLocation,
+  parse as jsoncParse,
+  ParseError,
+  printParseErrorCode,
+} from 'jsonc-parser';
 
 import { contextProvider } from './contextProvider';
 import { ConfigId, Configs, getConfig } from './config';
@@ -56,11 +63,7 @@ export function getYamlFromJsonc(jsoncText: string): string {
 
     // Step 2: Parse JSONC directly (supports trailing commas and comments)
     const parseErrors: ParseError[] = [];
-    const jsonObject: unknown = jsoncParse(jsoncText, parseErrors);
-    if (parseErrors.length > 0) {
-      throw new Error(`JSONC parse error (code ${parseErrors[0].error}) at offset ${parseErrors[0].offset}`);
-    const parseErrors: ParseError[] = [];
-    const jsonObject: unknown = jsoncParse(jsoncText, parseErrors);
+    const jsonObject: unknown = jsoncParse(jsoncText, parseErrors, { allowTrailingComma: true });
     if (parseErrors.length > 0) {
       const { error, offset } = parseErrors[0];
       const line = jsoncText.substring(0, offset).split('\n').length;
