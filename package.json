@@ -156,7 +156,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.convertJsonSelectionsToYaml",
-					"when": "listMultiSelection && resourceExtname == .json || listMultiSelection && resourceExtname == .jsonc"
+					"when": "listMultiSelection && (resourceExtname == .json || resourceExtname == .jsonc)"
 				},
 				{
 					"group": "1_modification",
