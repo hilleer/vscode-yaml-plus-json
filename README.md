@@ -7,7 +7,7 @@
 [![Version](https://img.shields.io/visual-studio-marketplace/v/hilleer.yaml-plus-json)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
 [![License: MIT](https://img.shields.io/github/license/hilleer/vscode-yaml-plus-json)](https://github.com/hilleer/vscode-yaml-plus-json/blob/main/LICENSE)
 
-Easily convert YAML to JSON or vice versa. Files can be converted individually, by folder selection or by preview commands. See [the usage examples](#usage-examples) below.
+Easily convert YAML to JSON or vice versa. Files can be converted individually, by selecting a folder, or via preview commands. See [the usage examples](#usage-examples) below.
 
 Any good ideas or feature requests? Please, do not hesitate to open [a new issue](https://github.com/hilleer/vscode-yaml-plus-json/issues/new)!
 
@@ -43,17 +43,17 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 ## Usage examples
 
-### Convert by single file
+### Convert a single file
 
-![Convert by single file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file.gif)
+![Convert a single file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file.gif)
 
-### Convert by file rename
+### Convert by renaming a file
 
-![Convert by file rename](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file_rename.gif)
+![Convert by renaming a file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file_rename.gif)
 
-### Convert by folder
+### Convert a folder
 
-![Convert by folder](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_directory.gif)
+![Convert a folder](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_directory.gif)
 
 ## Config
 
