@@ -7,7 +7,7 @@
 [![Version](https://img.shields.io/visual-studio-marketplace/v/hilleer.yaml-plus-json)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
 [![License: MIT](https://img.shields.io/github/license/hilleer/vscode-yaml-plus-json)](https://github.com/hilleer/vscode-yaml-plus-json/blob/main/LICENSE)
 
-Easily convert YAML to JSON or vice versa. Files can be converted individually, by folder selection or by preview commands. See [the usage examples](#usage-examples) below.
+Easily convert YAML to JSON or vice versa. Files can be converted individually, by selecting a folder, or via preview commands. See [the usage examples](#usage-examples) below.
 
 Any good ideas or feature requests? Please, do not hesitate to open [a new issue](https://github.com/hilleer/vscode-yaml-plus-json/issues/new)!
 
