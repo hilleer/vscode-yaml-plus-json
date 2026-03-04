@@ -41,17 +41,17 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 ## Usage examples
 
-### Convert by single file
+### Convert a single file
 
-![Convert by single file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file.gif)
+![Convert a single file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file.gif)
 
-### Convert by file rename
+### Convert by renaming a file
 
-![Convert by file rename](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file_rename.gif)
+![Convert by renaming a file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file_rename.gif)
 
-### Convert by folder
+### Convert a folder
 
-![Convert by folder](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_directory.gif)
+![Convert a folder](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_directory.gif)
 
 ## Config
 
