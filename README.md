@@ -13,6 +13,8 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 ## Features and usage
 
+![Overview](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_overview.gif)
+
 - **Convert a single file:**
   - Convert a YAML file to JSON or JSONC by right clicking it and selecting `Convert to JSON`.
   - Convert a YAML file to JSON or JSONC by changing file extension to `.json` or `.jsonc`.
