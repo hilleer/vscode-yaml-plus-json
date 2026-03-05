@@ -335,7 +335,7 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^25.3.1",
+		"@types/node": "^25.3.3",
 		"@types/sinon": "21.0.0",
 		"@types/vscode": "^1.109.0",
 		"@types/yaml": "1.9.7",
@@ -346,7 +346,7 @@
 		"eslint": "^10.0.2",
 		"eslint-config-prettier": "10.1.8",
 		"eslint-plugin-prettier": "5.5.5",
-		"globals": "^17.3.0",
+		"globals": "^17.4.0",
 		"husky": "^9.1.7",
 		"mocha": "^11.7.5",
 		"sinon": "21.0.1",

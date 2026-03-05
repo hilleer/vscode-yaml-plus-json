@@ -17,8 +17,13 @@ function generateNonce(): string {
 }
 
 function detectDirection(input: string): Direction {
-  const trimmed = input.trimStart();
-  return trimmed.startsWith('{') || trimmed.startsWith('[') ? 'json-to-yaml' : 'yaml-to-json';
+  const trimmed = input.trim();
+  try {
+    JSON.parse(trimmed);
+    return 'json-to-yaml';
+  } catch {
+    return 'yaml-to-json';
+  }
 }
 
 function getEditorContent(editor: import('vscode').TextEditor): { input: string; direction: Direction } | null {
@@ -92,15 +97,12 @@ export function onInteractiveConverter(): void {
           const isJsonToYaml = msg.direction === 'json-to-yaml';
           const filename = isJsonToYaml ? 'output.yaml' : 'output.json';
           const workspaceUri = contextProvider.vscode.workspace.workspaceFolders?.[0]?.uri;
-          const defaultUri = workspaceUri
-            ? contextProvider.vscode.Uri.joinPath(workspaceUri, filename)
-            : contextProvider.vscode.Uri.file(filename);
           const uri = await contextProvider.vscode.window.showSaveDialog({
-            defaultUri,
+            ...(workspaceUri ? { defaultUri: contextProvider.vscode.Uri.joinPath(workspaceUri, filename) } : {}),
             filters: isJsonToYaml ? { 'YAML files': ['yaml', 'yml'] } : { 'JSON files': ['json', 'jsonc'] },
           });
           if (uri) {
-            await contextProvider.vscode.workspace.fs.writeFile(uri, Buffer.from(msg.text, 'utf8'));
+            await contextProvider.vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(msg.text));
           }
           break;
         }
@@ -250,15 +252,6 @@ function getWebviewHtml(): string {
     let debounceTimer = null;
     let lastOutput = '';
 
-    function escapeHtml(text) {
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
     function updateLabels() {
       const isJsonToYaml = direction === 'json-to-yaml';
       document.getElementById('dirLabel').textContent = isJsonToYaml ? 'JSON \u2192 YAML' : 'YAML \u2192 JSON';
@@ -324,7 +317,7 @@ function getWebviewHtml(): string {
         case 'error': {
           lastOutput = '';
           const outputEl = document.getElementById('output');
-          outputEl.innerHTML = escapeHtml(msg.message);
+          outputEl.textContent = msg.message;
           outputEl.classList.add('error');
           break;
         }
