@@ -85,6 +85,11 @@
 			{
 				"command": "extension.previewAsJson",
 				"title": "YAML+JSON: Preview as JSON (from YAML. Opens in new file)"
+			},
+			{
+				"command": "extension.interactiveConverter",
+				"title": "YAML+JSON: Open Interactive Converter",
+				"icon": "$(arrow-swap)"
 			}
 		],
 		"menus": {
@@ -130,6 +135,15 @@
 				{
 					"command": "extension.previewAsJson",
 					"when": "editorLangId == 'yaml'"
+				},
+				{
+					"command": "extension.interactiveConverter"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "extension.interactiveConverter",
+					"group": "navigation"
 				}
 			],
 			"explorer/context": [
