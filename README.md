@@ -1,7 +1,7 @@
 # YAML :heart: JSON
 
-[![vscode marketplace installations](https://img.shields.io/visual-studio-marketplace/i/hilleer.yaml-plus-json)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
-[![vscode marketplace rating](https://img.shields.io/visual-studio-marketplace/r/hilleer.yaml-plus-json)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
+[![vscode marketplace installations](https://img.shields.io/visual-studio-marketplace/i/hilleer.yaml-plus-json?cacheSeconds=86400)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
+[![vscode marketplace rating](https://img.shields.io/visual-studio-marketplace/r/hilleer.yaml-plus-json?cacheSeconds=86400)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
 [![CodeQL](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql.yml/badge.svg)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/codeql.yml)
 [![extension CI](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml)
 [![Version](https://img.shields.io/visual-studio-marketplace/v/hilleer.yaml-plus-json)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
@@ -13,7 +13,9 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 
 ## Features and usage
 
-![Overview](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_overview.gif)
+![Overview](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo.gif)
+
+See more usage examples in [the docs directory](https://github.com/hilleer/vscode-yaml-plus-json/blob/main/docs).
 
 - **Convert a single file:**
   - Convert a YAML file to JSON or JSONC by right clicking it and selecting `Convert to JSON`.
@@ -40,20 +42,6 @@ Any good ideas or feature requests? Please, do not hesitate to open [a new issue
 - **Convert on save:** When `convertOnSave` is enabled, saving a YAML or JSON file will automatically create (or update) its counterpart file. The original file is always kept. The `overwriteExistentFiles` setting controls what happens when the counterpart already exists.
 - **Reverting converted files:** When a file has been reverted, a _"revert"_ prompt will be shown to revert it. Using this will return the entirety of the original file, including YAML comments.
 - **Overwriting existent files:** When trying to convert a file into a destination that already exist, you can use the `overwriteExistentFiles` configuration to overwrite such. **Notice** if you use the revert feature after overwriting a file, the extension cannot (currently) revert the overwritten file. Also, due to limitation in vscode of active user prompts, if you set it to `"ask"` you will only be prompted to overwrite N number of files, while others will be skipped.
-
-## Usage examples
-
-### Convert a single file
-
-![Convert a single file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file.gif)
-
-### Convert by renaming a file
-
-![Convert by renaming a file](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_single_file_rename.gif)
-
-### Convert a folder
-
-![Convert a folder](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_directory.gif)
 
 ## Config
 
