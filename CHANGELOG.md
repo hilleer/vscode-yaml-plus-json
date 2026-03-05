@@ -4,7 +4,7 @@
 
 ### Added
 
-* More usage examples to README
+* More README usage examples
 
 ## [1.16.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.15.1...v1.16.0) (2026-02-26)
 
