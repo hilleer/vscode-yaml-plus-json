@@ -6,7 +6,7 @@
 [![extension CI](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml)
 [![License: MIT](https://img.shields.io/github/license/hilleer/vscode-yaml-plus-json)](https://github.com/hilleer/vscode-yaml-plus-json/blob/main/LICENSE)
 
-Easily convert YAML to JSON or vice versa. Files can be converted individually, by selecting a folder, or via preview commands. See [the usage examples](#usage-examples) below.
+> Convert YAML to or from JSON directly in VS Code — single files, entire folders, text selections, or via live preview. Preserves comments when converting to JSONC.
 
 Any good ideas or feature requests? Please, do not hesitate to open [a new issue](https://github.com/hilleer/vscode-yaml-plus-json/issues/new)!
 

@@ -1,7 +1,7 @@
 {
 	"name": "yaml-plus-json",
 	"displayName": "YAML ❤️ JSON",
-	"description": "Easily convert yaml to json and json to yaml",
+	"description": "Convert YAML to or from JSON in one click. Batch convert folders, preview without saving, preserve comments, and auto-convert on save or rename.",
 	"version": "1.16.1",
 	"publisher": "hilleer",
 	"engines": {
@@ -17,15 +17,20 @@
 		}
 	],
 	"categories": [
+		"Formatters",
 		"Other"
 	],
 	"keywords": [
-		"converter",
-		"yaml converter",
-		"json converter",
+		"yaml",
+		"json",
 		"yaml to json",
-		"json to yaml"
+		"json to yaml",
+		"yaml2json"
 	],
+	"galleryBanner": {
+		"color": "#1e1e1e",
+		"theme": "dark"
+	},
 	"activationEvents": [
 		"workspaceContains:**/**.json",
 		"workspaceContains:**/**.jsonc",
