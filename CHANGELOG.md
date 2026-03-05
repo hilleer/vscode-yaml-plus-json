@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.16.1](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.15.1...v1.16.0) (2026-03-05)
+
+### Added
+
+* More usage examples to README
+
 ## [1.16.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.15.1...v1.16.0) (2026-02-26)
 
 
