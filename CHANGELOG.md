@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.16.2](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.16.1...v1.16.2) (2026-03-10)
+
+
+### Bug Fixes
+
+* corrected marketplace badges and descriptions ([#462](https://github.com/hilleer/vscode-yaml-plus-json/issues/462)) ([b1a172e](https://github.com/hilleer/vscode-yaml-plus-json/commit/b1a172e107e357d2ab2e45d1a4c400b21b7e2280))
+
 ## [1.16.1](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.16.0...v1.16.1) (2026-03-05)
 
 
