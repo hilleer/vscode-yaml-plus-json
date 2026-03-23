@@ -349,7 +349,7 @@
 	},
 	"dependencies": {
 		"jsonc-parser": "3.3.1",
-		"yaml": "2.8.2"
+		"yaml": "2.8.3"
 	},
 	"bugs": {
 		"url": "https://github.com/hilleer/vscode-yaml-plus-json/issues/new"
