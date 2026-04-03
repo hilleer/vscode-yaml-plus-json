@@ -32,6 +32,8 @@ See more usage examples in [the docs directory](https://github.com/hilleer/vscod
   - Convert a selection of YAML files to JSON by right clicking one of the selected files and selecting `Convert selected files to JSON`.
   - Convert YAML files in a directory to JSON by right clicking the directory and selecting `Convert YAML files to JSON`.
   - Convert JSON files in a directory to YAML by right clicking the directory and selecting `Convert JSON files to YAML`.
+
+- **Interactive converter:** Open a persistent split-pane panel to convert arbitrary YAML/JSON content without needing a file on disk. Click the `⇄` icon in the editor toolbar or run `YAML+JSON: Open Interactive Converter` from the command palette. Pre-populates from the active editor, supports real-time conversion, Swap, Copy, and Save As.
 - **Comment preservation (YAML to or from JSONC):**
   - When converting between YAML and JSONC, comments are preserved by default (`preserveComments: true`).
   - YAML `#` comments map to JSONC `//` comments and vice versa.
@@ -41,6 +43,12 @@ See more usage examples in [the docs directory](https://github.com/hilleer/vscod
 - **Convert on save:** When `convertOnSave` is enabled, saving a YAML or JSON file will automatically create (or update) its counterpart file. The original file is always kept. The `overwriteExistentFiles` setting controls what happens when the counterpart already exists.
 - **Reverting converted files:** When a file has been reverted, a _"revert"_ prompt will be shown to revert it. Using this will return the entirety of the original file, including YAML comments.
 - **Overwriting existent files:** When trying to convert a file into a destination that already exist, you can use the `overwriteExistentFiles` configuration to overwrite such. **Notice** if you use the revert feature after overwriting a file, the extension cannot (currently) revert the overwritten file. Also, due to limitation in vscode of active user prompts, if you set it to `"ask"` you will only be prompted to overwrite N number of files, while others will be skipped.
+
+## Usage examples
+
+**Converting files via the interactive tool:**
+
+![demo_interactive.gif](https://raw.githubusercontent.com/hilleer/vscode-yaml-plus-json/main/docs/demo_interactive.gif)
 
 ## Config
 
