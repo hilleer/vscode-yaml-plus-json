@@ -1,7 +1,5 @@
 # YAML :heart: JSON
 
-[![vscode marketplace installations](https://img.shields.io/visual-studio-marketplace/i/hilleer.yaml-plus-json?cacheSeconds=86400)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
-[![vscode marketplace rating](https://img.shields.io/visual-studio-marketplace/r/hilleer.yaml-plus-json?cacheSeconds=86400)](https://marketplace.visualstudio.com/items?itemName=hilleer.yaml-plus-json)
 [![CodeQL](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/github-code-scanning/codeql)
 [![extension CI](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/hilleer/vscode-yaml-plus-json/actions/workflows/ci.yaml)
 [![License: MIT](https://img.shields.io/github/license/hilleer/vscode-yaml-plus-json)](https://github.com/hilleer/vscode-yaml-plus-json/blob/main/LICENSE)
