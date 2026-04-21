@@ -4,6 +4,7 @@
     "target": "es6",
     "outDir": "out",
     "lib": ["es6", "es2022.error"],
+    "types": ["node", "mocha"],
     "noUnusedLocals": true,
     "sourceMap": true,
     "rootDir": "src",
