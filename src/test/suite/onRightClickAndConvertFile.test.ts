@@ -144,7 +144,7 @@ suite('onRightClickAndConvertFile', () => {
 
     test('prompts user when keepOriginalFiles is ask and user chooses to keep', async () => {
       withConfig({ [ConfigId.KeepOriginalFiles]: 'ask' });
-      showInformationMessageStub.resolves('Keep' as unknown);
+      showInformationMessageStub.resolves('Keep');
       const uri = Uri.file('/fake/file.json');
 
       mockFs.readFile.callsFake((uri: Uri) => {
@@ -163,7 +163,7 @@ suite('onRightClickAndConvertFile', () => {
 
     test('prompts user when keepOriginalFiles is ask and user chooses not to keep', async () => {
       withConfig({ [ConfigId.KeepOriginalFiles]: 'ask' });
-      showInformationMessageStub.resolves('Do not keep' as unknown);
+      showInformationMessageStub.resolves('Do not keep');
       const uri = Uri.file('/fake/file.json');
 
       mockFs.readFile.callsFake((uri: Uri) => {
@@ -300,7 +300,7 @@ suite('onRightClickAndConvertFile', () => {
 
     test('prompts and overwrites when set to ask and user confirms', async () => {
       withConfig({ [ConfigId.OverwriteExistentFiles]: 'ask' });
-      showInformationMessageStub.resolves('Yes' as unknown);
+      showInformationMessageStub.resolves('Yes');
       const uri = Uri.file('/fake/file.json');
 
       mockFs.readFile.callsFake((u: Uri) => {
@@ -319,7 +319,7 @@ suite('onRightClickAndConvertFile', () => {
 
     test('prompts and skips when set to ask and user declines', async () => {
       withConfig({ [ConfigId.OverwriteExistentFiles]: 'ask' });
-      showInformationMessageStub.resolves('No' as unknown);
+      showInformationMessageStub.resolves('No');
       const uri = Uri.file('/fake/file.json');
 
       mockFs.readFile.callsFake((u: Uri) => {
