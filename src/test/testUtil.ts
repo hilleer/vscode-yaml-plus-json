@@ -1,6 +1,6 @@
 import * as Sinon from 'sinon';
 import { Uri, FileSystemError, FileType, Position, Range, WorkspaceEdit, Selection, workspace } from 'vscode';
-import type { TextDocument, TextEditor, WorkspaceConfiguration } from 'vscode';
+import type { TextDocument, TextEditor } from 'vscode';
 import { ConfigId, Configs } from '../config';
 
 type ConfigInput = Partial<Configs>;
@@ -13,7 +13,7 @@ export class WorkspaceConfigurationMock {
 
     this.stub.returns({
       get: (configKey: ConfigId) => configMock[configKey],
-    } as WorkspaceConfiguration);
+    });
   }
 
   restore() {

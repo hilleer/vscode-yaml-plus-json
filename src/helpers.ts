@@ -261,7 +261,7 @@ function findFirstTokenAfterLine(
 }
 
 function findPairByPath(doc: YAML.Document, path: (string | number)[]): { key?: YAML.Node; value?: YAML.Node } | null {
-  let current: YAML.Node | null = doc.contents as YAML.Node;
+  let current: YAML.Node | null = doc.contents;
   for (let i = 0; i < path.length; i++) {
     const seg = path[i];
     if (YAML.isMap(current)) {

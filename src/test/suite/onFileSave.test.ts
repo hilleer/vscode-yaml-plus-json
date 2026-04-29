@@ -151,7 +151,7 @@ suite('onFileSave', () => {
         [ConfigId.ConvertOnSave]: true,
         [ConfigId.OverwriteExistentFiles]: 'ask',
       });
-      showInformationMessageStub.resolves('Yes' as unknown);
+      showInformationMessageStub.resolves('Yes');
 
       await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
@@ -164,7 +164,7 @@ suite('onFileSave', () => {
         [ConfigId.ConvertOnSave]: true,
         [ConfigId.OverwriteExistentFiles]: 'ask',
       });
-      showInformationMessageStub.resolves('No' as unknown);
+      showInformationMessageStub.resolves('No');
 
       await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: YAML_CONTENT }));
 
