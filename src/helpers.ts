@@ -81,9 +81,25 @@ export function getYamlFromJsonc(jsoncText: string): string {
     });
 
     // Step 4: Attach collected comments to YAML nodes
-    attachCommentsToYamlDoc(doc, comments);
+    // Trailing comments are handled separately to avoid the blank line the yaml
+    // library inserts before doc.comment (stringifyDocument.js hardcoded behaviour).
+    const trailingComment = comments.find((c) => c.isTrailing);
+    attachCommentsToYamlDoc(
+      doc,
+      comments.filter((c) => !c.isTrailing),
+    );
 
-    return doc.toString();
+    let result = doc.toString();
+
+    if (trailingComment?.commentBefore) {
+      const commentLines = trailingComment.commentBefore
+        .split('\n')
+        .map((line) => `#${line}`)
+        .join('\n');
+      result = result + commentLines + '\n';
+    }
+
+    return result;
   } catch (error) {
     console.error(error);
     throw new Error('Failed to parse JSONC. Please make sure it has a valid format and try again.', { cause: error });
@@ -147,6 +163,7 @@ type CommentInfo = {
   path: (string | number)[];
   commentBefore?: string;
   commentAfter?: string;
+  isTrailing?: boolean;
 };
 
 function collectJsoncComments(text: string): CommentInfo[] {
@@ -215,6 +232,14 @@ function collectJsoncComments(text: string): CommentInfo[] {
         existing.commentBefore = existing.commentBefore ? existing.commentBefore + '\n' + ce.text : ce.text;
       } else {
         comments.push({ path: nextToken.path, commentBefore: ce.text });
+      }
+    } else {
+      // Trailing comment — appears after the last token with no following token
+      const existing = comments.find((c) => c.isTrailing);
+      if (existing) {
+        existing.commentBefore = existing.commentBefore ? existing.commentBefore + '\n' + ce.text : ce.text;
+      } else {
+        comments.push({ path: [], commentBefore: ce.text, isTrailing: true });
       }
     }
   }

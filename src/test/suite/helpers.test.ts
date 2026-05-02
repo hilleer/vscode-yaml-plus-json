@@ -264,6 +264,55 @@ suite('helpers', () => {
       assert.ok(result.includes('a: 1'), 'should contain a');
       assert.ok(result.includes('b: 2'), 'should contain b');
     });
+
+    test('should preserve trailing comment after last property (issue #475)', () => {
+      const input = '{\n  // comments\n  "key": "value"\n  // trailing comment\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, '# comments\nkey: value\n# trailing comment\n');
+    });
+
+    test('should preserve multiple trailing comments after last property', () => {
+      const input = '{\n  "key": "value"\n  // first trailing\n  // second trailing\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: value\n# first trailing\n# second trailing\n');
+    });
+
+    test('should preserve trailing comment in nested object', () => {
+      const input = '{\n  "outer": {\n    "inner": "value"\n    // nested trailing\n  }\n}';
+      const result = getYamlFromJsonc(input);
+      assert.ok(result.includes('inner: value'), 'should contain the key-value');
+      assert.ok(result.includes('# nested trailing'), 'should contain nested trailing comment');
+      assert.ok(!result.includes('\n\n#'), 'should not have blank line before trailing comment');
+    });
+
+    test('should preserve trailing comment outside the closing brace', () => {
+      const input = '{\n  // comments\n  "key": "value"\n}\n// hi there\n';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, '# comments\nkey: value\n# hi there\n');
+    });
+
+    test('should preserve both inline and trailing comment on last property', () => {
+      const input = '{\n  "key": "value" // inline\n  // trailing\n}';
+      const result = getYamlFromJsonc(input);
+      assert.ok(result.includes('# inline'), 'should contain inline comment');
+      assert.ok(result.includes('# trailing'), 'should contain trailing comment');
+      assert.ok(!result.includes('inline\n\n#'), 'should not have blank line before trailing comment');
+    });
+
+    test('should preserve trailing block comment', () => {
+      const input = '{\n  "key": "value"\n  /* block trailing */\n}';
+      const result = getYamlFromJsonc(input);
+      assert.ok(result.includes('key: value'), 'should contain the key-value');
+      assert.ok(result.includes('# block trailing'), 'should contain trailing block comment');
+      assert.ok(!result.includes('value\n\n#'), 'should not have blank line before trailing comment');
+    });
+
+    test('should preserve trailing comment in root-level array', () => {
+      const input = '[\n  1,\n  2\n  // trailing\n]';
+      const result = getYamlFromJsonc(input);
+      assert.ok(result.includes('# trailing'), 'should contain trailing comment');
+      assert.ok(!result.includes('\n\n#'), 'should not have blank line before trailing comment');
+    });
   });
 
   suite('getJsoncFromYaml()', () => {
@@ -453,6 +502,14 @@ suite('helpers', () => {
       assert.ok(roundTripped.includes('before value'), 'should preserve before-value comment text');
       assert.ok(roundTripped.includes('name: test'), 'should preserve name');
       assert.ok(roundTripped.includes('value: 42'), 'should preserve value');
+    });
+
+    test('JSONC → YAML → JSONC round-trip preserves trailing comment', () => {
+      const originalJsonc = ['{', '  "name": "test"', '  // trailing note', '}'].join('\n');
+      const yaml = getYamlFromJsonc(originalJsonc);
+      const roundTripped = getJsoncFromYaml(yaml);
+      assert.ok(roundTripped.includes('trailing note'), 'should preserve trailing comment text');
+      assert.ok(roundTripped.includes('"name"'), 'should preserve name key');
     });
   });
 });
