@@ -54,7 +54,7 @@ suite('onFileRename', () => {
           newUri: Uri.file(newPath),
         },
       ],
-    } as FileRenameEvent;
+    };
   }
 
   suite('convertOnRename disabled', () => {
