@@ -326,7 +326,7 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^25.9.0",
+		"@types/node": "^25.9.1",
 		"@types/sinon": "21.0.1",
 		"@types/vscode": "^1.120.0",
 		"@types/yaml": "1.9.7",
@@ -339,12 +339,12 @@
 		"eslint-plugin-prettier": "5.5.5",
 		"globals": "^17.6.0",
 		"husky": "^9.1.7",
-		"mocha": "^11.7.5",
+		"mocha": "^11.7.6",
 		"sinon": "22.0.0",
 		"ts-loader": "^9.5.7",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.59.4",
-		"webpack": "5.106.2",
+		"webpack": "5.107.2",
 		"webpack-cli": "^7.0.2"
 	},
 	"dependencies": {
