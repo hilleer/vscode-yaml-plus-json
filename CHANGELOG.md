@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.17.1](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.17.0...v1.17.1) (2026-06-27)
+
+
+### Bug Fixes
+
+* preserve trailing comments when converting jsonc to yaml ([#477](https://github.com/hilleer/vscode-yaml-plus-json/issues/477)) ([3f88368](https://github.com/hilleer/vscode-yaml-plus-json/commit/3f883686b64f2545a5b8534f6ae2fdbc0b0cc85c))
+
 ## [1.17.0](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.16.2...v1.17.0) (2026-03-10)
 
 
