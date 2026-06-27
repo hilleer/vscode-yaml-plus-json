@@ -41,7 +41,7 @@ jobs:
           skipDuplicate: ${{ inputs.skip-duplicate != false }}
 
   publish-vs-marketplace:
-    if: github.event_name == 'release' || inputs.vs-marketplace
+    if: github.event_name == 'release' || inputs['vs-marketplace']
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
