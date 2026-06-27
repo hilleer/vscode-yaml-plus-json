@@ -6,17 +6,26 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      open-vsx:
+        description: 'Publish to Open VSX Registry'
+        type: boolean
+        default: true
+      vs-marketplace:
+        description: 'Publish to Visual Studio Marketplace'
+        type: boolean
+        default: true
+      skip-duplicate:
+        description: 'Fail silently if the version already exists on the registry'
+        type: boolean
+        default: true
 
 permissions:
   contents: read
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yaml
-    secrets: inherit
-
   publish-open-vsx:
-    needs: ci
+    if: github.event_name == 'release' || inputs['open-vsx']
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -29,9 +38,21 @@ jobs:
         uses: HaaLeo/publish-vscode-extension@ca5561daa085dee804bf9f37fe0165785a9b14db # 2.0.0
         with:
           pat: ${{ secrets.OPEN_VSX_TOKEN }}
+          skipDuplicate: ${{ github.event_name == 'release' || inputs['skip-duplicate'] }}
 
+  publish-vs-marketplace:
+    if: github.event_name == 'release' || inputs['vs-marketplace']
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      - run: npm ci
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@ca5561daa085dee804bf9f37fe0165785a9b14db # 2.0.0
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
+          skipDuplicate: ${{ github.event_name == 'release' || inputs['skip-duplicate'] }}
