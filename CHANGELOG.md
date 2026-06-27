@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.17.2](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.17.1...v1.17.2) (2026-06-27)
+
+
+### Bug Fixes
+
+* **ci:** validate extension packaging and bump engines.vscode ([#499](https://github.com/hilleer/vscode-yaml-plus-json/issues/499)) ([1b299fe](https://github.com/hilleer/vscode-yaml-plus-json/commit/1b299fe95a5c1676086660a05d1dff333e6ddd64))
+
 ## [1.17.1](https://github.com/hilleer/vscode-yaml-plus-json/compare/v1.17.0...v1.17.1) (2026-06-27)
 
 
