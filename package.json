@@ -5,7 +5,7 @@
 	"version": "1.17.1",
 	"publisher": "hilleer",
 	"engines": {
-		"vscode": "^1.109.0",
+		"vscode": "^1.125.0",
 		"node": ">=20"
 	},
 	"icon": "logo/logo.png",
@@ -313,6 +313,7 @@
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"lint": "eslint src/",
+		"package": "vsce package --no-yarn",
 		"postversion": "git push && git push --tags",
 		"pretest": "npm run compile && npm run webpack",
 		"preversion": "npm run pretest",
@@ -332,6 +333,7 @@
 		"@types/yaml": "1.9.7",
 		"@typescript-eslint/eslint-plugin": "^8.61.1",
 		"@typescript-eslint/parser": "^8.61.1",
+		"@vscode/vsce": "^3.9.2",
 		"@vscode/test-cli": "0.0.12",
 		"@vscode/test-electron": "^3.0.0",
 		"eslint": "^10.5.0",
