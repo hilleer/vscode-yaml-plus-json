@@ -278,11 +278,13 @@ suite('helpers', () => {
     });
 
     test('should preserve trailing comment in nested object', () => {
+      // known limitation: a trailing comment in a nested object is currently
+      // hoisted to the document root (indent/nesting context lost). Pinned
+      // strict here so a future fix updates this assertion. See issue #475,
+      // PR #477.
       const input = '{\n  "outer": {\n    "inner": "value"\n    // nested trailing\n  }\n}';
       const result = getYamlFromJsonc(input);
-      assert.ok(result.includes('inner: value'), 'should contain the key-value');
-      assert.ok(result.includes('# nested trailing'), 'should contain nested trailing comment');
-      assert.ok(!result.includes('\n\n#'), 'should not have blank line before trailing comment');
+      assert.strictEqual(result, 'outer:\n  inner: value\n# nested trailing\n');
     });
 
     test('should preserve trailing comment outside the closing brace', () => {
@@ -312,6 +314,42 @@ suite('helpers', () => {
       const result = getYamlFromJsonc(input);
       assert.ok(result.includes('# trailing'), 'should contain trailing comment');
       assert.ok(!result.includes('\n\n#'), 'should not have blank line before trailing comment');
+    });
+
+    test('should render inline comment at EOF on the same line (regression guard)', () => {
+      // The closing brace must be on its own line because `//` comments out
+      // the rest of the line, including a trailing `}`.
+      const input = '{ "key": 1 // hi\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: 1 # hi\n');
+    });
+
+    // Bug: empty `//` lines were rendered as `#` instead of staying empty,
+    // diverging from the yaml library's stringifyComment behaviour
+    // (see issue #475 parity).
+    test('should render empty and whitespace-only trailing comments library-consistently', () => {
+      const input = '{\n  "key": 1\n  //\n  // plain\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: 1\n\n# plain\n');
+    });
+
+    test('should render multi-line block trailing comment with empty inner line library-consistently', () => {
+      const input = '{\n  "key": 1\n  /*\na\n\nb\n*/\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: 1\n\n#a\n\n#b\n');
+    });
+
+    test('should preserve trailing comment after a trailing comma (regression guard)', () => {
+      const input = '{\n  "key": 1,\n  // trailing\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: 1\n# trailing\n');
+    });
+
+    test('should preserve trailing comment after a block-scalar value (regression guard)', () => {
+      // The value contains a newline so YAML emits a block scalar (`|-`).
+      const input = '{\n  "key": "line1\\nline2"\n  // trailing\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: |-\n  line1\n  line2\n# trailing\n');
     });
   });
 
@@ -510,6 +548,20 @@ suite('helpers', () => {
       const roundTripped = getJsoncFromYaml(yaml);
       assert.ok(roundTripped.includes('trailing note'), 'should preserve trailing comment text');
       assert.ok(roundTripped.includes('"name"'), 'should preserve name key');
+    });
+
+    // TODO: a JSONC trailing comment currently ends up inline after the last
+    // value in the round-tripped JSONC (e.g. "name": "test" // trailing note)
+    // rather than on its own line after the closing brace. Fixing this is
+    // scoped to a follow-up PR; the test is kept visible via test.skip.
+    test.skip('JSONC → YAML → JSONC keeps trailing comment on its own line (follow-up)', () => {
+      const originalJsonc = ['{', '  "name": "test"', '  // trailing note', '}'].join('\n');
+      const yaml = getYamlFromJsonc(originalJsonc);
+      const roundTripped = getJsoncFromYaml(yaml);
+      assert.ok(
+        !/"test" \/\/ trailing note/.test(roundTripped),
+        'trailing comment should not be rendered inline after the value',
+      );
     });
   });
 });

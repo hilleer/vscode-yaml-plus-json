@@ -50,6 +50,23 @@ export function getYamlFromJson(json: string): string {
 
 export { stripComments as stripJsoncComments } from 'jsonc-parser';
 
+/**
+ * Format text as YAML `#` comment lines. Mirrors the yaml library's internal
+ * stringifyComment (not exported) so trailing comments render identically to
+ * library-produced ones.
+ */
+const formatYamlComment = (str: string): string => str.replace(/^(?!$)(?: $)?/gm, '#');
+
+/**
+ * Append a trailing comment to an already-stringified YAML document.
+ * doc.toString() ends with a newline today, but the guard avoids relying on
+ * that assumption.
+ */
+function appendTrailingComment(result: string, comment: string): string {
+  const base = result.endsWith('\n') ? result : result + '\n';
+  return base + formatYamlComment(comment) + '\n';
+}
+
 export function getYamlFromJsonc(jsoncText: string): string {
   const indent = getConfig<Configs['yamlIndent']>(ConfigId.YamlIndent);
   const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
@@ -80,25 +97,23 @@ export function getYamlFromJsonc(jsoncText: string): string {
       merge,
     });
 
-    // Step 4: Attach collected comments to YAML nodes
-    // Trailing comments are handled separately to avoid the blank line the yaml
-    // library inserts before doc.comment (stringifyDocument.js hardcoded behaviour).
-    const trailingComment = comments.find((c) => c.isTrailing);
+    // Step 4: Attach comments to YAML nodes. Trailing comments are appended
+    // manually because the yaml library's stringifyDocument always inserts a
+    // blank line before `doc.comment` (no option to suppress it).
+    //
+    // Known limitation: a trailing comment in a nested object/array is hoisted
+    // to the document root (nesting lost). Fixing requires tracking the enclosing
+    // container via the JSONC AST — deferred. See issue #475, PR #477.
+    const trailingComment = comments.find((c) => c.kind === 'trailing');
     attachCommentsToYamlDoc(
       doc,
-      comments.filter((c) => !c.isTrailing),
+      comments.filter((c) => c.kind !== 'trailing'),
     );
 
     let result = doc.toString();
-
-    if (trailingComment?.commentBefore) {
-      const commentLines = trailingComment.commentBefore
-        .split('\n')
-        .map((line) => `#${line}`)
-        .join('\n');
-      result = result + commentLines + '\n';
+    if (trailingComment) {
+      result = appendTrailingComment(result, trailingComment.text);
     }
-
     return result;
   } catch (error) {
     console.error(error);
@@ -159,12 +174,10 @@ export function getJsoncFromYaml(yamlText: string): string {
   }
 }
 
-type CommentInfo = {
-  path: (string | number)[];
-  commentBefore?: string;
-  commentAfter?: string;
-  isTrailing?: boolean;
-};
+type CommentInfo =
+  | { kind: 'before'; path: (string | number)[]; text: string }
+  | { kind: 'inline'; path: (string | number)[]; text: string }
+  | { kind: 'trailing'; path: (string | number)[]; text: string };
 
 function collectJsoncComments(text: string): CommentInfo[] {
   const comments: CommentInfo[] = [];
@@ -212,47 +225,48 @@ function collectJsoncComments(text: string): CommentInfo[] {
   // Sort tokens by line
   tokenLines.sort((a, b) => a.line - b.line);
 
-  // For each comment, determine if it's inline (same line as previous token) or before (next token)
+  // Concatenate comment text. Checks `undefined` (not falsiness) so an empty
+  // `//` line is preserved rather than dropped.
+  const appendText = (current: string | undefined, next: string): string =>
+    current === undefined ? next : current + '\n' + next;
+
+  // For each comment, classify it as inline (same line as a preceding token),
+  // before (own line, preceding the next token), or trailing (after the last
+  // token, nothing follows).
+  let trailingComment: CommentInfo | undefined;
   for (const ce of commentEntries) {
-    // Check if this comment is on the same line as a preceding token
     const prevToken = findLastTokenOnOrBeforeLine(tokenLines, ce.startLine);
     const nextToken = findFirstTokenAfterLine(tokenLines, ce.startLine);
 
     if (prevToken && prevToken.line === ce.startLine) {
-      // Inline comment — attach to the previous token's path
+      // Inline — same line as a preceding token
       const key = JSON.stringify(prevToken.path);
-      const existing = inlineComments.get(key);
-      inlineComments.set(key, existing ? existing + '\n' + ce.text : ce.text);
+      inlineComments.set(key, appendText(inlineComments.get(key), ce.text));
     } else if (nextToken) {
-      // Comment before the next token
+      // Before the next token
       const key = JSON.stringify(nextToken.path);
-      // We'll collect these as commentBefore
-      const existing = comments.find((c) => JSON.stringify(c.path) === key);
+      const existing = comments.find((c) => c.kind === 'before' && JSON.stringify(c.path) === key);
       if (existing) {
-        existing.commentBefore = existing.commentBefore ? existing.commentBefore + '\n' + ce.text : ce.text;
+        existing.text = appendText(existing.text, ce.text);
       } else {
-        comments.push({ path: nextToken.path, commentBefore: ce.text });
+        comments.push({ kind: 'before', path: nextToken.path, text: ce.text });
       }
     } else {
-      // Trailing comment — appears after the last token with no following token
-      const existing = comments.find((c) => c.isTrailing);
-      if (existing) {
-        existing.commentBefore = existing.commentBefore ? existing.commentBefore + '\n' + ce.text : ce.text;
+      // Trailing — no following token. All such comments merge into one root
+      // entry (path: []), since there is no anchor to attach to.
+      if (trailingComment) {
+        trailingComment.text = appendText(trailingComment.text, ce.text);
       } else {
-        comments.push({ path: [], commentBefore: ce.text, isTrailing: true });
+        trailingComment = { kind: 'trailing', path: [], text: ce.text };
+        comments.push(trailingComment);
       }
     }
   }
 
-  // Merge inline comments
+  // Merge inline comments (collected by path above) into the comments array.
   for (const [key, text] of inlineComments) {
     const path = JSON.parse(key) as (string | number)[];
-    const existing = comments.find((c) => JSON.stringify(c.path) === key);
-    if (existing) {
-      existing.commentAfter = text;
-    } else {
-      comments.push({ path, commentAfter: text });
-    }
+    comments.push({ kind: 'inline', path, text });
   }
 
   return comments;
@@ -311,31 +325,29 @@ function findPairByPath(doc: YAML.Document, path: (string | number)[]): { key?: 
 
 function attachCommentsToYamlDoc(doc: YAML.Document, comments: CommentInfo[]): void {
   for (const ci of comments) {
-    if (ci.path.length === 0) {
-      // Root-level comment
-      if (ci.commentBefore) {
-        doc.commentBefore = doc.commentBefore ? doc.commentBefore + '\n' + ci.commentBefore : ci.commentBefore;
+    if (ci.kind === 'inline') {
+      // Inline comment — attach to the value node so it renders on the same line
+      const nodes = findPairByPath(doc, ci.path);
+      if (!nodes) continue;
+      const target = nodes.value || nodes.key;
+      if (target) {
+        target.comment = target.comment ? target.comment + '\n' + ci.text : ci.text;
       }
+      continue;
+    }
+
+    // kind === 'before': rendered on its own line before the key
+    if (ci.path.length === 0) {
+      // Root-level comment (before the first token with no key path)
+      doc.commentBefore = doc.commentBefore ? doc.commentBefore + '\n' + ci.text : ci.text;
       continue;
     }
 
     const nodes = findPairByPath(doc, ci.path);
     if (!nodes) continue;
-
-    // commentBefore goes on the key node (so it appears before the key in YAML)
-    if (ci.commentBefore) {
-      const target = nodes.key || nodes.value;
-      if (target) {
-        target.commentBefore = target.commentBefore ? target.commentBefore + '\n' + ci.commentBefore : ci.commentBefore;
-      }
-    }
-
-    // commentAfter (inline) goes on the value node
-    if (ci.commentAfter) {
-      const target = nodes.value || nodes.key;
-      if (target) {
-        target.comment = target.comment ? target.comment + '\n' + ci.commentAfter : ci.commentAfter;
-      }
+    const target = nodes.key || nodes.value;
+    if (target) {
+      target.commentBefore = target.commentBefore ? target.commentBefore + '\n' + ci.text : ci.text;
     }
   }
 }
