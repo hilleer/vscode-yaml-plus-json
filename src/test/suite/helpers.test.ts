@@ -278,13 +278,21 @@ suite('helpers', () => {
     });
 
     test('should preserve trailing comment in nested object', () => {
-      // known limitation: a trailing comment in a nested object is currently
-      // hoisted to the document root (indent/nesting context lost). Pinned
-      // strict here so a future fix updates this assertion. See issue #475,
-      // PR #477.
+      // known limitation: a trailing comment in a nested object is mis-attributed
+      // (here, with no following token, it lands at the document root). Pinned
+      // strict so a future fix updates this assertion. See issue #475, PR #477.
       const input = '{\n  "outer": {\n    "inner": "value"\n    // nested trailing\n  }\n}';
       const result = getYamlFromJsonc(input);
       assert.strictEqual(result, 'outer:\n  inner: value\n# nested trailing\n');
+    });
+
+    // known limitation: with a following sibling key, the nested trailing
+    // comment is mis-attributed as the sibling's "before" comment. Pinned so a
+    // future fix updates this assertion. See issue #475, PR #477.
+    test('pinned: nested trailing comment is mis-attributed to following sibling key', () => {
+      const input = '{\n  "outer": {\n    "inner": "value"\n    // nested trailing\n  },\n  "sibling": 1\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'outer:\n  inner: value\n# nested trailing\nsibling: 1\n');
     });
 
     test('should preserve trailing comment outside the closing brace', () => {

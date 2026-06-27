@@ -101,9 +101,11 @@ export function getYamlFromJsonc(jsoncText: string): string {
     // manually because the yaml library's stringifyDocument always inserts a
     // blank line before `doc.comment` (no option to suppress it).
     //
-    // Known limitation: a trailing comment in a nested object/array is hoisted
-    // to the document root (nesting lost). Fixing requires tracking the enclosing
-    // container via the JSONC AST — deferred. See issue #475, PR #477.
+    // Known limitation: a trailing comment in a nested container is
+    // mis-attributed — if a following sibling token exists (e.g. the next key)
+    // it becomes that sibling's "before" comment; otherwise it lands at the
+    // document root. Fixing requires tracking the enclosing container via the
+    // JSONC AST — deferred. See issue #475, PR #477.
     const trailingComment = comments.find((c) => c.kind === 'trailing');
     attachCommentsToYamlDoc(
       doc,
