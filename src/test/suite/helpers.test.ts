@@ -277,7 +277,7 @@ suite('helpers', () => {
       assert.strictEqual(result, 'key: value\n# first trailing\n# second trailing\n');
     });
 
-    test('should preserve trailing comment in nested object', () => {
+    test('should leave nested trailing comment at document root (known limitation, no following token)', () => {
       // known limitation: a trailing comment in a nested object is mis-attributed
       // (here, with no following token, it lands at the document root). Pinned
       // strict so a future fix updates this assertion. See issue #475, PR #477.
@@ -289,7 +289,7 @@ suite('helpers', () => {
     // known limitation: with a following sibling key, the nested trailing
     // comment is mis-attributed as the sibling's "before" comment. Pinned so a
     // future fix updates this assertion. See issue #475, PR #477.
-    test('pinned: nested trailing comment is mis-attributed to following sibling key', () => {
+    test('should mis-attribute nested trailing comment to following sibling key (known limitation)', () => {
       const input = '{\n  "outer": {\n    "inner": "value"\n    // nested trailing\n  },\n  "sibling": 1\n}';
       const result = getYamlFromJsonc(input);
       assert.strictEqual(result, 'outer:\n  inner: value\n# nested trailing\nsibling: 1\n');
@@ -335,16 +335,22 @@ suite('helpers', () => {
     // Bug: empty `//` lines were rendered as `#` instead of staying empty,
     // diverging from the yaml library's stringifyComment behaviour
     // (see issue #475 parity).
-    test('should render empty and whitespace-only trailing comments library-consistently', () => {
+    test('should render empty trailing comment line as blank, not as #', () => {
       const input = '{\n  "key": 1\n  //\n  // plain\n}';
       const result = getYamlFromJsonc(input);
       assert.strictEqual(result, 'key: 1\n\n# plain\n');
     });
 
-    test('should render multi-line block trailing comment with empty inner line library-consistently', () => {
+    test('should render empty inner line of block trailing comment as blank', () => {
       const input = '{\n  "key": 1\n  /*\na\n\nb\n*/\n}';
       const result = getYamlFromJsonc(input);
       assert.strictEqual(result, 'key: 1\n\n#a\n\n#b\n');
+    });
+
+    test('should render whitespace-only inner line of block trailing comment as #', () => {
+      const input = '{\n  "key": 1\n  /*\na\n \nb\n*/\n}';
+      const result = getYamlFromJsonc(input);
+      assert.strictEqual(result, 'key: 1\n\n#a\n#\n#b\n');
     });
 
     test('should preserve trailing comment after a trailing comma (regression guard)', () => {
