@@ -13,6 +13,7 @@ const JSON_CONTENT = JSON.stringify({ name: 'foo', value: 1 }, null, 2);
 suite('onFileSave', () => {
   let showInformationMessageStub: Sinon.SinonStub;
   let showErrorMessageStub: Sinon.SinonStub;
+  let showWarningMessageStub: Sinon.SinonStub;
   let configMock: WorkspaceConfigurationMock | undefined;
   let mockFs: MockFs;
 
@@ -21,6 +22,7 @@ suite('onFileSave', () => {
 
     showInformationMessageStub = Sinon.stub();
     showErrorMessageStub = Sinon.stub();
+    showWarningMessageStub = Sinon.stub();
 
     contextProvider.setVscode(
       createMockVscode({
@@ -28,6 +30,7 @@ suite('onFileSave', () => {
         window: {
           showInformationMessage: showInformationMessageStub,
           showErrorMessage: showErrorMessageStub,
+          showWarningMessage: showWarningMessageStub,
         },
       }),
     );
@@ -198,6 +201,57 @@ suite('onFileSave', () => {
       assert.strictEqual(mockFs.writeFile.callCount, 1);
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should use configured .json extension');
+    });
+
+    test('writes .json5 counterpart with preserved comments', async () => {
+      withConfig({ [ConfigId.ConvertOnSave]: true, [ConfigId.FileExtensionsJson]: '.json5' });
+
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.yaml', text: '# header\nname: foo # inline\n' }));
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri, writtenContent] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
+      assert.ok(writtenUri.fsPath.endsWith('.json5'), 'written file should use configured .json5 extension');
+      const content = Buffer.from(writtenContent).toString();
+      assert.ok(content.includes('// header'));
+      assert.ok(content.includes('// inline'));
+    });
+  });
+
+  suite('json5 source', () => {
+    const JSONC_COMPATIBLE_JSON5 = '{\n  // note\n  "name": "foo",\n  "value": 1\n}\n';
+    const JSON5_ONLY = "{ name: 'foo', value: 1 }";
+
+    test('converts JSONC-compatible .json5 to YAML and preserves comments without warning', async () => {
+      withConfig({ [ConfigId.ConvertOnSave]: true });
+
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json5', text: JSONC_COMPATIBLE_JSON5 }));
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri, writtenContent] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
+      assert.ok(writtenUri.fsPath.endsWith('.yaml'));
+      assert.ok(Buffer.from(writtenContent).toString().includes('# note'));
+      assert.strictEqual(showWarningMessageStub.callCount, 0, 'should not warn when comments are preserved');
+    });
+
+    test('converts .json5 with JSON5-only syntax and shows warning toast', async () => {
+      withConfig({ [ConfigId.ConvertOnSave]: true });
+
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json5', text: JSON5_ONLY }));
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      assert.strictEqual(showWarningMessageStub.callCount, 1, 'should warn that comments were dropped');
+      const warnMessage = showWarningMessageStub.firstCall.args[0] as string;
+      assert.ok(/JSON5-only syntax/.test(warnMessage));
+      assert.ok(warnMessage.includes('file.json5'));
+    });
+
+    test('does not show warning when preserveComments is disabled', async () => {
+      withConfig({ [ConfigId.ConvertOnSave]: true, [ConfigId.PreserveComments]: false });
+
+      await onFileSave(createMockDocument({ fsPath: '/fake/file.json5', text: JSON5_ONLY }));
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      assert.strictEqual(showWarningMessageStub.callCount, 0);
     });
   });
 

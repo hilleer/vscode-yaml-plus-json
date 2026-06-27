@@ -7,6 +7,7 @@ import {
   ParseError,
   printParseErrorCode,
 } from 'jsonc-parser';
+import * as JSON5 from 'json5';
 
 import { contextProvider } from './contextProvider';
 import { ConfigId, Configs, getConfig } from './config';
@@ -50,6 +51,29 @@ export function getYamlFromJson(json: string): string {
 
 export { stripComments as stripJsoncComments } from 'jsonc-parser';
 
+/**
+ * Prompts the user to confirm conversion of a JSON5 file whose syntax prevents
+ * comment preservation. Used for interactive flows (right-click, selection).
+ * Non-interactive flows (auto-convert on save/rename) should use
+ * `warnJson5CommentsStripped` instead.
+ */
+export async function confirmJson5CommentStrip(context: string): Promise<boolean> {
+  const vscode = contextProvider.vscode;
+  const message = `${context} uses JSON5-only syntax so comments cannot be preserved. Convert without comments?`;
+  const selection = await vscode.window.showInformationMessage(message, 'Convert', 'Cancel');
+  return selection === 'Convert';
+}
+
+/**
+ * Shows a non-blocking warning after a JSON5 file with only-JSON5 syntax was
+ * automatically converted without comment preservation.
+ */
+export function warnJson5CommentsStripped(context: string): void {
+  contextProvider.vscode.window.showWarningMessage(
+    `Comments in ${context} were dropped during conversion because it uses JSON5-only syntax.`,
+  );
+}
+
 export function getYamlFromJsonc(jsoncText: string): string {
   const indent = getConfig<Configs['yamlIndent']>(ConfigId.YamlIndent);
   const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
@@ -87,6 +111,100 @@ export function getYamlFromJsonc(jsoncText: string): string {
   } catch (error) {
     console.error(error);
     throw new Error('Failed to parse JSONC. Please make sure it has a valid format and try again.', { cause: error });
+  }
+}
+
+/**
+ * Returns true when `text` uses JSON5-only syntax that the JSONC tokenizer
+ * cannot parse (unquoted keys, single quotes, hex numbers, NaN/Infinity, etc.).
+ * When false, the input is a JSONC-compatible subset and comment positions
+ * can still be recovered via the jsonc-parser.
+ */
+export function hasJson5OnlySyntax(text: string): boolean {
+  const parseErrors: ParseError[] = [];
+  jsoncParse(text, parseErrors, { allowTrailingComma: true });
+  return parseErrors.length > 0;
+}
+
+export function getYamlFromJson5(json5Text: string): string {
+  if (!hasJson5OnlySyntax(json5Text)) {
+    return getYamlFromJsonc(json5Text);
+  }
+
+  const indent = getConfig<Configs['yamlIndent']>(ConfigId.YamlIndent);
+  const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
+  const lineWidth = getConfig<Configs['yamlLineWidth']>(ConfigId.YamlLineWidth);
+  const options = getConfig<Configs['yamlOptions']>(ConfigId.YamlOptions) || {};
+  const merge = getConfig<Configs['yamlMerge']>(ConfigId.YamlMerge) ?? true;
+
+  try {
+    const jsonObject: unknown = JSON5.parse(json5Text);
+    const doc = new YAML.Document(jsonObject, {
+      ...options,
+      ...(indent !== undefined && { indent }),
+      ...(schema !== undefined && { schema }),
+      ...(lineWidth !== undefined && { lineWidth }),
+      merge,
+    });
+    return doc.toString();
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to parse JSON5. Please make sure it has a valid format and try again.', { cause: error });
+  }
+}
+
+export function getJson5FromYaml(yamlText: string): string {
+  const schema = getConfig<Configs['yamlSchema']>(ConfigId.YamlSchema);
+  const options = getConfig<Configs['jsonOptions']>(ConfigId.JsonOptions) || {};
+
+  try {
+    const docs = YAML.parseAllDocuments(yamlText, {
+      ...options,
+      merge: true,
+      ...(schema && { schema }),
+    });
+
+    const errors = docs.flatMap((doc) => doc.errors);
+    if (errors.length > 0) throw errors[0];
+
+    if (docs.length > 1) {
+      const values: unknown[] = docs.map((doc) => doc.toJS() as unknown);
+      // Emit JSON-syntax (quoted keys, double-quoted strings). JSON is a strict subset
+      // of JSON5, so this is a valid .json5 file while letting jsonc-parser insert comments.
+      return JSON.stringify(values, null, 2);
+    }
+
+    const doc = docs[0];
+    // Emit JSON-syntax; see note above.
+    const json5 = JSON.stringify(doc.toJSON(), null, 2);
+    const comments = collectYamlComments(doc.contents as YAML.Node, []);
+    let result = insertCommentsIntoJson(json5, comments);
+    if (doc.commentBefore) {
+      result =
+        doc.commentBefore
+          .split('\n')
+          .map((line) => {
+            const trimmed = line.replace(/^\s+/, '');
+            return trimmed ? `// ${trimmed}` : '//';
+          })
+          .join('\n') +
+        '\n' +
+        result;
+    }
+    if (doc.comment) {
+      const afterLines = doc.comment
+        .split('\n')
+        .map((line) => {
+          const trimmed = line.replace(/^\s+/, '');
+          return trimmed ? `// ${trimmed}` : '//';
+        })
+        .join('\n');
+      result = result + '\n' + afterLines;
+    }
+    return result + '\n';
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to parse YAML. Please make sure it has a valid format and try again.', { cause: error });
   }
 }
 

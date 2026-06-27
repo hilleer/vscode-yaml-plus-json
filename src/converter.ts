@@ -1,10 +1,14 @@
 import * as path from 'path';
 
 import {
+  confirmJson5CommentStrip,
+  getJson5FromYaml,
   getJsonFromYaml,
   getJsoncFromYaml,
   getYamlFromJson,
+  getYamlFromJson5,
   getYamlFromJsonc,
+  hasJson5OnlySyntax,
   showError,
   stripJsoncComments,
 } from './helpers';
@@ -91,9 +95,23 @@ export class FileConverter {
         }
       }
 
+      const oldContent = oldFileContent.toString();
+      const preserveComments = getConfig<boolean>(ConfigId.PreserveComments) ?? true;
+      if (
+        this.convertFromType === ConvertFromType.Json &&
+        oldFileExtension === '.json5' &&
+        preserveComments &&
+        hasJson5OnlySyntax(oldContent)
+      ) {
+        const confirmed = await confirmJson5CommentStrip(path.basename(oldFileUri.fsPath));
+        if (!confirmed) {
+          return null;
+        }
+      }
+
       const fileContent = FileConverter.getNewFileContent({
         fromType: this.convertFromType,
-        oldContent: oldFileContent.toString(),
+        oldContent,
         oldFileExtension,
       });
 
@@ -208,9 +226,12 @@ export class FileConverter {
 
     const convertToYaml = fromType === ConvertFromType.Json;
     if (convertToYaml) {
-      // Source is JSON/JSONC - target is YAML
+      // Source is JSON/JSONC/JSON5 - target is YAML
       if (preserveComments && oldFileExtension === '.jsonc') {
         return getYamlFromJsonc(oldContent);
+      }
+      if (oldFileExtension === '.json5') {
+        return getYamlFromJson5(oldContent);
       }
       // Strip comments from JSONC before plain conversion
       const content = oldFileExtension === '.jsonc' ? stripJsoncComments(oldContent) : oldContent;
@@ -222,7 +243,12 @@ export class FileConverter {
       return getJsoncFromYaml(oldContent);
     }
 
-    // Source is YAML - target is JSON (or JSONC but user doesn't want to preserve comments)
+    // Source is YAML - target is JSON5
+    if (targetJsonExt === '.json5' && preserveComments) {
+      return getJson5FromYaml(oldContent);
+    }
+
+    // Source is YAML - target is JSON (or JSONC/JSON5 but user doesn't want to preserve comments)
     return getJsonFromYaml(oldContent);
   }
 

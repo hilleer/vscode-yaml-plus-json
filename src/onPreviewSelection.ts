@@ -1,10 +1,8 @@
 import { contextProvider } from './contextProvider';
 import { ConvertFromType } from './converter';
-import { getSelectionConverter } from './onConvertSelection';
+import { convertSelectionText } from './onConvertSelection';
 
 export function onPreviewSelection(fromType: ConvertFromType) {
-  const converter = getSelectionConverter(fromType);
-
   return async () => {
     try {
       const vscode = contextProvider.vscode;
@@ -22,7 +20,11 @@ export function onPreviewSelection(fromType: ConvertFromType) {
         return;
       }
 
-      const previewText = converter(text);
+      const previewText = await convertSelectionText(fromType, text, document.languageId);
+      if (previewText === null) {
+        return;
+      }
+
       const previewDocument = await vscode.workspace.openTextDocument({
         content: previewText,
         language: getTextDocumentLanguage(fromType),

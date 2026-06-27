@@ -1,0 +1,11 @@
+name: json5 sample
+port: 43981
+pi: 3.14
+trailing: 0.5
+flags:
+  enabled: true
+  missing: null
+items:
+  - first
+  - second
+  - third

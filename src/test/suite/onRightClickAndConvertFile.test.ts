@@ -447,5 +447,97 @@ suite('onRightClickAndConvertFile', () => {
       const [writtenUri] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
       assert.ok(writtenUri.fsPath.endsWith('.json'), 'written file should use configured .json extension');
     });
+
+    test('writes .json5 when fileExtensions.json is set to .json5', async () => {
+      withConfig({ [ConfigId.FileExtensionsJson]: '.json5' });
+      const uri = Uri.file('/fake/file.yaml');
+
+      mockFs.readFile.callsFake((uri: Uri) => {
+        if (uri.fsPath.endsWith('.json5')) {
+          return Promise.reject(FileSystemError.FileNotFound());
+        }
+        return Promise.resolve(Buffer.from('name: foo # inline\nvalue: 1\n'));
+      });
+
+      await onRightClickAndConvertYamlFile(uri);
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [writtenUri, written] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
+      assert.ok(writtenUri.fsPath.endsWith('.json5'));
+      const content = Buffer.from(written).toString();
+      assert.ok(content.includes('"name"'), 'should emit JSON-syntax keys');
+      assert.ok(content.includes('// inline'), 'should preserve inline comment as //');
+    });
+  });
+
+  suite('JSON5 source conversion', () => {
+    const JSONC_COMPATIBLE_JSON5 = '{\n  // comment\n  "name": "foo",\n  "value": 1\n}\n';
+    const JSON5_ONLY = "{ name: 'foo', value: 1 }";
+
+    test('converts JSONC-compatible .json5 source without prompting', async () => {
+      withConfig({});
+      const uri = Uri.file('/fake/file.json5');
+
+      mockFs.readFile.callsFake((u: Uri) => {
+        if (u.fsPath.endsWith('.yaml') || u.fsPath.endsWith('.yml')) {
+          return Promise.reject(FileSystemError.FileNotFound());
+        }
+        return Promise.resolve(Buffer.from(JSONC_COMPATIBLE_JSON5));
+      });
+
+      await onRightClickAndConvertJsonFile(uri);
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const [, written] = mockFs.writeFile.firstCall.args as [Uri, Uint8Array];
+      const yaml = Buffer.from(written).toString();
+      assert.ok(yaml.includes('# comment'), 'should preserve comment');
+      assert.ok(yaml.includes('name: foo'));
+      // Only the reverter tooltip should have been shown — no approval prompt.
+      assert.strictEqual(showInformationMessageStub.callCount, 1);
+      assert.ok((showInformationMessageStub.firstCall.args[0] as string).includes('Revert'));
+    });
+
+    test('prompts for approval on JSON5-only syntax and converts when user confirms', async () => {
+      withConfig({});
+      const uri = Uri.file('/fake/file.json5');
+
+      mockFs.readFile.callsFake((u: Uri) => {
+        if (u.fsPath.endsWith('.yaml') || u.fsPath.endsWith('.yml')) {
+          return Promise.reject(FileSystemError.FileNotFound());
+        }
+        return Promise.resolve(Buffer.from(JSON5_ONLY));
+      });
+
+      // Approval prompt is the first info message, reverter tooltip follows.
+      showInformationMessageStub.onFirstCall().resolves('Convert');
+      showInformationMessageStub.onSecondCall().resolves(undefined);
+
+      await onRightClickAndConvertJsonFile(uri);
+
+      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      const approvalMessage = showInformationMessageStub.firstCall.args[0] as string;
+      assert.ok(/JSON5-only syntax/.test(approvalMessage), 'should prompt about JSON5-only syntax');
+      const approvalButtons = showInformationMessageStub.firstCall.args.slice(1) as string[];
+      assert.deepStrictEqual(approvalButtons, ['Convert', 'Cancel']);
+    });
+
+    test('does not write file when user declines approval prompt', async () => {
+      withConfig({});
+      const uri = Uri.file('/fake/file.json5');
+
+      mockFs.readFile.callsFake((u: Uri) => {
+        if (u.fsPath.endsWith('.yaml') || u.fsPath.endsWith('.yml')) {
+          return Promise.reject(FileSystemError.FileNotFound());
+        }
+        return Promise.resolve(Buffer.from(JSON5_ONLY));
+      });
+
+      showInformationMessageStub.onFirstCall().resolves('Cancel');
+
+      await onRightClickAndConvertJsonFile(uri);
+
+      assert.strictEqual(mockFs.writeFile.callCount, 0);
+      assert.strictEqual(mockFs.delete.callCount, 0);
+    });
   });
 });

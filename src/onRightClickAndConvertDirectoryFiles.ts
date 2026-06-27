@@ -7,14 +7,14 @@ import { getFilesInDirectory } from './files';
 
 export async function onRightClickAndConvertJsonFilesToYaml(uri: Uri): Promise<void> {
   const vscode = contextProvider.vscode;
-  const files = await getFilesInDirectory(uri, ['json', 'jsonc']);
+  const files = await getFilesInDirectory(uri, ['json', 'jsonc', 'json5']);
 
   if (!files) {
     return; // getFilesInDirectory already showed an error/info message
   }
 
   if (isEmptyArray(files)) {
-    vscode.window.showInformationMessage('Did not find any json or jsonc files in the selected directory');
+    vscode.window.showInformationMessage('Did not find any json, jsonc, or json5 files in the selected directory');
     return;
   }
 

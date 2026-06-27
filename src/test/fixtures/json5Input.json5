@@ -1,0 +1,16 @@
+{
+  // Unquoted keys and single-quoted strings are JSON5-only syntax
+  name: 'json5 sample',
+  port: 0xABCD,
+  pi: 3.14,
+  trailing: .5,
+  flags: {
+    enabled: true,
+    missing: null,
+  },
+  items: [
+    'first',
+    'second',
+    'third',
+  ],
+}

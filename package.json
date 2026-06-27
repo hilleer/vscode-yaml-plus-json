@@ -34,10 +34,12 @@
 	"activationEvents": [
 		"workspaceContains:**/**.json",
 		"workspaceContains:**/**.jsonc",
+		"workspaceContains:**/**.json5",
 		"workspaceContains:**/**.yml",
 		"workspaceContains:**/**.yaml",
 		"onLanguage:json",
 		"onLanguage:jsonc",
+		"onLanguage:json5",
 		"onLanguage:yaml"
 	],
 	"main": "./dist/extension.js",
@@ -46,7 +48,7 @@
 			{
 				"command": "extension.rightClickJson",
 				"title": "Convert to YAML",
-				"enablement": "resourceExtname == .json || resourceExtname == .jsonc"
+				"enablement": "resourceExtname == .json || resourceExtname == .jsonc || resourceExtname == .json5"
 			},
 			{
 				"command": "extension.rightClickYaml",
@@ -96,11 +98,11 @@
 			"commandPalette": [
 				{
 					"command": "extension.rightClickJson",
-					"when": "resourceExtname == .json || resourceExtname == .jsonc"
+					"when": "resourceExtname == .json || resourceExtname == .jsonc || resourceExtname == .json5 || editorLangId == 'json' || editorLangId == 'jsonc' || editorLangId == 'json5'"
 				},
 				{
 					"command": "extension.rightClickYaml",
-					"when": "resourceExtname == .yml || resourceExtname == .yaml"
+					"when": "resourceExtname == .yml || resourceExtname == .yaml || editorLangId == 'yaml'"
 				},
 				{
 					"command": "extension.yamlSelectionToJson",
@@ -130,7 +132,7 @@
 				},
 				{
 					"command": "extension.previewAsYaml",
-					"when": "editorLangId == 'json' || editorLangId == 'jsonc'"
+					"when": "editorLangId == 'json' || editorLangId == 'jsonc' || editorLangId == 'json5'"
 				},
 				{
 					"command": "extension.previewAsJson",
@@ -151,7 +153,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.rightClickJson",
-					"when": "resourceExtname == .json || resourceExtname == .jsonc"
+					"when": "resourceExtname == .json || resourceExtname == .jsonc || resourceExtname == .json5"
 				},
 				{
 					"group": "1_modification",
@@ -161,7 +163,7 @@
 				{
 					"group": "1_modification",
 					"command": "extension.convertJsonSelectionsToYaml",
-					"when": "listMultiSelection && (resourceExtname == .json || resourceExtname == .jsonc)"
+					"when": "listMultiSelection && (resourceExtname == .json || resourceExtname == .jsonc || resourceExtname == .json5)"
 				},
 				{
 					"group": "1_modification",
@@ -255,7 +257,8 @@
 										"description": "json filename extension",
 										"enum": [
 											".json",
-											".jsonc"
+											".jsonc",
+											".json5"
 										]
 									}
 								}
@@ -300,7 +303,7 @@
 							"preserveComments": {
 								"type": "boolean",
 								"default": true,
-								"description": "Preserve comments when converting between YAML and JSONC. When true, YAML # comments map to JSONC // comments and vice versa. Requires fileExtensions.json to be set to .jsonc for YAML to JSONC conversion."
+								"description": "Preserve comments when converting between YAML and JSONC/JSON5. When true, YAML # comments map to JSONC/JSON5 // comments and vice versa. Requires fileExtensions.json to be set to .jsonc or .json5 for YAML to JSONC/JSON5 conversion. Comments in JSON5 sources are only preserved when the file uses JSONC-compatible syntax; files using JSON5-only features (unquoted keys, single quotes, hex, NaN/Infinity, etc.) will have comments dropped with a warning."
 							}
 						}
 					}
@@ -348,6 +351,7 @@
 		"webpack-cli": "^7.0.2"
 	},
 	"dependencies": {
+		"json5": "^2.2.3",
 		"jsonc-parser": "3.3.1",
 		"yaml": "2.8.3"
 	},

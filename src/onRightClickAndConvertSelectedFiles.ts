@@ -10,7 +10,7 @@ export async function onConvertSelectedYamlFilesToJson(_clickedFile: Uri, select
 }
 
 export async function onConvertSelectedJsonFilesToYaml(_clickedFile: Uri, selections: Uri[]) {
-  const files = selections.filter(createExtensionNameFilter(['.json', '.jsonc']));
+  const files = selections.filter(createExtensionNameFilter(['.json', '.jsonc', '.json5']));
   const jsonFileConverter = new FileConverter(ConvertFromType.Json);
   await jsonFileConverter.convertFiles(files);
 }

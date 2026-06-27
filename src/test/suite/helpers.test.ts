@@ -1,6 +1,14 @@
 import * as assert from 'assert';
 
-import { getJsonFromYaml, getJsoncFromYaml, getYamlFromJson, getYamlFromJsonc } from '../../helpers';
+import {
+  getJson5FromYaml,
+  getJsonFromYaml,
+  getJsoncFromYaml,
+  getYamlFromJson,
+  getYamlFromJson5,
+  getYamlFromJsonc,
+  hasJson5OnlySyntax,
+} from '../../helpers';
 import { loadFixture, loadFixtures, stripNewLines } from '../testHelpers';
 import { ConfigId, Configs } from '../../config';
 import { WorkspaceConfigurationMock } from '../testUtil';
@@ -428,6 +436,124 @@ suite('helpers', () => {
     });
   });
 
+  suite('hasJson5OnlySyntax()', () => {
+    test('returns false for plain JSON', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{"a": 1, "b": "two"}'), false);
+    });
+
+    test('returns false for JSONC (comments + trailing commas)', () => {
+      const jsonc = ['{', '  // comment', '  "a": 1,', '  "b": [1, 2,],', '}'].join('\n');
+      assert.strictEqual(hasJson5OnlySyntax(jsonc), false);
+    });
+
+    test('returns true for unquoted keys', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{ name: "foo" }'), true);
+    });
+
+    test('returns true for single-quoted strings', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{ "name": \'foo\' }'), true);
+    });
+
+    test('returns true for hex numbers', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{ "n": 0xff }'), true);
+    });
+
+    test('returns true for NaN', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{ "n": NaN }'), true);
+    });
+
+    test('returns true for Infinity', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{ "n": Infinity }'), true);
+    });
+
+    test('returns true for leading decimal', () => {
+      assert.strictEqual(hasJson5OnlySyntax('{ "n": .5 }'), true);
+    });
+  });
+
+  suite('getYamlFromJson5()', () => {
+    let workspaceConfigMock: WorkspaceConfigurationMock;
+    suiteSetup(() => (workspaceConfigMock = new WorkspaceConfigurationMock()));
+    suiteTeardown(() => workspaceConfigMock.restore());
+
+    test('preserves comments when input is a JSONC-compatible subset', async () => {
+      const [input, expected] = await loadFixtures('json5CommentsInput.json5', 'json5CommentsExpected.yaml');
+      const actual = getYamlFromJson5(input);
+      assert.strictEqual(stripNewLines(actual), stripNewLines(expected));
+    });
+
+    test('converts JSON5-only syntax correctly, dropping comments', async () => {
+      const [input, expected] = await loadFixtures('json5Input.json5', 'json5Expected.yaml');
+      const actual = getYamlFromJson5(input);
+      assert.strictEqual(stripNewLines(actual), stripNewLines(expected));
+    });
+
+    test('handles trailing commas in JSON5 input', () => {
+      const input = '{ "a": 1, "b": [1, 2, 3,], }';
+      const result = getYamlFromJson5(input);
+      assert.ok(result.includes('a: 1'));
+      assert.ok(result.includes('b:'));
+    });
+
+    test('parses single-quoted strings', () => {
+      const result = getYamlFromJson5("{ name: 'foo', count: 3 }");
+      assert.ok(result.includes('name: foo'));
+      assert.ok(result.includes('count: 3'));
+    });
+
+    test('parses hex numbers', () => {
+      const result = getYamlFromJson5('{ "port": 0xff }');
+      assert.ok(result.includes('port: 255'));
+    });
+
+    test('throws with descriptive message for invalid JSON5', () => {
+      assert.throws(
+        () => getYamlFromJson5('{ not valid json5 at all'),
+        (err: Error) => {
+          assert.ok(err instanceof Error);
+          assert.ok(/JSON5/i.test(err.message));
+          return true;
+        },
+      );
+    });
+  });
+
+  suite('getJson5FromYaml()', () => {
+    let workspaceConfigMock: WorkspaceConfigurationMock;
+    suiteSetup(() => (workspaceConfigMock = new WorkspaceConfigurationMock()));
+    suiteTeardown(() => workspaceConfigMock.restore());
+
+    test('converts basic YAML to JSON5', () => {
+      const yaml = 'name: foo\nvalue: 1\n';
+      const result = getJson5FromYaml(yaml);
+      assert.ok(result.includes('"name"'));
+      assert.ok(result.includes('"value"'));
+      assert.ok(result.includes('1'));
+    });
+
+    test('wraps multi-document YAML into a JSON array', () => {
+      const yaml = '---\na: 1\n---\nb: 2\n';
+      const result = getJson5FromYaml(yaml);
+      const parsed = JSON.parse(result) as unknown;
+      assert.deepStrictEqual(parsed, [{ a: 1 }, { b: 2 }]);
+    });
+
+    test('preserves YAML comments as // comments in JSON5 output', () => {
+      const yaml = ['# header', 'name: test', 'value: 42 # inline', ''].join('\n');
+      const result = getJson5FromYaml(yaml);
+      assert.ok(result.includes('// header'), 'should contain header comment');
+      assert.ok(result.includes('// inline'), 'should contain inline comment');
+      assert.ok(result.includes('"name"'));
+      assert.ok(result.includes('"value"'));
+    });
+
+    test('produces output parseable as both JSON and JSON5', () => {
+      const yaml = 'a: 1\nb: two\nc:\n  - 1\n  - 2\n';
+      const result = getJson5FromYaml(yaml);
+      assert.deepStrictEqual(JSON.parse(result), { a: 1, b: 'two', c: [1, 2] });
+    });
+  });
+
   suite('round-trip comment preservation', () => {
     let workspaceConfigMock: WorkspaceConfigurationMock;
     suiteSetup(() => (workspaceConfigMock = new WorkspaceConfigurationMock()));
@@ -453,6 +579,18 @@ suite('helpers', () => {
       assert.ok(roundTripped.includes('before value'), 'should preserve before-value comment text');
       assert.ok(roundTripped.includes('name: test'), 'should preserve name');
       assert.ok(roundTripped.includes('value: 42'), 'should preserve value');
+    });
+
+    test('JSON5 (JSONC-subset) → YAML → JSON5 round-trip preserves comment text', () => {
+      const originalJson5 = ['{', '  // header comment', '  "name": "test",', '  "value": 42 // inline note', '}'].join(
+        '\n',
+      );
+      const yaml = getYamlFromJson5(originalJson5);
+      const roundTripped = getJson5FromYaml(yaml);
+      assert.ok(roundTripped.includes('header comment'), 'should preserve header comment text');
+      assert.ok(roundTripped.includes('inline note'), 'should preserve inline comment text');
+      assert.ok(roundTripped.includes('"name"'), 'should preserve name key');
+      assert.ok(roundTripped.includes('42'), 'should preserve value');
     });
   });
 });

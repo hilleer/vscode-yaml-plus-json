@@ -47,7 +47,7 @@ export function createMockFs(fileType = FileType.File): MockFs {
 export function createMockEditor(
   text: string,
   selection: Selection,
-  options: { selectedText?: string } = {},
+  options: { selectedText?: string; languageId?: string } = {},
 ): TextEditor {
   const document = {
     getText: (range?: Range) => {
@@ -57,6 +57,7 @@ export function createMockEditor(
       return text;
     },
     uri: Uri.file('/fake/file'),
+    languageId: options.languageId ?? 'plaintext',
   } as unknown as TextDocument;
 
   return {
@@ -90,6 +91,7 @@ export type MockVscodeOptions = {
   window?: {
     showInformationMessage?: Sinon.SinonStub;
     showErrorMessage?: Sinon.SinonStub;
+    showWarningMessage?: Sinon.SinonStub;
     activeTextEditor?: TextEditor | undefined;
   };
   workspace?: {
@@ -113,6 +115,7 @@ export function createMockVscode(options: MockVscodeOptions = {}): typeof import
     window: {
       showInformationMessage: options.window?.showInformationMessage,
       showErrorMessage: options.window?.showErrorMessage,
+      showWarningMessage: options.window?.showWarningMessage,
       activeTextEditor: options.window?.activeTextEditor,
     },
     Uri,

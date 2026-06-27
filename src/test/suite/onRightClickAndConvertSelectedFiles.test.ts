@@ -107,12 +107,13 @@ suite('onRightClickAndConvertSelectedFiles', () => {
       assert.strictEqual(mockFs.writeFile.callCount, 1);
     });
 
-    test('converts only files with .json extension', async () => {
+    test('converts files with .json, .jsonc, and .json5 extensions', async () => {
       withConfig({});
       const selections = [
         Uri.file('/fake/file.json'),
         Uri.file('/fake/file.JSON'), // uppercase - should not match
-        Uri.file('/fake/file.json5'), // different extension
+        Uri.file('/fake/file.jsonc'),
+        Uri.file('/fake/file.json5'),
       ];
 
       mockFs.readFile.callsFake((uri: Uri) => {
@@ -124,7 +125,7 @@ suite('onRightClickAndConvertSelectedFiles', () => {
 
       await onConvertSelectedJsonFilesToYaml(Uri.file('/fake/clicked'), selections);
 
-      assert.strictEqual(mockFs.writeFile.callCount, 1);
+      assert.strictEqual(mockFs.writeFile.callCount, 3);
     });
 
     test('handles empty selections array', async () => {

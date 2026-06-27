@@ -3,7 +3,7 @@ import * as Sinon from 'sinon';
 import * as vscode from 'vscode';
 import type { WorkspaceEdit } from 'vscode';
 
-import { onConvertSelection, getSelectionConverter } from '../../onConvertSelection';
+import { onConvertSelection, convertSelectionText } from '../../onConvertSelection';
 import { ConvertFromType } from '../../converter';
 import { WorkspaceConfigurationMock, createMockEditor } from '../testUtil';
 import { contextProvider } from '../../contextProvider';
@@ -33,17 +33,19 @@ suite('onConvertSelection', () => {
     configMock = new WorkspaceConfigurationMock(config);
   }
 
-  suite('getSelectionConverter', () => {
-    test('returns getYamlFromJson for ConvertFromType.Json', () => {
-      const converter = getSelectionConverter(ConvertFromType.Json);
-      const result = converter(JSON_CONTENT);
+  suite('convertSelectionText', () => {
+    test('converts JSON selection to YAML', async () => {
+      withConfig({});
+      const result = await convertSelectionText(ConvertFromType.Json, JSON_CONTENT, 'json');
+      assert.ok(result);
       assert.ok(result.includes('name:'));
       assert.ok(result.includes('value:'));
     });
 
-    test('returns getJsonFromYaml for ConvertFromType.Yaml', () => {
-      const converter = getSelectionConverter(ConvertFromType.Yaml);
-      const result = converter(YAML_CONTENT);
+    test('converts YAML selection to JSON', async () => {
+      withConfig({});
+      const result = await convertSelectionText(ConvertFromType.Yaml, YAML_CONTENT, 'yaml');
+      assert.ok(result);
       assert.ok(result.includes('"name":'));
       assert.ok(result.includes('"value":'));
     });

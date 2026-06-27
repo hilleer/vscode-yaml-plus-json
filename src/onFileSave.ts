@@ -3,12 +3,16 @@ import type { TextDocument, Uri, FileSystem } from 'vscode';
 
 import { contextProvider } from './contextProvider';
 import {
+  getJson5FromYaml,
   getJsonFromYaml,
   getJsoncFromYaml,
   getYamlFromJson,
+  getYamlFromJson5,
   getYamlFromJsonc,
+  hasJson5OnlySyntax,
   showError,
   stripJsoncComments,
+  warnJson5CommentsStripped,
 } from './helpers';
 import { ConfigId, Configs, getConfig } from './config';
 
@@ -25,10 +29,10 @@ export async function onFileSave(document: TextDocument): Promise<void> {
   const fileExtension = path.extname(filePath);
 
   const isYaml = fileExtension === '.yaml' || fileExtension === '.yml';
-  const isJson = fileExtension === '.json' || fileExtension === '.jsonc';
+  const isJson = fileExtension === '.json' || fileExtension === '.jsonc' || fileExtension === '.json5';
 
   if (!isYaml && !isJson) {
-    return; // saved non yaml/json/jsonc file - do nothing
+    return; // saved non yaml/json/jsonc/json5 file - do nothing
   }
 
   const preserveComments = getConfig<boolean>(ConfigId.PreserveComments) ?? true;
@@ -36,10 +40,15 @@ export async function onFileSave(document: TextDocument): Promise<void> {
   try {
     if (isYaml) {
       const toJsonExtension = getConfig<string>(ConfigId.FileExtensionsJson) || '.json';
-      const newContent =
-        toJsonExtension === '.jsonc' && preserveComments
-          ? getJsoncFromYaml(document.getText())
-          : getJsonFromYaml(document.getText());
+      const yamlText = document.getText();
+      let newContent: string;
+      if (toJsonExtension === '.jsonc' && preserveComments) {
+        newContent = getJsoncFromYaml(yamlText);
+      } else if (toJsonExtension === '.json5' && preserveComments) {
+        newContent = getJson5FromYaml(yamlText);
+      } else {
+        newContent = getJsonFromYaml(yamlText);
+      }
       const newFilePath = filePath.replace(fileExtension, toJsonExtension);
 
       return await convertAndWrite(newFilePath, newContent, fs);
@@ -49,14 +58,26 @@ export async function onFileSave(document: TextDocument): Promise<void> {
       const toYamlExtension = getConfig<string>(ConfigId.FileExtensionsYaml) || '.yaml';
       const text = document.getText();
       let newContent: string;
+      let didStripJson5Comments = false;
       if (fileExtension === '.jsonc') {
         newContent = preserveComments ? getYamlFromJsonc(text) : getYamlFromJson(stripJsoncComments(text));
+      } else if (fileExtension === '.json5') {
+        if (preserveComments) {
+          didStripJson5Comments = hasJson5OnlySyntax(text);
+          newContent = getYamlFromJson5(text);
+        } else {
+          newContent = getYamlFromJson5(text);
+        }
       } else {
         newContent = getYamlFromJson(text);
       }
       const newFilePath = filePath.replace(fileExtension, toYamlExtension);
 
-      return await convertAndWrite(newFilePath, newContent, fs);
+      await convertAndWrite(newFilePath, newContent, fs);
+      if (didStripJson5Comments) {
+        warnJson5CommentsStripped(path.basename(filePath));
+      }
+      return;
     }
   } catch (error: unknown) {
     showError(error);
