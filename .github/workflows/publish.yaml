@@ -55,4 +55,4 @@ jobs:
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
-          skipDuplicate: ${{ inputs.skip-duplicate != false }}
+          skipDuplicate: ${{ inputs['skip-duplicate'] != false }}
